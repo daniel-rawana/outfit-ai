@@ -1,4 +1,5 @@
-AI Outfit Generator
+# AI Outfit Generator
+
 An AI-powered project that generates outfit suggestions based on your uploaded wardrobe items.
 
 Project Description
