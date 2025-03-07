@@ -69,7 +69,7 @@ function App() {
         <div className="image-gallery">
           <Icons.LeftArrow className={`arrow ${currentPage === 0 ? "hidden" : ""}`} onClick={currentPage > 0 ? handlePrevPage : null} />
 
-          {displayedImages.length === 0 ? (
+          {images.length === 0 ? (
             <div className="gallery-placeholder">No images uploaded yet.</div>
           ) : (
             <div className="image-grid">
