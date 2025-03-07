@@ -41,7 +41,7 @@ function App() {
       {/* Navbar */}
       <nav className="navbar">
         <div className="logo">
-          <Icons.Logo size={30} /> AI Stylist
+          <Icons.Logo className="logo-icon" /> RunwAI
         </div>
         <ul>
           <li><a href="#">Home</a></li>
@@ -54,8 +54,8 @@ function App() {
       {/* Main Section */}
       <div className="main-content">
         <div className="sidebar">
-          <h1>Welcome to AI Stylist</h1>
-          <p>An AI-powered project that generates outfit suggestions based on your uploaded wardrobe items.</p>
+          <h1>Welcome to RunwAI</h1>
+          <h2>An AI-powered styling assistant that curates outfit suggestions based on your uploaded wardrobe.</h2>
           <label className="upload-btn">
             <Icons.Upload className="upload"/> Upload
             <input type="file" multiple onChange={handleUpload} hidden />
@@ -67,22 +67,28 @@ function App() {
 
         {/* Image Grid with Arrows */}
         <div className="image-gallery">
-          {currentPage > 0 && <Icons.LeftArrow className="arrow" onClick={handlePrevPage} />}
+          <Icons.LeftArrow className={`arrow ${currentPage === 0 ? "hidden" : ""}`} onClick={currentPage > 0 ? handlePrevPage : null} />
+
           {displayedImages.length === 0 ? (
-            <p>No images uploaded yet.</p>
+            <div className="gallery-placeholder">No images uploaded yet.</div>
           ) : (
             <div className="image-grid">
               {displayedImages.map((src, index) => (
                 <div key={index} className="image-container">
                   <img src={src} alt={`Item ${index}`} />
-                  <button className="remove-btn" onClick={() => removeImage(index)}>
-                    <Icons.XButton className="x"/>
+                  <button className="remove-btn" onClick={() => removeImage(index + currentPage * imagesPerPage)}>
+                    <Icons.XButton className="x" />
                   </button>
                 </div>
               ))}
+              {/* Fill empty slots with placeholders */}
+              {Array.from({ length: imagesPerPage - displayedImages.length }).map((_, index) => (
+                <div key={`placeholder-${index}`} className="image-placeholder"></div>
+              ))}
             </div>
           )}
-          {currentPage < totalPages - 1 && <Icons.RightArrow className="arrow" onClick={handleNextPage} />}
+
+          <Icons.RightArrow className={`arrow ${currentPage >= totalPages - 1 ? "hidden" : ""}`} onClick={currentPage < totalPages - 1 ? handleNextPage : null} />
         </div>
       </div>
     </div>
