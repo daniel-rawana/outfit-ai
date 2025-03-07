@@ -57,11 +57,11 @@ function App() {
           <h1>Welcome to AI Stylist</h1>
           <p>An AI-powered project that generates outfit suggestions based on your uploaded wardrobe items.</p>
           <label className="upload-btn">
-            <button/> Upload
+            <Icons.Upload className="upload"/> Upload
             <input type="file" multiple onChange={handleUpload} hidden />
           </label>
           <button className="generate-btn">
-            <Icons.Logo size={30} /> Generate
+            <Icons.Generate className="generate" /> Generate
           </button>
         </div>
 
