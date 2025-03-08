@@ -16,25 +16,15 @@ def classify(image_path):
     # Load and preprocess the image
     image = preprocess(Image.open(image_path)).unsqueeze(0).to(device)
 
+    # Encode image
+    with torch.no_grad():
+        image_features = model.encode_image(image)
+
     # Define main category (Top, bottom, footwear)
     main_categories = ["top", "bottom", "footwear"]
 
-    # Tokenize main category names 
-    text_inputs = clip.tokenize(main_categories).to(device)
-
-    # Encode image and text
-    with torch.no_grad():
-        image_features = model.encode_image(image)
-        text_features = model.encode_text(text_inputs)
-
-    # Compute similarity
-    image_features /= image_features.norm(dim=-1, keepdim=True)
-    text_features /= text_features.norm(dim=-1, keepdim=True)
-    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity 
-
-    # Get the best match
-    best_match = similarity.argmax().item()
-    main_category = main_categories[best_match]
+    # Compute similarity with main categories
+    main_category = compute_similarity(main_categories, image_features, model, device)
 
     # Define subcategories 
     if main_category == "top":
@@ -89,59 +79,42 @@ def classify(image_path):
         "boat shoes",
         "flip-flops"]
 
-    # Tokenize the subcategories
-    text_inputs = clip.tokenize(sub_categories).to(device)
-
-    # Encode sub categories
-    with torch.no_grad():
-        text_features = model.encode_text(text_inputs)
-
-    # Compute similarity of sub categories 
-    text_features /= text_features.norm(dim=1, keepdim=True)
-    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity 
-
-    # Get the best match
-    best_match = similarity.argmax().item()
-    sub_category = sub_categories[best_match]
+    # Compute similarity with sub-categories
+    sub_category = compute_similarity(sub_categories, image_features, model, device)
 
     # Define colors
     colors = ["red", "blue", "black", "white", "green", "yellow"]
 
-    # Tokenize colors 
-    text_inputs = clip.tokenize(colors).to(device)
-
-    # Encode colors 
-    with torch.no_grad():
-        text_features = model.encode_text(text_inputs)
-
-    # Compute similiraty of colors 
-    text_features /= text_features.norm(dim=1, keepdim=True)
-    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
-
-    # Get the best match 
-    best_match = similarity.argmax().item()
-    color = colors[best_match]
+    # Compute similarity with colors
+    color = compute_similarity(colors, image_features, model, device)
 
     # Define seasonal setting
-    seasons = ["Spring", "Summer", "Fall", "Winter"]
+    seasons = ["spring", "summer", "fall", "winter"]
 
-    # Tokenize seasons
-    text_inputs = clip.tokenize(seasons).to(device)
-
-    # Encode seasons
-    with torch.no_grad():
-        text_features = model.encode_text(text_inputs)
-
-    # Compute similiraty of colors 
-    text_features /= text_features.norm(dim=1, keepdim=True)
-    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
-
-    # Get the best match 
-    best_match = similarity.argmax().item()
-    season = seasons[best_match]
+    # Compute similarity with seasonal setting
+    season = compute_similarity(seasons, image_features, model, device)
 
     prediction = [main_category, sub_category, color, season]
 
     return prediction
+
+def compute_similarity(categories, image_features, model, device):
+
+    # Tokenize categories
+    text_inputs = clip.tokenize(categories).to(device)
+
+    # Encode
+    with torch.no_grad():
+        text_features = model.encode_text(text_inputs)
+
+    # Compute similiraty 
+    text_features /= text_features.norm(dim=1, keepdim=True)
+    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
+
+    # Get the best match 
+    best_match = similarity.argmax().item()
+
+    return categories[best_match]
+
 
 print(classify("/Users/eduardogoncalvez/Desktop/jacket.jpg"))
