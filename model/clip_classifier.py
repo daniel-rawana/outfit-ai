@@ -141,5 +141,3 @@ def compute_similarity(categories, image_features, model, device):
     best_match = similarity.argmax().item()
 
     return categories[best_match]
-
-print(classify("/Users/eduardogoncalvez/Desktop/dress.png"))
