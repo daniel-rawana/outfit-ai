@@ -43,7 +43,8 @@ def classify(image_path):
         "henley",
         "flannel shirt",
         "printed shirt",
-        "jacket"]
+        "jacket",
+        "dress"]
 
     elif main_category == "bottom":
         sub_categories = ["jeans",
@@ -88,13 +89,38 @@ def classify(image_path):
     # Compute similarity with colors
     color = compute_similarity(colors, image_features, model, device)
 
+    # Define patterns
+    patterns = ["solid",      
+    "striped",     
+    "plaid",      
+    "floral",      
+    "polka_dot",   
+    "graphic",  
+    "animal"]
+
+    # Compute similarity with patterns
+    pattern = compute_similarity(patterns, image_features, model, device)
+
     # Define seasonal setting
     seasons = ["spring", "summer", "fall", "winter"]
 
     # Compute similarity with seasonal setting
     season = compute_similarity(seasons, image_features, model, device)
 
-    prediction = [main_category, sub_category, color, season]
+    # Define ocassions 
+    occasions = ["casual",       
+    "work",          
+    "formal",      
+    "athletic",      
+    "outdoor", 
+    "lounge",   
+    "party",         
+    "special_event"]
+
+    # Compute similarity with ocassions
+    ocassion = compute_similarity(occasions, image_features, model, device)
+
+    prediction = [main_category, sub_category, color, pattern, season, ocassion]
 
     return prediction
 
@@ -115,6 +141,3 @@ def compute_similarity(categories, image_features, model, device):
     best_match = similarity.argmax().item()
 
     return categories[best_match]
-
-
-print(classify("/Users/eduardogoncalvez/Desktop/jacket.jpg"))
