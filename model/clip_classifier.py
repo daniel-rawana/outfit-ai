@@ -52,7 +52,8 @@ def classify(image_path):
         "athletic top",
         "henley",
         "flannel shirt",
-        "printed shirt"]
+        "printed shirt",
+        "jacket"]
 
     elif main_category == "bottom":
         sub_categories = ["jeans",
@@ -121,8 +122,26 @@ def classify(image_path):
     best_match = similarity.argmax().item()
     color = colors[best_match]
 
-    prediction = [main_category, sub_category, color]
+    # Define seasonal setting
+    seasons = ["Spring", "Summer", "Fall", "Winter"]
+
+    # Tokenize seasons
+    text_inputs = clip.tokenize(seasons).to(device)
+
+    # Encode seasons
+    with torch.no_grad():
+        text_features = model.encode_text(text_inputs)
+
+    # Compute similiraty of colors 
+    text_features /= text_features.norm(dim=1, keepdim=True)
+    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
+
+    # Get the best match 
+    best_match = similarity.argmax().item()
+    season = seasons[best_match]
+
+    prediction = [main_category, sub_category, color, season]
 
     return prediction
 
-print(classify("PATH TO PHOTO"))
+print(classify("/Users/eduardogoncalvez/Desktop/jacket.jpg"))
