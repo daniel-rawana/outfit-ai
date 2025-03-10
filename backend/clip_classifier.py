@@ -1,13 +1,8 @@
-import os
-import certifi
 import torch
 import clip
 from PIL import Image 
 
 def classify(image_path):
-    
-    # Set the SSL certificate path
-    os.environ['SSL_CERT_FILE'] = certifi.where()
 
     # Load the model
     device = "cuda" if torch.cuda.is_available() else "cpu"
