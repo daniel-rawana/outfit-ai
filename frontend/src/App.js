@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icons } from "./assets/icons";
 
 function App() {
@@ -7,6 +7,33 @@ function App() {
   const [previewImages, setPreviewImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const imagesPerPage = 9; // 3x3 grid, 9 images per page
+
+  useEffect(() =>{
+    uploadImages();
+  }, [images]);
+
+  const uploadImages = async () => {
+    const formData = new FormData();
+    images.forEach((image, index) => {
+      formData.append("images", image); // Append images
+    });
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/wardrobe/items", {
+        method: "POST",
+        body: formData,
+      });
+      console.log(formData)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Upload successful:", result);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    }
+  };
 
   const handleUpload = (event) => {
     const files = Array.from(event.target.files);

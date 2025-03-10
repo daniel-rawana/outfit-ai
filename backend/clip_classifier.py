@@ -1,20 +1,16 @@
-import os
-import certifi
 import torch
 import clip
+import io
 from PIL import Image 
 
-def classify(image_path):
-    
-    # Set the SSL certificate path
-    os.environ['SSL_CERT_FILE'] = certifi.where()
+def classify(image):
 
     # Load the model
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load("ViT-B/32", device = device)
 
     # Load and preprocess the image
-    image = preprocess(Image.open(image_path)).unsqueeze(0).to(device)
+    image = preprocess(Image.open(io.BytesIO(image.read()))).unsqueeze(0).to(device)
 
     # Encode image
     with torch.no_grad():

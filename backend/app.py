@@ -1,5 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from clip_classifier import classify
 
 app = Flask(__name__)
 CORS(app)  
@@ -61,7 +62,13 @@ def add_clothing():
         # 4. Save clothing item to database
         # 5. Return success with item details
 
-        return jsonify({"message": "Clothing item added"}), 201
+        image_files = request.files.getlist('images')
+        classifications = []
+
+        for image in image_files:
+            classifications.append(classify(image))
+
+        return jsonify({"message": classifications}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
