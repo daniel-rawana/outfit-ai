@@ -3,7 +3,7 @@ import clip
 import io
 from PIL import Image 
 
-def classify(image_path):
+def classify(image):
 
     # Load the model
     device = "cuda" if torch.cuda.is_available() else "cpu"
