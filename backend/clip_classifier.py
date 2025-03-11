@@ -36,6 +36,10 @@ def classify(image):
                 "hiking shoes", "mules", "espadrilles", "boat shoes", "flip-flops"
             ]
         },
+        "silhouette": [
+            "fitted", "relaxed", "oversized", "A-line", "boxy",
+            "draped", "tailored", "flared", "straight", "voluminous"
+        ],
         "color": ["red", "blue", "black", "white", "green", "yellow"],
         "pattern": ["solid", "striped", "plaid", "floral", "polka_dot", "graphic", "animal"],
         "season": ["spring", "summer", "fall", "winter"],
