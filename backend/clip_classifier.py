@@ -1,127 +1,66 @@
 import torch
 import clip
 import io
-from PIL import Image 
+from PIL import Image
+
+#Load the model
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model, preprocess = clip.load("ViT-B/32", device = device)
 
 def classify(image):
-
-    # Load the model
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model, preprocess = clip.load("ViT-B/32", device = device)
-
     # Load and preprocess the image
     image = preprocess(Image.open(io.BytesIO(image.read()))).unsqueeze(0).to(device)
 
     # Encode image
     with torch.no_grad():
         image_features = model.encode_image(image)
+    
+    # Dictionary of categories with their possible values
+    categories = {
+        "main_category": ["top", "bottom", "footwear"],
+        "sub_category": {
+            "top": [
+                "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top",
+                "sweater", "sweatshirt", "cardigan", "turtleneck", "crop top",
+                "tunic", "athletic top", "henley", "flannel shirt", "printed shirt",
+                "jacket", "dress"
+            ],
+            "bottom": [
+                "jeans", "slacks", "chinos", "shorts", "skirt",
+                "leggings", "sweatpants", "cargo pants", "athletic shorts", "bermuda shorts",
+                "culottes", "capri pants", "palazzo pants", "cargo shorts", "denim shorts"
+            ],
+            "footwear": [
+                "sneakers", "dress shoes", "loafers", "boots", "sandals",
+                "heels", "flats", "slip-ons", "ankle boots", "running shoes",
+                "hiking shoes", "mules", "espadrilles", "boat shoes", "flip-flops"
+            ]
+        },
+        "silhouette": [
+            "fitted", "relaxed", "oversized", "A-line", "boxy",
+            "draped", "tailored", "flared", "straight", "voluminous"
+        ],
+        "color": ["red", "blue", "black", "white", "green", "yellow"],
+        "pattern": ["solid", "striped", "plaid", "floral", "polka_dot", "graphic", "animal"],
+        "season": ["spring", "summer", "fall", "winter"],
+        "occasion": ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special_event"]
+    }
 
-    # Define main category (Top, bottom, footwear)
-    main_categories = ["top", "bottom", "footwear"]
+    # Results dictionary
+    results = {}
 
-    # Compute similarity with main categories
-    main_category = compute_similarity(main_categories, image_features, model, device)
+    # Separately classify a main and sub_category since they are dependant on each other
+    results["main_category"] = compute_similarity(categories["main_category"], image_features)
+    results["sub_category"] = compute_similarity(categories["sub_category"][results["main_category"]], image_features)
 
-    # Define subcategories 
-    if main_category == "top":
-        sub_categories = ["t-shirt",
-        "button-up shirt",
-        "blouse",
-        "polo shirt",
-        "tank top",
-        "sweater",
-        "sweatshirt",
-        "cardigan",
-        "turtleneck",
-        "crop top",
-        "tunic",
-        "athletic top",
-        "henley",
-        "flannel shirt",
-        "printed shirt",
-        "jacket",
-        "dress"]
+    # Loop through the rest of the categories in the dictionary and perform the classification
+    for key in categories.keys():
+        if key != "main_category" and key != "sub_category":
+            results[key] = compute_similarity(categories[key], image_features)
 
-    elif main_category == "bottom":
-        sub_categories = ["jeans",
-        "slacks",
-        "chinos",
-        "shorts",
-        "skirt",
-        "leggings",
-        "sweatpants",
-        "cargo pants",
-        "athletic shorts",
-        "bermuda shorts",
-        "culottes",
-        "capri pants",
-        "palazzo pants",
-        "cargo shorts",
-        "denim shorts"]
+    return results
 
-    elif main_category == "footwear":
-        sub_categories = ["sneakers",
-        "dress shoes",
-        "loafers",
-        "boots",
-        "sandals",
-        "heels",
-        "flats",
-        "slip-ons",
-        "ankle boots",
-        "running shoes",
-        "hiking shoes",
-        "mules",
-        "espadrilles",
-        "boat shoes",
-        "flip-flops"]
-
-    # Compute similarity with sub-categories
-    sub_category = compute_similarity(sub_categories, image_features, model, device)
-
-    # Define colors
-    colors = ["red", "blue", "black", "white", "green", "yellow"]
-
-    # Compute similarity with colors
-    color = compute_similarity(colors, image_features, model, device)
-
-    # Define patterns
-    patterns = ["solid",      
-    "striped",     
-    "plaid",      
-    "floral",      
-    "polka_dot",   
-    "graphic",  
-    "animal"]
-
-    # Compute similarity with patterns
-    pattern = compute_similarity(patterns, image_features, model, device)
-
-    # Define seasonal setting
-    seasons = ["spring", "summer", "fall", "winter"]
-
-    # Compute similarity with seasonal setting
-    season = compute_similarity(seasons, image_features, model, device)
-
-    # Define ocassions 
-    occasions = ["casual",       
-    "work",          
-    "formal",      
-    "athletic",      
-    "outdoor", 
-    "lounge",   
-    "party",         
-    "special_event"]
-
-    # Compute similarity with ocassions
-    ocassion = compute_similarity(occasions, image_features, model, device)
-
-    prediction = [main_category, sub_category, color, pattern, season, ocassion]
-
-    return prediction
-
-def compute_similarity(categories, image_features, model, device):
-
+def compute_similarity(categories, image_features):
     # Tokenize categories
     text_inputs = clip.tokenize(categories).to(device)
 
