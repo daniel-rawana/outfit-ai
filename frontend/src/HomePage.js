@@ -43,6 +43,44 @@ function HomePage() {
         }
     };
 
+    const handleGenerate = async () => {
+        if (images.length === 0) {
+            alert("Please upload some wardrobe items first.");
+            return;
+        }
+
+        setIsGenerating(true);
+
+        try {
+            const generateResponse = await fetch("http://127.0.0.1:5000/outfits/generate", {
+                method: "POST",
+            });
+
+            if (!generateResponse.ok) {
+                throw new Error("Failed to generate outfit.");
+            }
+
+            const outfitData = await generateResponse.json();
+            console.log("Generated outfit:", outfitData);
+
+            setIsGenerating(false);
+
+            // dummy outfit for testing, remove later
+            const dummyOutfit = [
+                {id: 1, image: shirt1},
+                {id: 2, image: pants1},
+                {id: 3, image: shoes1},
+            ];
+
+            // replace dummyData with outfitData.outfit
+            navigate("/generated-outfit", {state: {outfit: dummyOutfit}});
+
+        } catch (error) {
+            console.error("Error during outfit generation:", error);
+            setIsGenerating(false);
+        }
+    };
+
     const handleUpload = (event) => {
         const files = Array.from(event.target.files);
         if (files.length > 0) {
@@ -53,23 +91,6 @@ function HomePage() {
             const previewUrls = files.map((file) => URL.createObjectURL(file));
             setPreviewImages((prev) => [...prev, ...previewUrls]);
         }
-    };
-
-    const handleGenerate = async () => {
-        setIsGenerating(true);
-
-        // Simulated API call with dummy outfit for testing, replace later with real API call
-        setTimeout(() => {
-            const dummyOutfit = [
-                { id: 1, image: shirt1 },
-                { id: 2, image: pants1 },
-                { id: 3, image: shoes1 },
-            ];
-
-            setIsGenerating(false);
-
-            navigate("/generated-outfit", { state: { outfit: dummyOutfit } });
-        }, 2000);
     };
 
     const removeImage = (index) => {
