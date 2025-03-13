@@ -1,22 +1,32 @@
 import "./App.css";
 import React from "react";
 
+// Testing only, update later to be generated outfit
+import shirt1 from "./sampleImages/shirt_1.jpg";
+import pants1 from "./sampleImages/pants_1.jpg";
+import shoes1 from "./sampleImages/shoes_1.jpg";
+
 const GeneratedOutfit = () => {
     const outfit = [
-        {id: 1, image: "../sampleImages/shirt_1.jpg"},
-        {id: 2, image: "sampleImages/pants_1.jpg"},
-        {id: 3, image: "sampleImages/shoes_1.jpg"},
+        {id: 1, image: shirt1},
+        {id: 2, image: pants1},
+        {id: 3, image: shoes1},
     ];
 
     return (
-        <div className="outfit-container">
-            <h2>Outfit Suggestion</h2>
-            <div className="outfit-grid">
+        <div className="suggestion-container">
+            <h1>Outfit Suggestion</h1>
+            <div className="outfit-container">
                 {outfit.map((item) => (
-                    <img key={item.id} src={item.image} alt="Outfit piece" className="outfit-item"/>
+                    <div key={item.id} className="large-image-container">
+                        <img src={item.image} alt="Outfit piece" className="outfit-item"/>
+                    </div>
                 ))}
             </div>
-            <button className="save-button">Save</button>
+            <div className="buttons-container">
+                <button className="new-outfit-btn">New Outfit</button>
+                <button className="save-btn">Save</button>
+            </div>
         </div>
     );
 };
