@@ -3,12 +3,18 @@ import React, {useState, useEffect} from "react";
 import {Icons} from "./assets/icons";
 import {useNavigate} from "react-router-dom";
 
+// Sample images for testing
+import shirt1 from "./sampleImages/shirt_1.jpg";
+import pants1 from "./sampleImages/pants_1.jpg";
+import shoes1 from "./sampleImages/shoes_1.jpg";
+
 function HomePage() {
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         uploadImages();
@@ -47,6 +53,23 @@ function HomePage() {
             const previewUrls = files.map((file) => URL.createObjectURL(file));
             setPreviewImages((prev) => [...prev, ...previewUrls]);
         }
+    };
+
+    const handleGenerate = async () => {
+        setIsGenerating(true);
+
+        // Simulated API call with dummy outfit for testing, replace later with real API call
+        setTimeout(() => {
+            const dummyOutfit = [
+                { id: 1, image: shirt1 },
+                { id: 2, image: pants1 },
+                { id: 3, image: shoes1 },
+            ];
+
+            setIsGenerating(false);
+
+            navigate("/generated-outfit", { state: { outfit: dummyOutfit } });
+        }, 2000);
     };
 
     const removeImage = (index) => {
@@ -88,7 +111,7 @@ function HomePage() {
                         <Icons.Upload className="upload"/> Upload
                         <input type="file" multiple onChange={handleUpload} hidden/>
                     </label>
-                    <button className="generate-btn" onClick={() => navigate("/generated-outfit")}>
+                    <button className="generate-btn" onClick={handleGenerate} disabled={isGenerating}>
                         <Icons.Generate className="generate"/> Generate
                     </button>
                 </div>
@@ -132,6 +155,16 @@ function HomePage() {
                     />
                 </div>
             </div>
+
+            {/* "generating" popup */}
+            {isGenerating && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <Icons.Generate className="spinner"/>
+                        <p>Generating your outfit...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
