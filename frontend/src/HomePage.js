@@ -61,19 +61,18 @@ function HomePage() {
             }
 
             const outfitData = await generateResponse.json();
-            console.log("Generated outfit:", outfitData);
 
             setIsGenerating(false);
 
-            // dummy outfit for testing, remove later
+            // dummy outfit for testing
             const dummyOutfit = [
                 {id: 1, image: shirt1},
                 {id: 2, image: pants1},
                 {id: 3, image: shoes1},
             ];
 
-            // replace dummyData with outfitData.outfit
-            navigate("/generated-outfit", {state: {outfit: dummyOutfit}});
+            // replace outfitData.outfit with dummyOutfit to test
+            navigate("/generated-outfit", {state: {outfit: outfitData.outfit}});
 
         } catch (error) {
             console.error("Error during outfit generation:", error);

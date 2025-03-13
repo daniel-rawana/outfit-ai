@@ -17,7 +17,7 @@ const GeneratedOutfit = () => {
                         </div>
                     ))
                 ) : (
-                    <p>No outfit generated.</p>
+                    <p>No wardrobe items in outfit.</p>
                 )}
             </div>
             <div className="buttons-container">
