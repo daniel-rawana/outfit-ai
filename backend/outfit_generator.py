@@ -30,7 +30,7 @@ def filter_by_weather(wardrobe, weather):
 
 def filter_by_occasion(wardrobe, occasion):
     """
-    Ocassion should be gathered as an input from the suser when they ask to generate an outfit
+    Occasion should be gathered as an input from the suser when they ask to generate an outfit
 
     Since occasion might be subjective, this function overlaps certain occasions according to their compatibility 
 
