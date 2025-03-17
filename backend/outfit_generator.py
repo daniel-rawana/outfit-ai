@@ -27,3 +27,29 @@ def filter_by_weather(wardrobe, weather):
 
     # Return filtered list 
     return [item for item in wardrobe if item["season"] == target_season]
+
+def filter_by_occasion(wardrobe, occasion):
+    """
+    Ocassion should be gathered as an input from the suser when they ask to generate an outfit
+
+    Since occasion might be subjective, this function overlaps certain occasions according to their compatibility 
+
+    This function returns a list with filtered clothing items according to the occasion 
+    """
+
+    compatible_occasions = {
+        "casual": ["casual", "lounge", "outdoor"],
+        "work": ["work", "formal", "special_event"],
+        "formal": ["formal", "work", "special_event"],
+        "athletic": ["athletic", "outdoor"],
+        "outdoor": ["outdoor", "athletic", "casual"],
+        "lounge": ["lounge", "casual"],
+        "party": ["party", "casual", "special_event"],
+        "special_event": ["special_event", "formal", "party"]
+    }
+
+    # Get list of compatibles occasions with the occasion requested from the user
+    target_occasions = compatible_occasions[occasion]
+
+    # Return filtered list
+    return [item for item in wardrobe if item["occasion"] in target_occasions]
