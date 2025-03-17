@@ -53,3 +53,22 @@ def filter_by_occasion(wardrobe, occasion):
 
     # Return filtered list
     return [item for item in wardrobe if item["occasion"] in target_occasions]
+
+def filter_wardrobe(wardrobe, weather, occasion):
+    """
+    This function combines both filters and classifies the wardrobe by 
+    the main_category of each clothing piece 
+    """
+
+    # Result dictionary of lists divided by main category 
+    filtered_wardrobe = {
+        "top": [],
+        "bottom": [],
+        "footwear": []
+    }
+    
+    # Classify clothing items by their main category (top, bottom, footwear)
+    for item in filter_by_occasion(filter_by_weather(wardrobe, weather), occasion):
+        filtered_wardrobe[item["main_category"]].append(item)
+    
+    return filtered_wardrobe
