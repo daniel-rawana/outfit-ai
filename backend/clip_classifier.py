@@ -1,29 +1,32 @@
 import torch
 import clip
-import io
 from PIL import Image
+import os
 
-#Load the model
+# global variables for model and device
+model = None
+preprocess = None
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model, preprocess = clip.load("ViT-B/32", device = device)
 
-def classify(image):
-    # Load and preprocess the image
-    image = preprocess(Image.open(io.BytesIO(image.read()))).unsqueeze(0).to(device)
+def load_model():
+    # load the clip model
+    global model, preprocess
+    model, preprocess = clip.load("ViT-B/32", device=device)
+    return model, preprocess
 
-    # Encode image
-    with torch.no_grad():
-        image_features = model.encode_image(image)
+def classify(image_path):
+    # load and preprocess the image
+    image = Image.open(image_path)
+    image_input = preprocess(image).unsqueeze(0).to(device)
     
-    # Dictionary of categories with their possible values
+    # dictionary of categories with their possible values
     categories = {
-        "main_category": ["top", "bottom", "footwear"],
+        "main_category": ["top", "bottom", "footwear", "outerwear", "dress", "accessory"],
         "sub_category": {
             "top": [
                 "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top",
                 "sweater", "sweatshirt", "cardigan", "turtleneck", "crop top",
-                "tunic", "athletic top", "henley", "flannel shirt", "printed shirt",
-                "jacket", "dress"
+                "tunic", "athletic top", "henley", "flannel shirt", "printed shirt"
             ],
             "bottom": [
                 "jeans", "slacks", "chinos", "shorts", "skirt",
@@ -34,45 +37,101 @@ def classify(image):
                 "sneakers", "dress shoes", "loafers", "boots", "sandals",
                 "heels", "flats", "slip-ons", "ankle boots", "running shoes",
                 "hiking shoes", "mules", "espadrilles", "boat shoes", "flip-flops"
+            ],
+            "outerwear": [
+                "jacket", "blazer", "coat", "raincoat", "windbreaker",
+                "denim jacket", "leather jacket", "bomber jacket", "puffer jacket"
+            ],
+            "dress": [
+                "casual dress", "formal dress", "maxi dress", "mini dress",
+                "sundress", "cocktail dress", "evening gown", "shift dress"
+            ],
+            "accessory": [
+                "necklace", "bracelet", "earrings", "ring", "belt",
+                "scarf", "hat", "bag", "watch", "sunglasses"
             ]
         },
-        "silhouette": [
-            "fitted", "relaxed", "oversized", "A-line", "boxy",
-            "draped", "tailored", "flared", "straight", "voluminous"
+        "style": [
+            "casual", "formal", "business", "athletic", "streetwear",
+            "bohemian", "vintage", "preppy", "minimalist", "luxury"
         ],
-        "color": ["red", "blue", "black", "white", "green", "yellow"],
-        "pattern": ["solid", "striped", "plaid", "floral", "polka_dot", "graphic", "animal"],
+        "color": [
+            "black", "white", "red", "blue", "green", "yellow", "purple",
+            "pink", "orange", "brown", "gray", "navy", "beige", "cream"
+        ],
+        "pattern": [
+            "solid", "striped", "plaid", "floral", "polka dot", "animal print",
+            "geometric", "abstract", "camouflage", "tie-dye", "checkered"
+        ],
         "season": ["spring", "summer", "fall", "winter"],
-        "occasion": ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special_event"]
+        "occasion": [
+            "casual", "work", "formal", "athletic", "outdoor",
+            "lounge", "party", "special event", "beach", "travel"
+        ]
     }
-
-    # Results dictionary
+    
+    # results dictionary
     results = {}
-
-    # Separately classify a main and sub_category since they are dependant on each other
-    results["main_category"] = compute_similarity(categories["main_category"], image_features)
-    results["sub_category"] = compute_similarity(categories["sub_category"][results["main_category"]], image_features)
-
-    # Loop through the rest of the categories in the dictionary and perform the classification
-    for key in categories.keys():
-        if key != "main_category" and key != "sub_category":
-            results[key] = compute_similarity(categories[key], image_features)
-
+    
+    # first classify main category
+    main_cat_results = compute_similarity(categories["main_category"], image_input)
+    results["main_category"] = main_cat_results
+    
+    # get the top main category
+    top_main_category = main_cat_results[0]["category"]
+    
+    # then classify sub-category based on main category
+    if top_main_category in categories["sub_category"]:
+        results["sub_category"] = compute_similarity(categories["sub_category"][top_main_category], image_input)
+    
+    # classify other attributes
+    for key in ["style", "color", "pattern", "season", "occasion"]:
+        results[key] = compute_similarity(categories[key], image_input)
+    
     return results
 
-def compute_similarity(categories, image_features):
-    # Tokenize categories
-    text_inputs = clip.tokenize(categories).to(device)
-
-    # Encode
+def compute_similarity(categories, image_input):
+    # tokenize categories
+    text_inputs = torch.cat([clip.tokenize(cat) for cat in categories]).to(device)
+    
+    # get features
     with torch.no_grad():
         text_features = model.encode_text(text_inputs)
-
-    # Compute similiraty 
+        image_features = model.encode_image(image_input)
+    
+    # normalize features
     text_features /= text_features.norm(dim=1, keepdim=True)
-    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
+    image_features /= image_features.norm(dim=1, keepdim=True)
+    
+    # calculate similarity
+    similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+    
+    # get top 3 predictions
+    values, indices = similarity[0].topk(3)
+    
+    # format results
+    results = []
+    for value, index in zip(values, indices):
+        results.append({
+            "category": categories[index],
+            "confidence": float(value)
+        })
+    
+    return results
 
-    # Get the best match 
-    best_match = similarity.argmax().item()
-
-    return categories[best_match]
+# test section
+if __name__ == "__main__":
+    # load the model
+    load_model()
+    
+    # test with a sample image
+    test_image_path = "backend/images/22818.jpg" 
+    if os.path.exists(test_image_path):
+        results = classify(test_image_path)
+        print("\npredictions:")
+        for category, predictions in results.items():
+            print(f"\n{category.title()}:")
+            for pred in predictions:
+                print(f"- {pred['category']}: {pred['confidence']:.2%}")
+    else:
+        print(f"please provide a valid image path. current path: {test_image_path}")
