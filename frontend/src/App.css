@@ -200,7 +200,7 @@ body {
   margin-right: 15px;
 }
 
-.suggestion-container {
+.suggestion-container, .preferences-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -216,6 +216,33 @@ body {
   display: flex;
   flex-direction: row;
   gap: 15px;
+}
+
+.preference-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  color: #2d4883;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  min-width: 120px;
+  max-height: 50px;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
 }
 
 .popup-overlay {
@@ -237,6 +264,10 @@ body {
     border-radius: 10px;
     text-align: center;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+#popup-text {
+  color: black;
 }
 
 .spinner {
