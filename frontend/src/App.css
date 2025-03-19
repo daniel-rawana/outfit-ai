@@ -235,7 +235,7 @@ select {
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  min-width: 120px;
+  width: 170px;
   max-height: 50px;
   min-height: 40px;
   box-sizing: border-box;
@@ -243,6 +243,7 @@ select {
   font-weight: bold;
   font-family: 'Poppins', sans-serif;
   text-align: center;
+  white-space: nowrap; /* Prevents wrapping */
 }
 
 .popup-overlay {

@@ -11,11 +11,11 @@ import shoes1 from "./sampleImages/shoes_1.jpg";
 const Preferences = () => {
     const navigate = useNavigate();
     const [isGenerating, setIsGenerating] = useState(false);
-    const [season, setSeason] = useState('summer');
-    const [occasion, setOccasion] = useState('casual');
+    const [weather, setWeather] = useState('');
+    const [occasion, setOccasion] = useState('');
 
-    const seasons = [
-        "spring", "summer", "fall", "winter"
+    const weather_options = [
+        "hot", "warm", "cool", "cold", "rainy"
     ];
 
     const occasions = [
@@ -63,10 +63,11 @@ const Preferences = () => {
             <h1>Select Your Preferences</h1>
 
             <div className="preference-container">
-                <h2>Season:</h2>
-                <select value={season} onChange={(e) => setSeason(e.target.value)}>
-                    {seasons.map((seas) => (
-                        <option key={seas} value={seas}>{seas}</option>
+                <h2>Weather:</h2>
+                <select value={weather} onChange={(e) => setWeather(e.target.value)}>
+                    <option value="" disabled>Select</option>
+                    {weather_options.map((wea) => (
+                        <option key={wea} value={wea}>{wea}</option>
                     ))}
                 </select>
             </div>
@@ -74,6 +75,7 @@ const Preferences = () => {
             <div className="preference-container">
                 <h2>Occasion:</h2>
                 <select value={occasion} onChange={(e) => setOccasion(e.target.value)}>
+                    <option value="" disabled>Select</option>
                     {occasions.map((occ) => (
                         <option key={occ} value={occ}>{occ}</option>
                     ))}
