@@ -179,6 +179,14 @@ body {
   visibility: hidden;
 }
 
+.suggestion-arrow {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  fill: white;
+  margin: 10px;
+}
+
 .upload {
   width: 20px;
   height: 20px;
@@ -216,6 +224,7 @@ body {
   display: flex;
   flex-direction: row;
   gap: 15px;
+  align-items: center;
 }
 
 .preference-container {

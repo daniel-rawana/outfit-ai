@@ -7,6 +7,10 @@ import {Icons} from "./assets/icons";
 import shirt1 from "./sampleImages/shirt_1.jpg";
 import pants1 from "./sampleImages/pants_1.jpg";
 import shoes1 from "./sampleImages/shoes_1.jpg";
+import shirt2 from "./sampleImages/shirt_2.jpg";
+import pants2 from "./sampleImages/pants_2.jpg";
+import shoes2 from "./sampleImages/shoes_2.png";
+import sweater1 from "./sampleImages/sweater_1.jpg";
 
 const Preferences = () => {
     const navigate = useNavigate();
@@ -39,19 +43,27 @@ const Preferences = () => {
             setIsGenerating(false);
 
             /* testing purposes only, simulates delay of API call with dummy outfit
-            const dummyOutfit = [
+            const dummyOutfits = [[
                 {id: 1, image: shirt1},
                 {id: 2, image: pants1},
                 {id: 3, image: shoes1},
-            ];
+            ], [
+                {id: 1, image: shirt2},
+                {id: 2, image: pants2},
+                {id: 3, image: shoes2},
+            ], [
+                {id: 1, image: sweater1},
+                {id: 2, image: pants1},
+                {id: 3, image: shoes2},
+            ]];
 
             setTimeout(() => {
                 setIsGenerating(false);
-                navigate("/generated-outfit", {state: {outfit: dummyOutfit}});
+                navigate("/generated-outfit", {state: {outfitSuggestions: dummyOutfits}});
             }, 1000);
             */
 
-            navigate("/generated-outfit", {state: {outfit: outfitData.outfit}});
+            navigate("/generated-outfit", {state: {outfitSuggestions: outfitData.outfit}});
         } catch (error) {
             console.error("Error during outfit generation:", error);
             setIsGenerating(false);
