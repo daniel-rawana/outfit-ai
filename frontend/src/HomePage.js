@@ -3,18 +3,12 @@ import React, {useState, useEffect} from "react";
 import {Icons} from "./assets/icons";
 import {useNavigate} from "react-router-dom";
 
-// Sample images for testing
-import shirt1 from "./sampleImages/shirt_1.jpg";
-import pants1 from "./sampleImages/pants_1.jpg";
-import shoes1 from "./sampleImages/shoes_1.jpg";
-
 function HomePage() {
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
-    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         uploadImages();
@@ -43,41 +37,12 @@ function HomePage() {
         }
     };
 
-    const handleGenerate = async () => {
+    const handleGenerate = () => {
         if (images.length === 0) {
             alert("Please upload some wardrobe items first.");
             return;
         }
-
-        setIsGenerating(true);
-
-        try {
-            const generateResponse = await fetch("http://127.0.0.1:5000/outfits/generate", {
-                method: "POST",
-            });
-
-            if (!generateResponse.ok) {
-                throw new Error("Failed to generate outfit.");
-            }
-
-            const outfitData = await generateResponse.json();
-
-            setIsGenerating(false);
-
-            // dummy outfit for testing
-            const dummyOutfit = [
-                {id: 1, image: shirt1},
-                {id: 2, image: pants1},
-                {id: 3, image: shoes1},
-            ];
-
-            // replace outfitData.outfit with dummyOutfit to test
-            navigate("/generated-outfit", {state: {outfit: outfitData.outfit}});
-
-        } catch (error) {
-            console.error("Error during outfit generation:", error);
-            setIsGenerating(false);
-        }
+        navigate('/preferences');
     };
 
     const handleUpload = (event) => {
@@ -131,7 +96,7 @@ function HomePage() {
                         <Icons.Upload className="upload"/> Upload
                         <input type="file" multiple onChange={handleUpload} hidden/>
                     </label>
-                    <button className="generate-btn" onClick={handleGenerate} disabled={isGenerating}>
+                    <button className="generate-btn" onClick={handleGenerate}>
                         <Icons.Generate className="generate"/> Generate
                     </button>
                 </div>
@@ -175,16 +140,6 @@ function HomePage() {
                     />
                 </div>
             </div>
-
-            {/* "generating" popup */}
-            {isGenerating && (
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <Icons.Generate className="spinner"/>
-                        <p>Generating your outfit...</p>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
