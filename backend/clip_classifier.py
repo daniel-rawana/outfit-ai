@@ -261,6 +261,3 @@ category_prompts = {
             "clothing for travel"
         ],
     }
-
-for i in range(43):
-    print(f"{i}: {classify(f'/Users/eduardogoncalvez/Desktop/QuickTest/{i}.jpg')}")
