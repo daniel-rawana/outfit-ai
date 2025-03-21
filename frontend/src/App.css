@@ -57,7 +57,7 @@ body {
   width: 50%;
   min-height: 550px;
   align-content: center;
-  background: linear-gradient(to bottom, #a0e1ff, #739fe5);
+  background: linear-gradient(to top, #a0e1ff, #739fe5);
   padding: 70px;
   display: flex;
   flex-direction: column;
@@ -77,7 +77,7 @@ body {
   color: white;
 }
 
-.upload-btn, .generate-btn {
+.upload-btn, .generate-btn, .save-btn, .new-outfit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,6 +118,13 @@ body {
 .image-container img {
   width: 175px;
   height: 175px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.large-image-container img {
+  width: 250px;
+  height: 250px;
   border-radius: 8px;
   object-fit: cover;
 }
@@ -192,3 +199,59 @@ body {
   fill: black;
   margin-right: 15px;
 }
+
+.suggestion-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  color: white;
+  background: linear-gradient(to top, #a0e1ff, #739fe5);
+  padding: 50px;
+  gap: 30px;
+  min-height: 500px;
+}
+
+.outfit-container, .buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
