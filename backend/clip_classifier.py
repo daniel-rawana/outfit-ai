@@ -1,32 +1,82 @@
 import torch
 import clip
+import io
 from PIL import Image
-import os
 
-# global variables for model and device
-model = None
-preprocess = None
+#Load the model
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-def load_model():
-    # load the clip model
-    global model, preprocess
-    model, preprocess = clip.load("ViT-B/32", device=device)
-    return model, preprocess
+model, preprocess = clip.load("ViT-B/32", device = device)
 
 def classify(image_path):
-    # load and preprocess the image
-    image = Image.open(image_path)
-    image_input = preprocess(image).unsqueeze(0).to(device)
+    # Load and preprocess the image
+    image = preprocess(Image.open(image_path)).unsqueeze(0).to(device)
+
+    # Encode image
+    with torch.no_grad():
+        image_features = model.encode_image(image)
+        image_features /= image_features.norm(dim=1, keepdim=True) # Normalize
+
+    # Results dictionary
+    results = {}
+
+    # Verify all category prompts and labels have matching lengths
+    for key in category_labels:
+        if key == "sub_category":
+            for sub_key in category_labels[key]:
+                if len(category_prompts[key][sub_key]) != len(category_labels[key][sub_key]):
+                    raise ValueError(f"Mismatch in '{key}.{sub_key}': {len(category_prompts[key][sub_key])} prompts vs {len(category_labels[key][sub_key])} labels")
+        else: 
+            if len(category_prompts[key]) != len(category_labels[key]):
+                raise ValueError(f"Mismatch in '{key}': {len(category_prompts[key])} prompts vs {len(category_labels[key])} labels")
+
+    # Separately classify a main and sub_category since they are dependant on each other
+    results["main_category"] = compute_similarity(image_features, category_labels["main_category"], category_prompts["main_category"])
+    results["sub_category"] = compute_similarity(
+        image_features, 
+        category_labels["sub_category"][results["main_category"]], 
+        category_prompts["sub_category"][results["main_category"]]
+        )
+
+    # Loop through the rest of the categories in the dictionary and perform the classification
+    for key in category_labels.keys():
+        if key != "main_category" and key != "sub_category":
+            results[key] = compute_similarity(image_features, category_labels[key], category_prompts[key])
+
+    return results
+
+def compute_similarity(image_features, labels, prompts):
+
+    # Make sure that labels and prompts are the same length
+    if len(prompts) != len(labels):
+        raise ValueError("Prompts and labels lists must be of the same length")
     
-    # dictionary of categories with their possible values
-    categories = {
-        "main_category": ["top", "bottom", "footwear", "outerwear", "dress", "accessory"],
+    # Tokenize prompts
+    text_inputs = clip.tokenize(prompts).to(device)
+
+    # Encode text
+    with torch.no_grad():
+        text_features = model.encode_text(text_inputs)
+
+    # Compute similiraty 
+    text_features /= text_features.norm(dim=1, keepdim=True) # Normalize
+    similarity = (image_features @ text_features.T).squeeze(0) # Compute cosine similarity
+
+    # Get the best match 
+    best_match = similarity.argmax().item()
+
+    return labels[best_match]
+
+# ===== Category Dictionaries =====
+
+# Dictionary of category labels
+category_labels = {
+        "main_category": ["top", "bottom", "footwear", "outerwear", "dress", "accessory"], 
         "sub_category": {
             "top": [
                 "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top",
                 "sweater", "sweatshirt", "cardigan", "turtleneck", "crop top",
-                "tunic", "athletic top", "henley", "flannel shirt", "printed shirt"
+                "tunic", "athletic top", "henley", "flannel shirt", "printed shirt",
+                "jacket"
             ],
             "bottom": [
                 "jeans", "slacks", "chinos", "shorts", "skirt",
@@ -55,83 +105,162 @@ def classify(image_path):
             "casual", "formal", "business", "athletic", "streetwear",
             "bohemian", "vintage", "preppy", "minimalist", "luxury"
         ],
+        "silhouette": [
+            "fitted", "relaxed", "oversized", "A-line", "boxy",
+            "draped", "tailored", "flared", "straight", "voluminous"
+        ],
         "color": [
-            "black", "white", "red", "blue", "green", "yellow", "purple",
-            "pink", "orange", "brown", "gray", "navy", "beige", "cream"
+            "red", "blue", "black", "white", "green", "yellow", 
+            "purple", "pink", "orange", "brown", "gray", "navy", "beige", "cream"
         ],
         "pattern": [
-            "solid", "striped", "plaid", "floral", "polka dot", "animal print",
+            "solid", "striped", "plaid", "floral", "polka dot", "graphic", "animal print",
             "geometric", "abstract", "camouflage", "tie-dye", "checkered"
-        ],
+            ],
         "season": ["spring", "summer", "fall", "winter"],
         "occasion": [
-            "casual", "work", "formal", "athletic", "outdoor",
+            "casual", "work", "formal", "athletic", "outdoor", 
             "lounge", "party", "special event", "beach", "travel"
-        ]
+            ]
     }
-    
-    # results dictionary
-    results = {}
-    
-    # first classify main category
-    main_cat_results = compute_similarity(categories["main_category"], image_input)
-    results["main_category"] = main_cat_results
-    
-    # get the top main category
-    top_main_category = main_cat_results[0]["category"]
-    
-    # then classify sub-category based on main category
-    if top_main_category in categories["sub_category"]:
-        results["sub_category"] = compute_similarity(categories["sub_category"][top_main_category], image_input)
-    
-    # classify other attributes
-    for key in ["style", "color", "pattern", "season", "occasion"]:
-        results[key] = compute_similarity(categories[key], image_input)
-    
-    return results
 
-def compute_similarity(categories, image_input):
-    # tokenize categories
-    text_inputs = torch.cat([clip.tokenize(cat) for cat in categories]).to(device)
-    
-    # get features
-    with torch.no_grad():
-        text_features = model.encode_text(text_inputs)
-        image_features = model.encode_image(image_input)
-    
-    # normalize features
-    text_features /= text_features.norm(dim=1, keepdim=True)
-    image_features /= image_features.norm(dim=1, keepdim=True)
-    
-    # calculate similarity
-    similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
-    
-    # get top 3 predictions
-    values, indices = similarity[0].topk(3)
-    
-    # format results
-    results = []
-    for value, index in zip(values, indices):
-        results.append({
-            "category": categories[index],
-            "confidence": float(value)
-        })
-    
-    return results
+# Dictionary of category prompts
+category_prompts = {
+        "main_category": [
+            "a photograph of clothing worn on the upper body, like a shirt, jacket, or a dress",
+            "a photograph of clothing worn on the lower body, like pants, jeans, shorts, or a skirt",
+            "a photograph of footwear worn on feet, like shoes or boots",
+            "a photograph of an outerwear garment like a jacket or coat",
+            "a photograph of a dress or gown worn as a single piece",
+            "a photograph of a fashion accessory worn to complement an outfit"
+        ],
+        "sub_category": {
+            "top": [
+                "a t-shirt", "a button-up shirt", "a blouse", "a polo shirt", "a tank top",
+                "a sweater", "a sweatshirt", "a cardigan", "a turtleneck", "a crop top",
+                "a tunic", "an athletic top", "a henley shirt", "a flannel shirt", "a printed shirt",
+                "a jacket"
+            ],
+            "bottom": [
+                "a pair of blue denim jeans", "a pair of dress slacks", "a pair of chino pants",
+                "a pair of shorts", "a skirt", "a pair of leggings", "a pair of sweatpants",
+                "a pair of cargo pants", "a pair of athletic shorts", "a pair of bermuda shorts",
+                "a pair of culottes", "a pair of capri pants", "a pair of palazzo pants", 
+                "a pair of cargo shorts", "a pair of denim shorts"
+            ],
+            "footwear": [
+                "a pair of sneakers", "a pair of dress shoes", "a pair of loafers", "a pair of boots",
+                "a pair of sandals", "a pair of high heels", "a pair of flat shoes", "a pair of slip-on shoes",
+                "a pair of ankle boots", "a pair of running shoes", "a pair of hiking shoes",
+                "a pair of mules", "a pair of espadrilles", "a pair of boat shoes", "a pair of flip-flops"
+            ],
+            "outerwear": [
+                "a jacket with a structured design for casual or formal wear",
+                "a blazer with a tailored fit typically worn over formal clothes",
+                "a coat that extends below the hips for cold weather protection",
+                "a raincoat made of waterproof material for wet weather",
+                "a windbreaker made of lightweight material to block wind",
+                "a denim jacket made from blue jean material",
+                "a leather jacket made from animal hide or synthetic leather",
+                "a bomber jacket with a puffy appearance and elastic waistband",
+                "a puffer jacket with quilted sections filled with insulation"
+            ],
+            "dress": [
+                "a casual dress designed for everyday wear",
+                "a formal dress designed for special occasions",
+                "a maxi dress that extends to the ankles",
+                "a mini dress with a hemline above the knees",
+                "a sundress designed for warm weather with thin straps",
+                "a cocktail dress for semi-formal events",
+                "an evening gown for formal events that extends to the floor",
+                "a shift dress with a straight cut that hangs from the shoulders"
+            ],
+            "accessory": [
+                "a necklace worn around the neck as decorative jewelry",
+                "a bracelet worn around the wrist as decorative jewelry",
+                "earrings worn on the ears as decorative jewelry",
+                "a ring worn on a finger as decorative jewelry",
+                "a belt worn around the waist to secure clothing",
+                "a scarf worn around the neck or shoulders for warmth or decoration",
+                "a hat worn on the head for protection or decoration",
+                "a bag used to carry personal items",
+                "a watch worn on the wrist to tell time",
+                "sunglasses worn over the eyes to protect from sunlight"
+            ],
+        },
+        "style": [
+            "clothing with a casual everyday style",
+            "clothing with a formal elegant style",
+            "clothing with a professional business style",
+            "clothing with an athletic sporty style",
+            "clothing with an urban streetwear style",
+            "clothing with a bohemian free-spirited style",
+            "clothing with a vintage retro style",
+            "clothing with a preppy collegiate style",
+            "clothing with a minimalist clean style",
+            "clothing with a high-end luxury style"
+        ],
+        "silhouette": [
+            "clothing with a fitted silhouette", 
+            "clothing with a relaxed silhouette", 
+            "clothing with an oversized silhouette",
+            "clothing with an A-line silhouette", 
+            "clothing with a boxy silhouette",
+            "clothing with a draped silhouette", 
+            "clothing with a tailored silhouette", 
+            "clothing with a flared silhouette", 
+            "clothing with a straight silhouette", 
+            "clothing with a voluminous silhouette"
+        ],
+        "color": [
+            "clothing that is red in color", 
+            "clothing that is blue in color", 
+            "clothing that is black in color", 
+            "clothing that is white in color", 
+            "clothing that is green in color", 
+            "clothing that is yellow in color",
+            "clothing that is purple in color",
+            "clothing that is pink in color",
+            "clothing that is orange in color",
+            "clothing that is brown in color",
+            "clothing that is gray in color",
+            "clothing that is navy in color",
+            "clothing that is beige in color",
+            "clothing that is cream in color"
+        ],
+        "pattern": [
+            "clothing with a solid color pattern and no designs or prints",
+            "clothing with parallel lines or stripes of different colors",
+            "clothing with a tartan or plaid pattern with intersecting lines forming squares",
+            "clothing decorated with flower or botanical motifs and designs",
+            "clothing covered with dots or small circular spots repeated across the fabric",
+            "clothing featuring logos, text, images, or artistic designs printed on the fabric",
+            "clothing with patterns mimicking animal skins like leopard spots or zebra stripes",
+            "clothing with a geometric pattern with shapes like triangles, circles, or squares",
+            "clothing with an abstract pattern featuring non-representational designs",
+            "clothing with a camouflage pattern designed to blend with surroundings",
+            "clothing with a tie-dye pattern created by twisting and dyeing fabric",
+            "clothing with a checkered pattern featuring alternating colored squares"
+        ],
+        "season":[
+            "clothing typically worn in spring", 
+            "clothing typically worn in summer", 
+            "clothing typically worn in fall", 
+            "clothing typically worn in winter"
+        ],
+        "occasion": [
+            "clothing for casual occasions", 
+            "clothing for work or business settings", 
+            "clothing for formal events", 
+            "clothing for athletic activities", 
+            "clothing for outdoor activities", 
+            "clothing for lounging at home", 
+            "clothing for parties", 
+            "clothing for special events",
+            "clothing for going to the beach",
+            "clothing for travel"
+        ],
+    }
 
-# test section
-if __name__ == "__main__":
-    # load the model
-    load_model()
-    
-    # test with a sample image
-    test_image_path = "backend/images/22818.jpg" 
-    if os.path.exists(test_image_path):
-        results = classify(test_image_path)
-        print("\npredictions:")
-        for category, predictions in results.items():
-            print(f"\n{category.title()}:")
-            for pred in predictions:
-                print(f"- {pred['category']}: {pred['confidence']:.2%}")
-    else:
-        print(f"please provide a valid image path. current path: {test_image_path}")
+for i in range(43):
+    print(f"{i}: {classify(f'/Users/eduardogoncalvez/Desktop/QuickTest/{i}.jpg')}")
