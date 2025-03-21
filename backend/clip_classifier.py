@@ -70,7 +70,7 @@ def compute_similarity(image_features, labels, prompts):
 
 # Dictionary of category labels
 category_labels = {
-        "main_category": ["top", "bottom", "footwear", "outerwear", "dress", "accessory"], 
+        "main_category": ["top", "bottom", "footwear", "outerwear", "dress"], 
         "sub_category": {
             "top": [
                 "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top",
@@ -95,10 +95,6 @@ category_labels = {
             "dress": [
                 "casual dress", "formal dress", "maxi dress", "mini dress",
                 "sundress", "cocktail dress", "evening gown", "shift dress"
-            ],
-            "accessory": [
-                "necklace", "bracelet", "earrings", "ring", "belt",
-                "scarf", "hat", "bag", "watch", "sunglasses"
             ]
         },
         "style": [
@@ -131,8 +127,7 @@ category_prompts = {
             "a photograph of clothing worn on the lower body, like pants, jeans, shorts, or a skirt",
             "a photograph of footwear worn on feet, like shoes or boots",
             "a photograph of an outerwear garment like a jacket or coat",
-            "a photograph of a dress or gown worn as a single piece",
-            "a photograph of a fashion accessory worn to complement an outfit"
+            "a photograph of a dress or gown worn as a single piece"
         ],
         "sub_category": {
             "top": [
@@ -174,19 +169,7 @@ category_prompts = {
                 "a cocktail dress for semi-formal events",
                 "an evening gown for formal events that extends to the floor",
                 "a shift dress with a straight cut that hangs from the shoulders"
-            ],
-            "accessory": [
-                "a necklace worn around the neck as decorative jewelry",
-                "a bracelet worn around the wrist as decorative jewelry",
-                "earrings worn on the ears as decorative jewelry",
-                "a ring worn on a finger as decorative jewelry",
-                "a belt worn around the waist to secure clothing",
-                "a scarf worn around the neck or shoulders for warmth or decoration",
-                "a hat worn on the head for protection or decoration",
-                "a bag used to carry personal items",
-                "a watch worn on the wrist to tell time",
-                "sunglasses worn over the eyes to protect from sunlight"
-            ],
+            ]
         },
         "style": [
             "clothing with a casual everyday style",
@@ -261,3 +244,5 @@ category_prompts = {
             "clothing for travel"
         ],
     }
+
+print(classify("/Users/eduardogoncalvez/Desktop/QuickTest/40.jpg"))
