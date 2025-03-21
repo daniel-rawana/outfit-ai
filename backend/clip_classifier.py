@@ -244,5 +244,3 @@ category_prompts = {
             "clothing for travel"
         ],
     }
-
-print(classify("/Users/eduardogoncalvez/Desktop/QuickTest/40.jpg"))
