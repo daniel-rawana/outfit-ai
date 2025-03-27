@@ -1,7 +1,8 @@
 import "./App.css";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {Icons} from "./assets/icons";
 import {useNavigate} from "react-router-dom";
+import Confirmation from "./Confirmation";
 
 function HomePage() {
     const [images, setImages] = useState([]);
@@ -9,8 +10,16 @@ function HomePage() {
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [confirmationData, setConfirmationData] = useState({ wardrobeImages: [] });
+    const prevImagesRef = useRef([]); // stores current wardrobe to track changes
 
     useEffect(() => {
+        // only upload if there's been a change in wardrobe
+        if (JSON.stringify(images) === JSON.stringify(prevImagesRef.current)) {
+            return;
+        }
+        prevImagesRef.current = images;
         uploadImages();
     }, [images]);
 
@@ -32,6 +41,16 @@ function HomePage() {
 
             const result = await response.json();
             console.log("Upload successful:", result);
+
+            //const classifications = result.message;
+            const classifications = [
+                ["top", "t-shirt", "red", "solid", "summer", "casual"],
+                ["bottom", "jeans", "blue", "solid", "fall", "casual"],
+                ["footwear", "sneakers", "white", "solid", "spring", "athletic"]
+            ];
+
+            setConfirmationData({ wardrobeImages: images, classifications: classifications});
+            setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images:", error);
         }
@@ -140,6 +159,14 @@ function HomePage() {
                     />
                 </div>
             </div>
+            {/* Show confirmation popup */}
+            {showConfirmation && (
+                <Confirmation
+                    wardrobeImages={confirmationData.wardrobeImages}
+                    classifications={confirmationData.classifications}
+                    onClose={() => setShowConfirmation(false)}
+                />
+            )}
         </div>
     );
 }
