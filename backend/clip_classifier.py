@@ -2,7 +2,7 @@ import torch
 import clip
 from PIL import Image
 import os
-print("LeGoat")
+
 # global variables for model and device
 model = None
 preprocess = None
