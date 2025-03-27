@@ -1,18 +1,72 @@
+def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
+    categories = {
+        "top": [],
+        "bottom": [],
+        "footwear": [],
+        "outerwear": [],
+        "dress": []
+    }
+    
+    for clothing in wardrobe:
+        category = clothing["main_category"]
+        if category in categories:
+            categories[category].append(clothing)
+    
+    tops = categories["top"]
+    bottoms = categories["bottom"]
+    footwear = categories["footwear"]
+    outerwear = categories["outerwear"]
+    dresses = categories["dress"]
+
+    # Check if there is enough items
+    if not tops or not bottoms or not footwear:
+        return []
+    
+    # Generate all possible outfit 
+    possible_outfits = []
+
+    for top in tops:
+        for bottom in bottoms:
+            for shoe in footwear:
+                outfit = {
+                    "top": top,
+                    "bootom": bottom,
+                    "footwear": shoe,
+                    "score": 0
+                }
+
+                outfit_score = calculate_outfit_score(outfit, user_preferences)
+                outfit["score"] = outfit_score
+
+                possible_outfits.append(outfit)
+
+    ranked_outfits = sorted(possible_outfits, key=lambda x:["score"], reverse=True)
+
+    return ranked_outfits[:limit]
+
+def calculate_outfit_score(outfit, user_preferences):
+    score = 0
+
+    items = [outfit["top"], outfit["bottom"], outfit["footwear"]]
+
+    weather_score = calculate_weather_score(items, user_preferences["weather"])
+    score += weather_score * 30
+
+    occasion_score = calculate_occasion_score(items, user_preferences["occasion"])
+    score += occasion_score * 25
+
+    color_score = calculate_color_compatibility(items)
+    score += color_score * 20
+
+    pattern_score = calculate_pattern_compatibility(items)
+    score += pattern_score * 15
+
+    style_score = calculate_style_consistency(items)
+    score += style_score * 10 
+
+    return score
+
 def filter_by_weather(wardrobe, weather):
-    """
-    User's wardrobe parameter is supposed to be a list of dictionaries
-    Where each dictionary corresponds to a clothing piece inside the user's wardrobe 
-
-    Weather should be gathered as an input from the user when they ask to generate an outfit
-
-    Currently, CLIP classifies images by their appropiate season,
-    there is room for improvement since there might be a way to
-    classify by weather using prompt engineering. 
-    For now we will be mapping seasons to the appropiate weather
-
-    This function returns a list with the filtered clothing items
-    """
-
     # Map weather to season
     weather_to_season = {
         "hot": "summer",
