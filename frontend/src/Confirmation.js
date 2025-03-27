@@ -3,17 +3,49 @@ import React, {useState, useEffect} from "react";
 
 const Confirmation = ({wardrobeImages, classifications, onClose}) => {
     const categoryOptions = {
-        top: ["t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top", "sweater", "sweatshirt", "cardigan", "turtleneck", "crop top", "tunic", "athletic top", "henley", "flannel shirt", "printed shirt", "jacket", "dress"],
-        bottom: ["jeans", "slacks", "chinos", "shorts", "skirt", "leggings", "sweatpants", "cargo pants", "athletic shorts", "bermuda shorts", "culottes", "capri pants", "palazzo pants", "cargo shorts", "denim shorts"],
-        footwear: ["sneakers", "dress shoes", "loafers", "boots", "sandals", "heels", "flats", "slip-ons", "ankle boots", "running shoes", "hiking shoes", "mules", "espadrilles", "boat shoes", "flip-flops"]
+        top: [
+            "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top", "sweater", "sweatshirt", "cardigan",
+            "turtleneck", "crop top", "tunic", "athletic top", "henley", "flannel shirt", "printed shirt", "jacket", "dress"
+        ],
+        bottom: [
+            "jeans", "slacks", "chinos", "shorts", "skirt", "leggings", "sweatpants", "cargo pants", "athletic shorts",
+            "bermuda shorts", "culottes", "capri pants", "palazzo pants", "cargo shorts", "denim shorts"
+        ],
+        footwear: [
+            "sneakers", "dress shoes", "loafers", "boots", "sandals", "heels", "flats", "slip-ons", "ankle boots",
+            "running shoes", "hiking shoes", "mules", "espadrilles", "boat shoes", "flip-flops"
+        ],
+        outerwear: [
+            "jacket", "blazer", "coat", "raincoat", "windbreaker", "denim jacket", "leather jacket", "bomber jacket",
+            "puffer jacket"
+        ],
+        dress: [
+            "casual dress", "formal dress", "maxi dress", "mini dress", "sundress", "cocktail dress", "evening gown",
+            "shift dress"
+        ],
+        accessory: [
+            "necklace", "bracelet", "earrings", "ring", "belt", "scarf", "hat", "bag", "watch", "sunglasses"
+        ]
     };
 
-    const colorOptions = ["red", "blue", "black", "white", "green", "yellow"];
-    const patternOptions = ["solid", "striped", "plaid", "floral", "polka_dot", "graphic", "animal"];
+    const colorOptions = ["black", "white", "red", "blue", "green", "yellow", "purple", "pink", "orange", "brown",
+        "gray", "navy", "beige", "cream"];
+    const patternOptions = ["solid", "striped", "plaid", "floral", "polka dot", "animal print", "geometric",
+        "abstract", "camouflage", "tie-dye", "checkered"];
     const seasonOptions = ["spring", "summer", "fall", "winter"];
-    const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special_event"];
+    const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event",
+        "beach", "travel"];
 
-    const [updatedClassifications, setUpdatedClassifications] = useState([...classifications]);
+    const [updatedClassifications, setUpdatedClassifications] = useState(() => {
+        return classifications.map((data) => [
+            data.main_category?.[0]?.category || "",
+            data.sub_category?.[0]?.category || "",
+            data.color?.[0]?.category || "",
+            data.pattern?.[0]?.category || "",
+            data.season?.[0]?.category || "",
+            data.occasion?.[0]?.category || ""
+        ]);
+    });
 
     // disable scroll on main page when popup is open
     useEffect(() => {
@@ -23,6 +55,7 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
         };
     }, []);
 
+    //update UI with new selections
     const handleChange = (index, fieldIndex, value) => {
         const updated = [...updatedClassifications];
         updated[index] = [...updated[index]];
