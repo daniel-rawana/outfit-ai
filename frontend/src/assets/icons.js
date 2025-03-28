@@ -4,6 +4,7 @@ import { ReactComponent as XButton } from './x_button.svg';
 import { ReactComponent as Logo } from './runwai_logo.svg';
 import { ReactComponent as Upload } from './upload.svg';
 import { ReactComponent as Generate } from './generate.svg';
+import { ReactComponent as Loading } from './loading.svg';
 
 export const Icons = {
   LeftArrow,
@@ -12,4 +13,5 @@ export const Icons = {
   Logo,
   Upload,
   Generate,
+  Loading,
 };
