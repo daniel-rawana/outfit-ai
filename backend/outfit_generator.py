@@ -506,7 +506,6 @@ def main():
 
     outfits = generate_ranked_outfits(wardrobe, {"weather": "cool", "occasion": "formal"})
 
-
     for outfit in outfits:
         print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
 
