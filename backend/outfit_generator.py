@@ -57,7 +57,7 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
             possible_outfits.append(outfit)
     
     # Sort outfits by score
-    ranked_outfits = sorted(possible_outfits, key=lambda x:["score"], reverse=True)
+    ranked_outfits = sorted(possible_outfits, key=lambda x: x["score"], reverse=True)
 
     # Return top outfits
     return ranked_outfits[:limit]
@@ -195,7 +195,7 @@ def calculate_weather_score(items, weather):
     target_season = weather_to_season.get(weather, weather)
     
     # Calculate percentage of items appropriate for the weather
-    matches = sum(1 for item in items if item["season"] == target_season)
+    matches = sum(1 for item in items if item.season == target_season)
     return matches / len(items)
 
 def calculate_occasion_score(items, occasion):
@@ -213,7 +213,7 @@ def calculate_occasion_score(items, occasion):
     target_occasions = compatible_occasions.get(occasion, [occasion])
     
     # Calculate percentage of items appropriate for the occasion
-    matches = sum(1 for item in items if item["occasion"] in target_occasions)
+    matches = sum(1 for item in items if item.occasion in target_occasions)
     return matches / len(items)
 
 def calculate_color_compatibility(top, bottom, footwear):
@@ -277,9 +277,40 @@ def is_bad_color_combination(color1, color2):
     
     return False
 
-#FIXME
 def calculate_pattern_compatibility(top, bottom, footwear):
-    pass
+    patterns = [top.pattern, bottom.pattern, footwear.pattern]
+
+    # Handle missing pattern data
+    patterns = [p.lower() if p else "solid" for p in patterns]
+
+    # Define pattern categories
+    statement_patterns = ["floral", "animal", "graphic", "abstract", "camouflage", "tie-dye"]
+    structured_patterns = ["striped", "plaid", "checkered", "geometric"]
+    subtle_patterns = ["polka dot", "solid"]
+
+    # Count patterns by category 
+    statement_count = sum(1 for p in patterns if p in statement_patterns)
+    structured_count = sum(1 for p in patterns if p in structured_patterns)
+
+    # Rule 1: Only one statement pattern
+    if statement_count > 1:
+        return 0.3  # Multiple statement patterns clash
+    
+    # Rule 2: All solid is safe but boring
+    if patterns.count("solid") == 3:
+        return 0.8
+    
+    # Rule 3: Two structured patterns usually clash
+    if structured_count > 1:
+        return 0.5
+    
+    # Rule 4: One statement or structured + solids is good
+    if (statement_count == 1 or structured_count == 1) and patterns.count("solid") >= 1:
+        return 0.9
+    
+    # Default moderate score
+    return 0.6
+
 
 #FIXME
 def calculate_style_consistency(top, bottom, footwear):
