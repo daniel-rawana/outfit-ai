@@ -216,9 +216,66 @@ def calculate_occasion_score(items, occasion):
     matches = sum(1 for item in items if item["occasion"] in target_occasions)
     return matches / len(items)
 
-#FIXME
 def calculate_color_compatibility(top, bottom, footwear):
-    pass
+    # Get colors from each item
+    top_color = top.color.lower()
+    bottom_color = bottom.color.lower()
+    footwear_color = footwear.color.lower()
+
+    # Calculate pairwise compatibility scores
+    top_bottom_score = color_pair_compatibility(top_color, bottom_color)
+    bottom_footwear_score = color_pair_compatibility(bottom_color, footwear_color)
+    top_footwear_score = color_pair_compatibility(top_color, footwear_color)
+
+    # Weight the scores (top-bottom pairing is most important)
+    weighted_score = (0.5 * top_bottom_score) + (0.25 * bottom_footwear_score) + (0.25 * top_footwear_score)
+
+    return weighted_score
+
+def color_pair_compatibility(color1, color2):
+    # Handle missing or None values
+    if not color1 or not color2:
+        return 0.5 # Default moderate score
+    
+    # Check for same color (monochromatic)
+    if color1 == color2:
+        return 0.9 # High score for matching colors
+    
+    # Check for neutral colors (They go well with everything)
+    neutrals = ["black", "white", "gray", "beige", "navy"]
+    if color1 in neutrals or color2 in neutrals:
+        return 0.85 # Good score for neutrals
+    
+    # Check for bad combinations 
+    if is_bad_color_combination(color1, color2):
+        return 0.2 # Low score for clashing colors
+    
+    # Default to decent compatibility if not specially bad
+    return 0.7
+
+def is_bad_color_combination(color1, color2):
+
+    # Define clashing color pairs (based on high-contrast & unbalanced hues)
+    clashing_pairs = {
+        ("red", "green"), 
+        ("orange", "blue"), 
+        ("yellow", "purple"), 
+        ("red", "pink"), 
+        ("red", "orange"), 
+        ("green", "purple"), 
+        ("blue", "brown"), 
+        ("yellow", "gray"), 
+        ("purple", "brown")
+    }
+
+    # Ensure colors are in lowercase for consistency 
+    color1, color2 = color1.lower(), color2.lower()
+
+    # Check if colors are in the clashing pair set (both directions)
+    if (color1, color2) in clashing_pairs or (color2, color1) in clashing_pairs:
+        return True
+    
+    return False
 
 #FIXME
 def calculate_pattern_compatibility(top, bottom, footwear):

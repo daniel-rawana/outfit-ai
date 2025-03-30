@@ -94,7 +94,19 @@ def get_clothing_data(user_id):
     return clothing_list
 
 if __name__ == "__main__":
-    get_clothing_data(user_id)
+    lst = get_clothing_data(user_id)
+    for clothing in lst:
+        print(f"Id: {clothing.id}")
+        print(f"Image data: {clothing.image_data[:20]}")
+        print(f"Main category: {clothing.main_category}")
+        print(f"Sub category: {clothing.sub_category}")
+        print(f"Style: {clothing.style}")
+        print(f"Silhouette: {clothing.silhouette}")
+        print(f"Color: {clothing.color}")
+        print(f"Pattern: {clothing.pattern}")
+        print(f"Season: {clothing.season}")
+        print(f"Occasion: {clothing.occasion}")
+        print('\n')
 
 
 
