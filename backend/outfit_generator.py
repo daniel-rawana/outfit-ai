@@ -152,3 +152,78 @@ def find_best_shoe(top, bottom, shoes):
             best_shoe = shoe 
 
     return best_shoe
+
+def calculate_outfit_score(outfit, user_preferences):
+    score = 0
+
+    # Get items
+    top = outfit["top"]
+    bottom = outfit["bottom"]
+    footwear = outfit["footwear"]
+
+    # Weather appropriateness (0-30 points)
+    weather_score = calculate_weather_score([top, bottom, footwear], user_preferences["weather"])
+    score += weather_score * 30
+    
+    # Occasion appropriateness (0-25 points)
+    occasion_score = calculate_occasion_score([top, bottom, footwear], user_preferences["occasion"])
+    score += occasion_score * 25
+    
+    # Color compatibility (0-20 points)
+    color_score = calculate_color_compatibility(top, bottom, footwear)
+    score += color_score * 20
+    
+    # Pattern compatibility (0-15 points)
+    pattern_score = calculate_pattern_compatibility(top, bottom, footwear)
+    score += pattern_score * 15
+    
+    # Style consistency (0-10 points)
+    style_score = calculate_style_consistency(top, bottom, footwear)
+    score += style_score * 10
+    
+    return score
+
+def calculate_weather_score(items, weather):
+    weather_to_season = {
+        "hot": "summer",
+        "warm": "spring",
+        "cool": "fall",
+        "cold": "winter",
+        "rainy": "fall"  
+    }
+    
+    target_season = weather_to_season.get(weather, weather)
+    
+    # Calculate percentage of items appropriate for the weather
+    matches = sum(1 for item in items if item["season"] == target_season)
+    return matches / len(items)
+
+def calculate_occasion_score(items, occasion):
+    compatible_occasions = {
+        "casual": ["casual", "lounge", "outdoor"],
+        "work": ["work", "formal", "special_event"],
+        "formal": ["formal", "work", "special_event"],
+        "athletic": ["athletic", "outdoor"],
+        "outdoor": ["outdoor", "athletic", "casual"],
+        "lounge": ["lounge", "casual"],
+        "party": ["party", "casual", "special_event"],
+        "special_event": ["special_event", "formal", "party"]
+    }
+    
+    target_occasions = compatible_occasions.get(occasion, [occasion])
+    
+    # Calculate percentage of items appropriate for the occasion
+    matches = sum(1 for item in items if item["occasion"] in target_occasions)
+    return matches / len(items)
+
+#FIXME
+def calculate_color_compatibility(top, bottom, footwear):
+    pass
+
+#FIXME
+def calculate_pattern_compatibility(top, bottom, footwear):
+    pass
+
+#FIXME
+def calculate_style_consistency(top, bottom, footwear):
+    pass
