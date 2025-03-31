@@ -22,9 +22,6 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
         dress: [
             "casual dress", "formal dress", "maxi dress", "mini dress", "sundress", "cocktail dress", "evening gown",
             "shift dress"
-        ],
-        accessory: [
-            "necklace", "bracelet", "earrings", "ring", "belt", "scarf", "hat", "bag", "watch", "sunglasses"
         ]
     };
 
@@ -38,12 +35,12 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
 
     const [updatedClassifications, setUpdatedClassifications] = useState(() => {
         return classifications.map((data) => [
-            data.main_category?.[0]?.category || "",
-            data.sub_category?.[0]?.category || "",
-            data.color?.[0]?.category || "",
-            data.pattern?.[0]?.category || "",
-            data.season?.[0]?.category || "",
-            data.occasion?.[0]?.category || ""
+            data.main_category || "",
+            data.sub_category || "",
+            data.color || "",
+            data.pattern || "",
+            data.season || "",
+            data.occasion || ""
         ]);
     });
 
