@@ -13,6 +13,7 @@ function HomePage() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ wardrobeImages: [] });
     const prevImagesRef = useRef([]); // stores current wardrobe to track changes
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
         // only upload if there's been a change in wardrobe
@@ -24,6 +25,8 @@ function HomePage() {
     }, [images]);
 
     const uploadImages = async () => {
+        setIsAnalyzing(true); // Show analyzing popup
+
         const formData = new FormData();
         images.forEach((image, index) => {
             formData.append("images", image); // Append images
@@ -34,7 +37,7 @@ function HomePage() {
                 method: "POST",
                 body: formData,
             });
-            console.log(formData)
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -42,17 +45,15 @@ function HomePage() {
             const result = await response.json();
             console.log("Upload successful:", result);
 
-            //const classifications = result.message;
-            const classifications = [
-                ["top", "t-shirt", "red", "solid", "summer", "casual"],
-                ["bottom", "jeans", "blue", "solid", "fall", "casual"],
-                ["footwear", "sneakers", "white", "solid", "spring", "athletic"]
-            ];
+            const classifications = result.message;
 
-            setConfirmationData({ wardrobeImages: images, classifications: classifications});
+            // Hide analyzing popup and show confirmation
+            setIsAnalyzing(false);
+            setConfirmationData({ wardrobeImages: images, classifications: classifications });
             setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images:", error);
+            setIsAnalyzing(false); // Hide analyzing popup in case of an error
         }
     };
 
@@ -74,6 +75,12 @@ function HomePage() {
             const previewUrls = files.map((file) => URL.createObjectURL(file));
             setPreviewImages((prev) => [...prev, ...previewUrls]);
         }
+    };
+
+    const handleConfirmationClose = async (updatedClassifications) => {
+        setShowConfirmation(false);
+
+        // send updated classifications to backend
     };
 
     const removeImage = (index) => {
@@ -164,8 +171,17 @@ function HomePage() {
                 <Confirmation
                     wardrobeImages={confirmationData.wardrobeImages}
                     classifications={confirmationData.classifications}
-                    onClose={() => setShowConfirmation(false)}
+                    onClose={handleConfirmationClose}
                 />
+            )}
+            {/* "generating" popup */}
+            {isAnalyzing && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <Icons.Loading className="spinner"/>
+                        <p id="popup-text">Analyzing clothing items...</p>
+                    </div>
+                </div>
             )}
         </div>
     );
