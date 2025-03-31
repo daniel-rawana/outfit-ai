@@ -1,7 +1,8 @@
 import "./App.css";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {Icons} from "./assets/icons";
 import {useNavigate} from "react-router-dom";
+import Confirmation from "./Confirmation";
 
 function HomePage() {
     const [images, setImages] = useState([]);
@@ -9,12 +10,23 @@ function HomePage() {
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [confirmationData, setConfirmationData] = useState({ wardrobeImages: [] });
+    const prevImagesRef = useRef([]); // stores current wardrobe to track changes
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
+        // only upload if there's been a change in wardrobe
+        if (JSON.stringify(images) === JSON.stringify(prevImagesRef.current)) {
+            return;
+        }
+        prevImagesRef.current = images;
         uploadImages();
     }, [images]);
 
     const uploadImages = async () => {
+        setIsAnalyzing(true); // Show analyzing popup
+
         const formData = new FormData();
         images.forEach((image, index) => {
             formData.append("images", image); // Append images
@@ -25,15 +37,23 @@ function HomePage() {
                 method: "POST",
                 body: formData,
             });
-            console.log(formData)
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
             const result = await response.json();
             console.log("Upload successful:", result);
+
+            const classifications = result.message;
+
+            // Hide analyzing popup and show confirmation
+            setIsAnalyzing(false);
+            setConfirmationData({ wardrobeImages: images, classifications: classifications });
+            setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images:", error);
+            setIsAnalyzing(false); // Hide analyzing popup in case of an error
         }
     };
 
@@ -55,6 +75,12 @@ function HomePage() {
             const previewUrls = files.map((file) => URL.createObjectURL(file));
             setPreviewImages((prev) => [...prev, ...previewUrls]);
         }
+    };
+
+    const handleConfirmationClose = async (updatedClassifications) => {
+        setShowConfirmation(false);
+
+        // send updated classifications to backend
     };
 
     const removeImage = (index) => {
@@ -140,6 +166,23 @@ function HomePage() {
                     />
                 </div>
             </div>
+            {/* Show confirmation popup */}
+            {showConfirmation && (
+                <Confirmation
+                    wardrobeImages={confirmationData.wardrobeImages}
+                    classifications={confirmationData.classifications}
+                    onClose={handleConfirmationClose}
+                />
+            )}
+            {/* "generating" popup */}
+            {isAnalyzing && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <Icons.Loading className="spinner"/>
+                        <p id="popup-text">Analyzing clothing items...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
