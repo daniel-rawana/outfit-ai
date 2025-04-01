@@ -3,7 +3,15 @@ body {
     margin: 0;
     background: linear-gradient(to bottom, #ffffff, #dedede);
 }
-
+.header-container {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 500px;
+}
+.header-container p {
+    font-size: 20px;
+}
 .team-members {
     max-width: 90%;
     margin: 0 auto;
@@ -30,7 +38,7 @@ td {
 }
 
 .member {
-    width: 350px;
+    width: 400px;
     height: 250px;
     display: flex;
     flex-direction: column;
@@ -59,9 +67,11 @@ td {
     margin-right: 20px;
     object-fit: cover;
 }
+div{
+    font-family: Poppins, sans-serif;
+}
 
 div h2 {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 1.5rem;
     color: #000000;
     text-align: center;
@@ -70,7 +80,6 @@ div h2 {
 }
 
 div p {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 0.75rem;
     color: #727272;
     text-align: left;
@@ -79,11 +88,10 @@ div p {
 }
 
 .header {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 48px;
     color: #242424;
     text-align: center;
-    margin: 10px 0;
+    margin: 10px 30px;
     display: block;
 }
 
