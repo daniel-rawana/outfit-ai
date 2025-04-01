@@ -14,7 +14,7 @@ const AboutUs = () => {
         <p>Empowering Your Wardrobe with AI</p>
       </div>
       
-      <div className="main-content">
+      <div className="main">
         <h2>About Us</h2>
         <p>
           Welcome to RunwAI! RunwAI is an 
@@ -22,7 +22,6 @@ const AboutUs = () => {
           By analyzing clothing items from photos and combining your personal style with popular fashion trends, RunwAI curates outfit recommendations 
           that are tailored to your preferences. Our goal is to make fashion more accessible and personalized through advanced AI technology.
         </p>
-        <hr></hr>
         <h2>Our Mission</h2>
         <p>
           At RunwAI, we are passionate about revolutionizing personal style through cutting-edge artificial intelligence. 

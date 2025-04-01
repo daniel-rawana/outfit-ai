@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .page-header {
@@ -35,7 +35,7 @@ body {
     color: #666;
 }
 
-.main-content {
+.main {
     padding: 40px 20px;
     background-color: rgb(60, 60, 60);
     color: whitesmoke;
@@ -43,18 +43,20 @@ body {
     margin: 0 auto;
 }
 
-.main-content h2 {
+.main h2 {
+    color: white;
     font-size: 50px;
     font-weight: bold;
     margin-bottom: 20px;
     text-align: left;
 }
 
-.main-content p {
+.main p {
     font-size: 20px;
     line-height: 1.6;
     margin-bottom: 20px;
     text-align: left;
+    color: white;
 }
 .img-div img {
     border-radius: 15px;
