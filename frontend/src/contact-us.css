@@ -1,7 +1,7 @@
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    background: white;
+    background: linear-gradient(to bottom, #ffffff, #dedede);
 }
 
 .navbar {
@@ -75,9 +75,9 @@ td {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    border-top: 25px solid rgb(55, 91, 168);
+    border-top: 25px solid rgb(65, 78, 97);
     border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.24);
+    background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.39) 0px 0px 15px 0px;
     transition: transform 0.3s ease;
 }
@@ -111,7 +111,7 @@ div h2 {
 div p {
     font-family: 'Roboto Mono', sans-serif;
     font-size: 0.75rem;
-    color: #000000;
+    color: #727272;
     text-align: left;
     margin: 10px 0;
     flex-grow: 1;
@@ -120,7 +120,7 @@ div p {
 .header {
     font-family: 'Roboto Mono', sans-serif;
     font-size: 48px;
-    color: #000000;
+    color: #242424;
     text-align: center;
     margin: 10px 0;
     display: block;
@@ -131,7 +131,6 @@ div p {
 }
 
 .prev-btn, .next-btn {
-    background: linear-gradient(to right, #80ceff, #8cb0e8);
     border: none;
     padding: 8px 16px;
     border-radius: 5px;
@@ -140,6 +139,13 @@ div p {
     font-size: medium;
     color: white;
     margin: 0 10px;
+}
+
+.prev-btn {
+    background: linear-gradient(to right, #212121, #6d6d6a);
+}
+.next-btn{
+    background: linear-gradient(to left, #212121, #6d6d6a);
 }
 
 .btn-div {
