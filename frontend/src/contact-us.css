@@ -3,6 +3,12 @@ body {
     margin: 0;
     background: linear-gradient(to bottom, #ffffff, #dedede);
 }
+
+.main-content {
+    max-width: 2000px;
+    margin: 0 auto;
+}
+
 .header-container {
     text-align: center;
     margin: 0 auto;
