@@ -1,31 +1,12 @@
 import React from 'react';
 import './about-us.css';
-import navIcon from './logo.svg';
-import runwAILogo from './runwai-logo.png';
+import runwAILogo from './assets/runwai-logo.png';
+import Navbar from './Navbar';
 
 const AboutUs = () => {
   return (
     <>
-      <nav className="navbar">
-        <div className="logo">
-          <img src={navIcon} alt="Logo"/>
-          RunwAI
-        </div>
-        <ul>
-          <li>
-            <a href="/">Home</a>
-          </li>
-          <li>
-            <a href="/about-us">About</a>
-          </li>
-          <li>
-            <a href="/contact-us">Contact Us</a>
-          </li>
-          <li>
-            <button className="login-btn">Login</button>
-          </li>
-        </ul>
-      </nav>
+      {Navbar()}
       
       <div className="page-header">
         <div className="img-div">

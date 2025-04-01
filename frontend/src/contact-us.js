@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./contact-us.css";
+import Navbar from "./Navbar"; // Ensure Navbar is imported correctly
+import placeholderImg from "./assets/placeholder.jpg"; // Placeholder image path
 
 const teamMembers = [
    {
@@ -8,105 +10,105 @@ const teamMembers = [
     role: "Team Leader",
     blurb:
       "lorem ispum doloor sit amet. lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 2,
     name: "Member 2",
     role: "Role",
     blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 3,
     name: "Member 3",
     role: "Role",
     blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 4,
     name: "Member 4",
     role: "Role",
     blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 5,
     name: "Member 5",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 6,
     name: "Member 6",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 7,
     name: "Member 7",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 8,
     name: "Member 8",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 9,
     name: "Member 9",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 10,
     name: "Member 10",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 11,
     name: "Member 11",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 12,
     name: "Member 12",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 13,
     name: "Member 13",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 14,
     name: "Member 14",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
   {
     id: 15,
     name: "Member 15",
     role: "Role",
     blurb: "lorem ispum doloor sit amet.",
-    img: "placeholder.jpg",
+    img: placeholderImg,
   },
 ];
 
@@ -159,16 +161,7 @@ const TeamSlider = () => {
 
   return (
     <div>
-      <nav className="navbar">
-        <div className="logo">RunwAI</div>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact Us</a></li>
-          <li><button className="login-btn">Login</button></li>
-        </ul>
-      </nav>
-
+      {Navbar()}
       <div className="main-content">
         <h1 className="header">Meet the Team</h1>
         <div className="team-members">
