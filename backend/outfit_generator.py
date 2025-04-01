@@ -314,9 +314,54 @@ def calculate_pattern_compatibility(top, bottom, footwear):
     return 0.6
 
 
-#FIXME
 def calculate_style_consistency(top, bottom, footwear):
-    pass
+
+    # This function returns a score between 0 and 1
+    # 0 means no style consistency, 1 means perfect style match
+
+    # Extract style attributes from each item
+    styles = [top.style, bottom.style, footwear.style]
+    
+    # Define style compatibility groups
+    style_groups = {
+        "casual": ["casual", "athletic"],
+        "business": ["business", "formal"],
+        "formal": ["formal", "business"],
+        "athletic": ["athletic", "casual"]
+    }
+    
+    # Count matching styles
+    if all(style == styles[0] for style in styles):
+        # Perfect match - all items have the same style
+        return 1.0
+    
+    # Calculate pairwise compatibility
+    compatibility_scores = []
+    
+    # Check top-bottom compatibility
+    top_bottom_compatible = (bottom.style in style_groups.get(top.style, [top.style]))
+    compatibility_scores.append(1.0 if top_bottom_compatible else 0.5)
+    
+    # Check bottom-footwear compatibility
+    bottom_footwear_compatible = (footwear.style in style_groups.get(bottom.style, [bottom.style]))
+    compatibility_scores.append(1.0 if bottom_footwear_compatible else 0.5)
+    
+    # Check top-footwear compatibility
+    top_footwear_compatible = (footwear.style in style_groups.get(top.style, [top.style]))
+    compatibility_scores.append(1.0 if top_footwear_compatible else 0.5)
+    
+    # Calculate weighted average (top-bottom compatibility is most important)
+    weighted_score = (0.5 * compatibility_scores[0]) + (0.3 * compatibility_scores[1]) + (0.2 * compatibility_scores[2])
+    
+    # Complete style consistency across all items
+    unique_styles = len(set(styles))
+    if unique_styles == 1:
+        weighted_score = min(1.0, weighted_score + 0.1)  # Bonus for perfect match
+    elif unique_styles == 3:
+        weighted_score = max(0.2, weighted_score - 0.1)  # Penalty for all different styles
+    
+    return weighted_score
+
 
 def create_sample_wardrobe():
     wardrobe = []
