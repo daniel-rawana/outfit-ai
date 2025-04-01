@@ -3,46 +3,15 @@ body {
     margin: 0;
     background: linear-gradient(to bottom, #ffffff, #dedede);
 }
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 15px 30px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.header-container {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 500px;
 }
-
-.navbar .logo {
-    display: flex;
-    align-items: center;
+.header-container p {
     font-size: 20px;
-    font-weight: bold;
 }
-
-.navbar ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-    align-items: center;
-}
-
-.navbar ul li a {
-    text-decoration: none;
-    color: black;
-}
-
-.login-btn {
-    background: linear-gradient(to right, #80ceff, #8cb0e8);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: medium;
-    color: white;
-}
-
 .team-members {
     max-width: 90%;
     margin: 0 auto;
@@ -69,7 +38,7 @@ td {
 }
 
 .member {
-    width: 350px;
+    width: 400px;
     height: 250px;
     display: flex;
     flex-direction: column;
@@ -98,9 +67,11 @@ td {
     margin-right: 20px;
     object-fit: cover;
 }
+div{
+    font-family: Poppins, sans-serif;
+}
 
 div h2 {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 1.5rem;
     color: #000000;
     text-align: center;
@@ -109,7 +80,6 @@ div h2 {
 }
 
 div p {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 0.75rem;
     color: #727272;
     text-align: left;
@@ -118,11 +88,10 @@ div p {
 }
 
 .header {
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 48px;
     color: #242424;
     text-align: center;
-    margin: 10px 0;
+    margin: 10px 30px;
     display: block;
 }
 

@@ -161,9 +161,11 @@ const TeamSlider = () => {
 
   return (
     <div>
-      {Navbar()}
       <div className="main-content">
-        <h1 className="header">Meet the Team</h1>
+        <div className="header-container">
+          <h1 className="header">Meet the Team</h1>
+          <p className="subheader">Here at RunwAI, we are a team of passionate individuals dedicated to revolutionizing the fashion and AI industry.</p>
+        </div>
         <div className="team-members">
           <table>{renderCardRows()}</table>
           <div className="btn-div" style={{ textAlign: "center", marginTop: "20px" }}>
