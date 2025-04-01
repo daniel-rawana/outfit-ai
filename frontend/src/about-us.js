@@ -1,14 +1,11 @@
 import React from 'react';
 import './about-us.css';
 import runwAILogo from './assets/runwai-logo.png';
-import Navbar from './Navbar';
+
 
 const AboutUs = () => {
   return (
     <>
-      
-
-      
       <div className="page-header">
         <div className="img-div">
           <img src={runwAILogo} alt="RunwAI Logo" className="logo-image"/>

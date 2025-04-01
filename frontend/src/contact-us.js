@@ -161,7 +161,6 @@ const TeamSlider = () => {
 
   return (
     <div>
-      {Navbar()}
       <div className="main-content">
         <h1 className="header">Meet the Team</h1>
         <div className="team-members">
