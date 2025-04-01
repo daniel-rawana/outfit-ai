@@ -4,6 +4,8 @@ import Navbar from "./Navbar";
 import HomePage from "./HomePage";
 import GeneratedOutfit from "./GeneratedOutfit";
 import Preferences from "./Preferences";
+import AboutUs from "./about-us";
+import ContactUs from "./contact-us";
 
 function App() {
     return (
