@@ -101,7 +101,6 @@ def add_clothing():
             classification['image'] = base64_string
             classifications.append(classification)
 
-        print(classifications)
         return jsonify({"message": classifications}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -111,7 +110,6 @@ def update_classifications():
     # Update clothing classifications to ones selected by user
     try:
         classifications = request.get_json()
-        print(classifications)
 
         #save clothing items and their classifications in database
 
