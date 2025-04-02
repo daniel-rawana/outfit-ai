@@ -7,6 +7,7 @@ model, preprocess = clip.load("ViT-B/32", device = device)
 
 def classify(image_file):
     # Load and preprocess the image
+
     image = preprocess(image_file).unsqueeze(0).to(device)
 
     # Encode image

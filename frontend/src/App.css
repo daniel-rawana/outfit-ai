@@ -207,6 +207,7 @@ body {
     fill: black;
     margin-right: 15px;
 }
+
 .preference-text-container {
     width: 70%;
     text-align: center;
@@ -364,4 +365,3 @@ select {
     text-align: center;
     white-space: nowrap; /* Prevents wrapping */
 }
-
