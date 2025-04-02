@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from clip_classifier import classify
+from PIL import Image
+import io
+import base64
 
 app = Flask(__name__)
 CORS(app)  
@@ -59,13 +62,15 @@ def add_clothing():
         # 2. Get clothing data from request
         # 3. Handle image upload if present (depending on what the ai/ml team does, we could allow a user to choose a clothing item from the database,
         #                                   in addition to uploading their own)
-        # 4. Save clothing item to database
-        # 5. Return success with item details
+        # 4. Return success with clothing classifications
 
-        image_files = request.files.getlist('images') # FileStorage objects
+        images = request.get_json().get("images", []) # base64 images
         classifications = []
 
-        for image in image_files:
+        for base64_string in images:
+            image_bytes = base64.b64decode(base64_string)
+            image = Image.open(io.BytesIO(image_bytes))
+
             classification = classify(image)
             #classification['image']
             classifications.append(classification)
