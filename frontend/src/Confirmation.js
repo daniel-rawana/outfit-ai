@@ -99,7 +99,7 @@ const Confirmation = ({classifications, onClose}) => {
 
                 <div className="buttons-container">
                     <button className="confirm-btn" onClick={() => onClose(updatedClassifications)}>Confirm</button>
-                    <button className="cancel-btn" onClick={() => onClose()}>Cancel</button>
+                    <button className="cancel-btn" onClick={() => onClose(null)}>Cancel</button>
                 </div>
 
             </div>

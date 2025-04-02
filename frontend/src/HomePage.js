@@ -119,9 +119,13 @@ function HomePage() {
         setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
-    const handleConfirmationClose = async (updatedClassifications) => {
+    const handleConfirmationClose = async (updatedClassifications = null) => {
         setShowConfirmation(false);
 
+        // discard changes if user clicked cancel
+        if (!updatedClassifications) { return; }
+
+        // need to update to only send updated selections
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
                 method: "POST",
@@ -134,6 +138,8 @@ function HomePage() {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
+
+            setWardrobeItems(updatedClassifications);
         } catch (error) {
             console.error("Error updating classifications: ", error);
         }
