@@ -72,7 +72,7 @@ def add_clothing():
             image = Image.open(io.BytesIO(image_bytes))
 
             classification = classify(image)
-            #classification['image']
+            classification['image'] = base64_string
             classifications.append(classification)
 
         print(classifications)

@@ -38,7 +38,7 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
 
     const [updatedClassifications, setUpdatedClassifications] = useState(() => {
         return classifications.map((data) => ({
-            //image: data.image,
+            image: data.image,
             main_category: data.main_category || "",
             sub_category: data.sub_category || "",
             style: data.style || "",
@@ -58,7 +58,7 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
         };
     }, []);
 
-    //update UI with new selections
+    //update with new selections
     const handleChange = (index, field, value) => {
         setUpdatedClassifications((prev) => {
             const updated = [...prev];
