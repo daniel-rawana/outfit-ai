@@ -5,6 +5,7 @@ from clip_classifier import classify
 import base64
 from PIL import Image
 import io
+from clothing import Clothing
 
 load_dotenv()
 
@@ -49,7 +50,6 @@ def add_image_with_items(image_path):
         print(f"Error inserting into database: {e}")
         return None
 
-#FIXME: Implement function to decode images back to binary when retrieving them from the database
 user_id = 1
 
 def get_clothing_data(user_id):
@@ -62,6 +62,8 @@ def get_clothing_data(user_id):
         .eq("user_id", user_id)
         .execute()
     )
+
+    clothing_list = []
 
     for row in response.data:
         # Decode BYTEA hex
@@ -79,17 +81,16 @@ def get_clothing_data(user_id):
             print(f"main_category: {metadata['main_category']}\ncolor: {metadata['color']}\nseason: {metadata['season']}"
                   f"\nsub_category: {metadata['sub_category']}\npattern: {metadata['pattern']}\noccasion: {metadata['occasion']}"
                   f"\nsilhouette: {metadata['silhouette']}\nstyle: {metadata['style']}\n")
+            
+            clothing_list.append(Clothing(
+                binary_data, metadata['main_category'], metadata['sub_category'], metadata['style'], metadata['silhouette'],
+                metadata['color'], metadata['pattern'], metadata['season'], metadata['occasion'], row['clothing_id']
+            ))
         else:
             print("⚠️ No metadata found for this image.")
         print()
 
-    return response.data
+    return clothing_list
 
 if __name__ == "__main__":
-    get_clothing_data(user_id)
-
-
-
-
-
-
+    lst = get_clothing_data(user_id)
