@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./contact-us.css";
-import Navbar from "./Navbar"; // Ensure Navbar is imported correctly
 import placeholderImg from "./assets/placeholder.jpg"; // Placeholder image path
 
 const teamMembers = [
