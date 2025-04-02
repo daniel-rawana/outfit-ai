@@ -80,7 +80,7 @@ const Confirmation = ({classifications, onClose}) => {
                                     occasion: occasionOptions
                                 }).map(([key, selectionOptions]) => (
                                     <div key={key} className="classification-container">
-                                        <p>{key.replace("_", " ")}</p>
+                                        <p>{key.replace("_", " ")}:</p>
                                         <select
                                             className="attribute-select"
                                             value={classification[key] || ""}

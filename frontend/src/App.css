@@ -327,7 +327,7 @@ select {
 .classifications-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, auto);
+    grid-template-rows: repeat(3, auto);
     gap: 15px;
     width: max-content;
 }
@@ -337,8 +337,31 @@ select {
     white-space: nowrap;
 }
 
+.classification-container p {
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
 .attribute-select {
-    color: white;
-    background: #739fe5;
+    color: #739fe5;
+    background-color: #ecf5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border: #739fe5 1px solid;
+    border-radius: 25px;
+    cursor: pointer;
+    width: auto;
+    min-width: 175px;
+    max-height: 45px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    white-space: nowrap; /* Prevents wrapping */
 }
 
