@@ -5,7 +5,7 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
     const categoryOptions = {
         top: [
             "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top", "sweater", "sweatshirt", "cardigan",
-            "turtleneck", "crop top", "tunic", "athletic top", "henley", "flannel shirt", "printed shirt", "jacket", "dress"
+            "turtleneck", "crop top", "tunic", "athletic top", "henley", "flannel shirt", "printed shirt", "jacket"
         ],
         bottom: [
             "jeans", "slacks", "chinos", "shorts", "skirt", "leggings", "sweatpants", "cargo pants", "athletic shorts",
@@ -24,7 +24,10 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
             "shift dress"
         ]
     };
-
+    const styleOptions = ["casual", "formal", "business", "athletic", "streetwear", "bohemian", "vintage",
+        "preppy", "minimalist", "luxury"];
+    const silhouetteOptions = ["fitted", "relaxed", "oversized", "A-line", "boxy", "draped", "tailored", "flared",
+        "straight", "voluminous"];
     const colorOptions = ["black", "white", "red", "blue", "green", "yellow", "purple", "pink", "orange", "brown",
         "gray", "navy", "beige", "cream"];
     const patternOptions = ["solid", "striped", "plaid", "floral", "polka dot", "graphic", "animal print",
@@ -32,13 +35,14 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
     const seasonOptions = ["spring", "summer", "fall", "winter"];
     const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event",
         "beach", "travel"];
-    // add missing categories
 
     const [updatedClassifications, setUpdatedClassifications] = useState(() => {
         return classifications.map((data) => ({
             //image: data.image,
             main_category: data.main_category || "",
             sub_category: data.sub_category || "",
+            style: data.style || "",
+            silhouette: data.silhouette || "",
             color: data.color || "",
             pattern: data.pattern || "",
             season: data.season || "",
@@ -73,6 +77,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                         const classification = updatedClassifications[index] || {
                             main_category: "",
                             sub_category: "",
+                            style: "",
+                            silhouette: "",
                             color: "",
                             pattern: "",
                             season: "",
@@ -120,6 +126,32 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         >
                                             {colorOptions.map((color) => (
                                                 <option key={color} value={color}>{color}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="classification-container">
+                                        <p>Style</p>
+                                        <select
+                                            className="attribute-select"
+                                            value={classification.style}
+                                            onChange={(e) => handleChange(index, "style", e.target.value)}
+                                        >
+                                            {styleOptions.map((style) => (
+                                                <option key={style} value={style}>{style}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="classification-container">
+                                        <p>Silhouette</p>
+                                        <select
+                                            className="attribute-select"
+                                            value={classification.silhouette}
+                                            onChange={(e) => handleChange(index, "silhouette", e.target.value)}
+                                        >
+                                            {silhouetteOptions.map((silhouette) => (
+                                                <option key={silhouette} value={silhouette}>{silhouette}</option>
                                             ))}
                                         </select>
                                     </div>
