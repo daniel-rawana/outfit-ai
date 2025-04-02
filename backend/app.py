@@ -62,14 +62,31 @@ def add_clothing():
         # 4. Save clothing item to database
         # 5. Return success with item details
 
-        image_files = request.files.getlist('images')
+        image_files = request.files.getlist('images') # FileStorage objects
         classifications = []
 
         for image in image_files:
-            classifications.append(classify(image))
+            classification = classify(image)
+            #classification['image']
+            classifications.append(classification)
 
+        print(classifications)
         return jsonify({"message": classifications}), 201
     except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/wardrobe/update-classifications', methods=['POST'])
+def update_classifications():
+    # Update clothing classifications to ones selected by user
+    try:
+        classifications = request.get_json()
+        print(classifications)
+
+        #save clothing items and their classifications in database
+
+        return jsonify(classifications), 200
+    except Exception as e:
+        print(str(e))
         return jsonify({"error": str(e)}), 400
 
 # Outfit generation route

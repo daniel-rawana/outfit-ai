@@ -52,7 +52,7 @@ function HomePage() {
             setConfirmationData({ wardrobeImages: images, classifications: classifications });
             setShowConfirmation(true);
         } catch (error) {
-            console.error("Error uploading images:", error);
+            console.error("Error uploading images: ", error);
             setIsAnalyzing(false); // Hide analyzing popup in case of an error
         }
     };
@@ -80,7 +80,36 @@ function HomePage() {
     const handleConfirmationClose = async (updatedClassifications) => {
         setShowConfirmation(false);
 
+        try {
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedClassifications),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error updating classifications: ", error);
+        }
+
         // send updated classifications to backend
+        // only send categories that are updated
+        // format -> [
+        // {'image': FileStorage object,
+        // 'main_category': 'outerwear',
+        // 'sub_category': 'jacket',
+        // 'style': 'streetwear',
+        // 'silhouette': 'oversized',
+        // 'color': 'cream',
+        // 'pattern': 'graphic',
+        // 'season': 'winter',
+        // 'occasion': 'special event'},
+        // ...dictionaries for other images
+        // ]
     };
 
     const removeImage = (index) => {

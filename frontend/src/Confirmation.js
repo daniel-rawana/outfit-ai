@@ -27,21 +27,23 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
 
     const colorOptions = ["black", "white", "red", "blue", "green", "yellow", "purple", "pink", "orange", "brown",
         "gray", "navy", "beige", "cream"];
-    const patternOptions = ["solid", "striped", "plaid", "floral", "polka dot", "animal print", "geometric",
-        "abstract", "camouflage", "tie-dye", "checkered"];
+    const patternOptions = ["solid", "striped", "plaid", "floral", "polka dot", "graphic", "animal print",
+        "geometric", "abstract", "camouflage", "tie-dye", "checkered"];
     const seasonOptions = ["spring", "summer", "fall", "winter"];
     const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event",
         "beach", "travel"];
+    // add missing categories
 
     const [updatedClassifications, setUpdatedClassifications] = useState(() => {
-        return classifications.map((data) => [
-            data.main_category || "",
-            data.sub_category || "",
-            data.color || "",
-            data.pattern || "",
-            data.season || "",
-            data.occasion || ""
-        ]);
+        return classifications.map((data) => ({
+            //image: data.image,
+            main_category: data.main_category || "",
+            sub_category: data.sub_category || "",
+            color: data.color || "",
+            pattern: data.pattern || "",
+            season: data.season || "",
+            occasion: data.occasion || ""
+        }));
     });
 
     // disable scroll on main page when popup is open
@@ -53,11 +55,12 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
     }, []);
 
     //update UI with new selections
-    const handleChange = (index, fieldIndex, value) => {
-        const updated = [...updatedClassifications];
-        updated[index] = [...updated[index]];
-        updated[index][fieldIndex] = value;
-        setUpdatedClassifications(updated);
+    const handleChange = (index, field, value) => {
+        setUpdatedClassifications((prev) => {
+            const updated = [...prev];
+            updated[index] = { ...updated[index], [field]: value };
+            return updated;
+        });
     };
 
     return (
@@ -67,8 +70,14 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
 
                 <div className="classifications-list">
                     {wardrobeImages.map((image, index) => {
-                        const classification = updatedClassifications[index] || ["", "", "", "", "", ""];
-
+                        const classification = updatedClassifications[index] || {
+                            main_category: "",
+                            sub_category: "",
+                            color: "",
+                            pattern: "",
+                            season: "",
+                            occasion: "",
+                        };
                         return (
                             <div key={index} className="classification-row">
                                 <div className="image-container">
@@ -80,8 +89,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Main Category</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[0]}
-                                            onChange={(e) => handleChange(index, 0, e.target.value)}
+                                            value={classification.main_category}
+                                            onChange={(e) => handleChange(index, "main_category", e.target.value)}
                                         >
                                             {Object.keys(categoryOptions).map((cat) => (
                                                 <option key={cat} value={cat}>{cat}</option>
@@ -93,10 +102,10 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Subcategory</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[1]}
-                                            onChange={(e) => handleChange(index, 1, e.target.value)}
+                                            value={classification.sub_category}
+                                            onChange={(e) => handleChange(index, "sub_category", e.target.value)}
                                         >
-                                            {categoryOptions[classification[0]]?.map((sub) => (
+                                            {categoryOptions[classification.main_category]?.map((sub) => (
                                                 <option key={sub} value={sub}>{sub}</option>
                                             ))}
                                         </select>
@@ -106,8 +115,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Color</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[2]}
-                                            onChange={(e) => handleChange(index, 2, e.target.value)}
+                                            value={classification.color}
+                                            onChange={(e) => handleChange(index, "color", e.target.value)}
                                         >
                                             {colorOptions.map((color) => (
                                                 <option key={color} value={color}>{color}</option>
@@ -119,8 +128,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Pattern</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[3]}
-                                            onChange={(e) => handleChange(index, 3, e.target.value)}
+                                            value={classification.pattern}
+                                            onChange={(e) => handleChange(index, "pattern", e.target.value)}
                                         >
                                             {patternOptions.map((pattern) => (
                                                 <option key={pattern} value={pattern}>{pattern}</option>
@@ -132,8 +141,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Season</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[4]}
-                                            onChange={(e) => handleChange(index, 4, e.target.value)}
+                                            value={classification.season}
+                                            onChange={(e) => handleChange(index, "season", e.target.value)}
                                         >
                                             {seasonOptions.map((season) => (
                                                 <option key={season} value={season}>{season}</option>
@@ -145,8 +154,8 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                                         <p>Occasion</p>
                                         <select
                                             className="attribute-select"
-                                            value={classification[5]}
-                                            onChange={(e) => handleChange(index, 5, e.target.value)}
+                                            value={classification.occasion}
+                                            onChange={(e) => handleChange(index, "occasion", e.target.value)}
                                         >
                                             {occasionOptions.map((occasion) => (
                                                 <option key={occasion} value={occasion}>{occasion}</option>
