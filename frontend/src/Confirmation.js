@@ -1,7 +1,7 @@
 import "./App.css";
 import React, {useState, useEffect} from "react";
 
-const Confirmation = ({wardrobeImages, classifications, onClose}) => {
+const Confirmation = ({classifications, onClose}) => {
     const categoryOptions = {
         top: [
             "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top", "sweater", "sweatshirt", "cardigan",
@@ -36,19 +36,7 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
     const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event",
         "beach", "travel"];
 
-    const [updatedClassifications, setUpdatedClassifications] = useState(() => {
-        return classifications.map((data) => ({
-            image: data.image,
-            main_category: data.main_category || "",
-            sub_category: data.sub_category || "",
-            style: data.style || "",
-            silhouette: data.silhouette || "",
-            color: data.color || "",
-            pattern: data.pattern || "",
-            season: data.season || "",
-            occasion: data.occasion || ""
-        }));
-    });
+    const [updatedClassifications, setUpdatedClassifications] = useState(() => classifications.map(data => ({...data})));
 
     // disable scroll on main page when popup is open
     useEffect(() => {
@@ -73,131 +61,40 @@ const Confirmation = ({wardrobeImages, classifications, onClose}) => {
                 <h2>Confirm Wardrobe Attributes</h2>
 
                 <div className="classifications-list">
-                    {wardrobeImages.map((image, index) => {
-                        const classification = updatedClassifications[index] || {
-                            main_category: "",
-                            sub_category: "",
-                            style: "",
-                            silhouette: "",
-                            color: "",
-                            pattern: "",
-                            season: "",
-                            occasion: "",
-                        };
-                        return (
-                            <div key={index} className="classification-row">
-                                <div className="image-container">
-                                    <img src={URL.createObjectURL(image)} alt={`Outfit piece ${index}`}/>
-                                </div>
-
-                                <div className="classifications-container">
-                                    <div className="classification-container">
-                                        <p>Main Category</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.main_category}
-                                            onChange={(e) => handleChange(index, "main_category", e.target.value)}
-                                        >
-                                            {Object.keys(categoryOptions).map((cat) => (
-                                                <option key={cat} value={cat}>{cat}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Subcategory</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.sub_category}
-                                            onChange={(e) => handleChange(index, "sub_category", e.target.value)}
-                                        >
-                                            {categoryOptions[classification.main_category]?.map((sub) => (
-                                                <option key={sub} value={sub}>{sub}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Color</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.color}
-                                            onChange={(e) => handleChange(index, "color", e.target.value)}
-                                        >
-                                            {colorOptions.map((color) => (
-                                                <option key={color} value={color}>{color}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Style</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.style}
-                                            onChange={(e) => handleChange(index, "style", e.target.value)}
-                                        >
-                                            {styleOptions.map((style) => (
-                                                <option key={style} value={style}>{style}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Silhouette</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.silhouette}
-                                            onChange={(e) => handleChange(index, "silhouette", e.target.value)}
-                                        >
-                                            {silhouetteOptions.map((silhouette) => (
-                                                <option key={silhouette} value={silhouette}>{silhouette}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Pattern</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.pattern}
-                                            onChange={(e) => handleChange(index, "pattern", e.target.value)}
-                                        >
-                                            {patternOptions.map((pattern) => (
-                                                <option key={pattern} value={pattern}>{pattern}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Season</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.season}
-                                            onChange={(e) => handleChange(index, "season", e.target.value)}
-                                        >
-                                            {seasonOptions.map((season) => (
-                                                <option key={season} value={season}>{season}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="classification-container">
-                                        <p>Occasion</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification.occasion}
-                                            onChange={(e) => handleChange(index, "occasion", e.target.value)}
-                                        >
-                                            {occasionOptions.map((occasion) => (
-                                                <option key={occasion} value={occasion}>{occasion}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
+                    {updatedClassifications.map((classification, index) => (
+                        <div key={index} className="classification-row">
+                            <div className="image-container">
+                                <img src={`data:image/png;base64,${classification.image}`}
+                                     alt={`Outfit piece ${index}`}/>
                             </div>
-                        );
-                    })}
+                            <div className="classifications-container">
+                                {Object.entries({
+                                    main_category: Object.keys(categoryOptions),
+                                    sub_category: categoryOptions[classification.main_category],
+                                    style: styleOptions,
+                                    silhouette: silhouetteOptions,
+                                    color: colorOptions,
+                                    pattern: patternOptions,
+                                    season: seasonOptions,
+                                    occasion: occasionOptions
+                                }).map(([key, selectionOptions]) => (
+                                    <div key={key} className="classification-container">
+                                        <p>{key.replace("_", " ")}</p>
+                                        <select
+                                            className="attribute-select"
+                                            value={classification[key] || ""}
+                                            onChange={(e) => handleChange(index, key, e.target.value)}
+                                        >
+                                            <option value="">Select</option>
+                                            {selectionOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="buttons-container">

@@ -5,30 +5,65 @@ import {useNavigate} from "react-router-dom";
 import Confirmation from "./Confirmation";
 
 function HomePage() {
-    const [images, setImages] = useState([]);
+    const [wardrobeItems, setWardrobeItems] = useState([]); // existing wardrobe (items + classifications)
+    const [uploadedImages, setUploadedImages] = useState([]); // new images uploaded
     const [previewImages, setPreviewImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [confirmationData, setConfirmationData] = useState({ wardrobeImages: [] });
-    const prevImagesRef = useRef([]); // stores current wardrobe to track changes
+    const [confirmationData, setConfirmationData] = useState({wardrobeImages: []});
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
-        // only upload if there's been a change in wardrobe
-        if (JSON.stringify(images) === JSON.stringify(prevImagesRef.current)) {
-            return;
+        const fetchWardrobe = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/wardrobe");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const wardrobeData = await response.json();
+
+                if (wardrobeData.length > 0) {
+                    const wardrobe = wardrobeData.map(item => ({
+                        image: item.image,
+                        main_category: item.main_category || "",
+                        sub_category: item.sub_category || "",
+                        style: item.style || "",
+                        silhouette: item.silhouette || "",
+                        color: item.color || "",
+                        pattern: item.pattern || "",
+                        season: item.season || "",
+                        occasion: item.occasion || "",
+                    }));
+
+                    setWardrobeItems(wardrobe);
+
+                    // Convert base64 to object URLs for display
+                    const previewUrls = wardrobe.map(item => `data:image/jpeg;base64,${item.image}`);
+                    setPreviewImages(previewUrls);
+                }
+            } catch (error) {
+                console.error("Error fetching wardrobe: ", error);
+            }
+        };
+        fetchWardrobe();
+    }, []);
+
+    useEffect(() => {
+        if (uploadedImages.length > 0) {
+            uploadImages();
         }
-        prevImagesRef.current = images;
-        uploadImages();
-    }, [images]);
+    }, [uploadedImages]);
 
     const uploadImages = async () => {
+        if (uploadedImages.length === 0) return;
+
         setIsAnalyzing(true); // Show analyzing popup
 
         const base64Images = await Promise.all(
-            images.map((image) => convertToBase64(image))
+            uploadedImages.map((image) => convertToBase64(image))
         );
 
         try {
@@ -37,7 +72,7 @@ function HomePage() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ images: base64Images }),
+                body: JSON.stringify({images: base64Images}),
             });
 
             if (!response.ok) {
@@ -49,18 +84,24 @@ function HomePage() {
 
             const classifications = result.message;
 
-            // Hide analyzing popup and show confirmation
+            // update wardrobe items and then open confirmation popup with updated data
+            setWardrobeItems((prev) => {
+                const updatedWardrobe = [...prev, ...classifications];
+                setConfirmationData({classifications: updatedWardrobe});
+                return updatedWardrobe;
+            });
+
+            setUploadedImages([]);
             setIsAnalyzing(false);
-            setConfirmationData({ wardrobeImages: images, classifications: classifications });
             setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images: ", error);
-            setIsAnalyzing(false); // Hide analyzing popup in case of an error
+            setIsAnalyzing(false);
         }
     };
 
     const handleGenerate = () => {
-        if (images.length === 0) {
+        if (wardrobeItems.length === 0) {
             alert("Please upload some wardrobe items first.");
             return;
         }
@@ -69,14 +110,13 @@ function HomePage() {
 
     const handleUpload = (event) => {
         const files = Array.from(event.target.files);
-        if (files.length > 0) {
-            // Store files
-            setImages((prev) => [...prev, ...files]);
+        if (files.length === 0) return;
 
-            // Generate preview URLs for display
-            const previewUrls = files.map((file) => URL.createObjectURL(file));
-            setPreviewImages((prev) => [...prev, ...previewUrls]);
-        }
+        setUploadedImages(prev => [...prev, ...files])
+
+        // Generate preview URLs for display
+        const previewUrls = files.map(file => URL.createObjectURL(file));
+        setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
     const handleConfirmationClose = async (updatedClassifications) => {
@@ -97,11 +137,6 @@ function HomePage() {
         } catch (error) {
             console.error("Error updating classifications: ", error);
         }
-    };
-
-    const removeImage = (index) => {
-        setImages((prev) => prev.filter((_, i) => i !== index));
-        setPreviewImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const totalPages = Math.ceil(previewImages.length / imagesPerPage);
@@ -166,14 +201,6 @@ function HomePage() {
                             {displayedImages.map((src, index) => (
                                 <div key={index} className="image-container">
                                     <img src={src} alt={`Item ${index}`}/>
-                                    <button
-                                        className="remove-btn"
-                                        onClick={() =>
-                                            removeImage(index + currentPage * imagesPerPage)
-                                        }
-                                    >
-                                        <Icons.XButton className="x"/>
-                                    </button>
                                 </div>
                             ))}
                             {/* Fill empty slots with placeholders */}

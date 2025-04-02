@@ -50,7 +50,33 @@ def get_wardrobe():
         # 3. Format items for response
         # 4. Return wardrobe items
 
-        return jsonify({"items": []}), 200
+        # return list of clothing items + classifications pulled from database
+        wardrobe = []
+
+        dummy_wardrobe = [
+            {
+                'image': 'image1',
+                'main_category': 'top',
+                'sub_category': 't-shirt',
+                'style': 'casual',
+                'silhouette': 'relaxed',
+                'color': 'blue',
+                'pattern': 'graphic',
+                'season': 'summer',
+                'occasion': 'casual'},
+            {
+                'image': 'image2',
+                'main_category': 'bottom',
+                'sub_category': 'jeans',
+                'style': 'casual',
+                'silhouette': 'straight',
+                'color': 'blue',
+                'pattern': 'solid',
+                'season': 'summer',
+                'occasion': 'casual'
+            }
+        ]
+        return jsonify(wardrobe), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
