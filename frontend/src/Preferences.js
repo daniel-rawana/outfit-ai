@@ -72,7 +72,11 @@ const Preferences = () => {
 
     return (
         <div className="preferences-container">
-            <h1>Select Your Preferences</h1>
+            <div className="preference-text-container">
+                <h1>Select Your Preferences</h1>
+                <h3>Customize your outfit with these selections—optional but recommended for the
+                    perfect look!</h3>
+            </div>
 
             <div className="preference-container">
                 <h2>Weather:</h2>

@@ -1,8 +1,5 @@
 import torch
 import clip
-import io
-from io import BytesIO
-from PIL import Image
 
 #Load the model
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -10,7 +7,8 @@ model, preprocess = clip.load("ViT-B/32", device = device)
 
 def classify(image_file):
     # Load and preprocess the image
-    image = preprocess(Image.open(BytesIO(image_file.read()))).unsqueeze(0).to(device)
+
+    image = preprocess(image_file).unsqueeze(0).to(device)
 
     # Encode image
     with torch.no_grad():
