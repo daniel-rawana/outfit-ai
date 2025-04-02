@@ -12,7 +12,7 @@ function HomePage() {
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [confirmationData, setConfirmationData] = useState({wardrobeImages: []});
+    const [confirmationData, setConfirmationData] = useState({ classifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
@@ -119,6 +119,13 @@ function HomePage() {
         setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
+    const handleEdit = () => {
+        if (wardrobeItems.length > 0) {
+            setConfirmationData({classifications: wardrobeItems});
+            setShowConfirmation(true);
+        }
+    }
+
     const handleConfirmationClose = async (updatedClassifications = null) => {
         setShowConfirmation(false);
 
@@ -188,6 +195,9 @@ function HomePage() {
                         <Icons.Upload className="upload"/> Upload
                         <input type="file" multiple onChange={handleUpload} hidden/>
                     </label>
+                    <button className="edit-btn" onClick={handleEdit}>
+                        <Icons.Edit className="edit"/> Edit
+                    </button>
                     <button className="generate-btn" onClick={handleGenerate}>
                         <Icons.Generate className="generate"/> Generate
                     </button>
