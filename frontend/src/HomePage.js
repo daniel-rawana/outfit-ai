@@ -27,15 +27,17 @@ function HomePage() {
     const uploadImages = async () => {
         setIsAnalyzing(true); // Show analyzing popup
 
-        const formData = new FormData();
-        images.forEach((image, index) => {
-            formData.append("images", image); // Append images
-        });
+        const base64Images = await Promise.all(
+            images.map((image) => convertToBase64(image))
+        );
 
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/items", {
                 method: "POST",
-                body: formData,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ images: base64Images }),
             });
 
             if (!response.ok) {
@@ -95,21 +97,6 @@ function HomePage() {
         } catch (error) {
             console.error("Error updating classifications: ", error);
         }
-
-        // send updated classifications to backend
-        // only send categories that are updated
-        // format -> [
-        // {'image': FileStorage object,
-        // 'main_category': 'outerwear',
-        // 'sub_category': 'jacket',
-        // 'style': 'streetwear',
-        // 'silhouette': 'oversized',
-        // 'color': 'cream',
-        // 'pattern': 'graphic',
-        // 'season': 'winter',
-        // 'occasion': 'special event'},
-        // ...dictionaries for other images
-        // ]
     };
 
     const removeImage = (index) => {
@@ -136,6 +123,15 @@ function HomePage() {
         currentPage * imagesPerPage,
         (currentPage + 1) * imagesPerPage
     );
+
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = (error) => reject(error);
+        });
+    };
 
     return (
         <div className="app-container">
