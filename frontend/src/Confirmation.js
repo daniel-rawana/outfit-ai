@@ -58,7 +58,8 @@ const Confirmation = ({classifications, onClose}) => {
     return (
         <div className="popup-overlay">
             <div className="popup-content">
-                <h2>Confirm Wardrobe Attributes</h2>
+                <h2>Edit Wardrobe Attributes</h2>
+                <p>Please confirm the classifications RunwAI has assigned to your clothing items.</p>
 
                 <div className="classifications-list">
                     {updatedClassifications.map((classification, index) => (

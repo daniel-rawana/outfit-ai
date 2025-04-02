@@ -207,6 +207,10 @@ body {
     fill: black;
     margin-right: 15px;
 }
+.preference-text-container {
+    width: 70%;
+    text-align: center;
+}
 
 .suggestion-container, .preferences-container {
     display: flex;
