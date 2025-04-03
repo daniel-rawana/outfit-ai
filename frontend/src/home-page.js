@@ -142,7 +142,7 @@ function HomePage() {
                 existingClassifications: wardrobeItems,
                 newClassifications: [] });
             setShowConfirmation(true);
-        }
+        } else { alert("Please upload some wardrobe items first."); }
     }
 
     const handleConfirmationClose = async ({newItems, modifiedExisting}) => {
