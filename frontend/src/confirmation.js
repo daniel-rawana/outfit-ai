@@ -1,4 +1,4 @@
-import "./App.css";
+import "./styling/App.css";
 import React, {useState, useEffect} from "react";
 
 const Confirmation = ({existingClassifications, newClassifications, onClose}) => {
@@ -65,9 +65,10 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
     };
 
     const renderClassificationRow = (classification, index, type) => (
-        <div key={index} className={type === "new" ? "new-classification-row" : "existing-classification-row"}>
+        <div key={index} className={type === "new" ? "new-classification-row" : "classification-row"}>
             <div className="image-container">
-                <img src={`data:image/png;base64,${classification.image}`} alt={`Outfit piece ${index}`} />
+                <img src={`data:image/png;base64,${classification.image}`} alt={`Outfit piece ${index}`}/>
+                {type === "new" && <h4>New Item</h4>}
             </div>
             <div className="classifications-container">
                 {Object.entries({

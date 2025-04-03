@@ -1,8 +1,8 @@
-import "./App.css";
+import "./styling/App.css";
 import React, {useState, useEffect, useRef} from "react";
-import {Icons} from "./assets/icons";
+import {Icons} from "./icons";
 import {useNavigate} from "react-router-dom";
-import Confirmation from "./Confirmation";
+import Confirmation from "./confirmation";
 
 function HomePage() {
     const [wardrobeItems, setWardrobeItems] = useState([]); // existing wardrobe (items + classifications)

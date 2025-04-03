@@ -1,9 +1,9 @@
 import React from "react";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import Navbar from "./Navbar";
-import HomePage from "./HomePage";
-import GeneratedOutfit from "./GeneratedOutfit";
-import Preferences from "./Preferences";
+import Navbar from "./navbar";
+import HomePage from "./home-page";
+import GeneratedOutfit from "./generated-outfit";
+import Preferences from "./preferences";
 import AboutUs from "./about-us.js";
 import ContactUs from "./contact-us.js";
 

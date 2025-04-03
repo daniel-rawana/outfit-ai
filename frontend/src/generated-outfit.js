@@ -1,7 +1,7 @@
-import "./App.css";
+import "./styling/App.css";
 import React, {useState} from "react";
 import {useLocation} from "react-router-dom";
-import {Icons} from "./assets/icons";
+import {Icons} from "./icons";
 
 const GeneratedOutfit = () => {
     const location = useLocation();
