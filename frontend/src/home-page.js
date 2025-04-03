@@ -107,7 +107,7 @@ function HomePage() {
         navigate('/preferences');
     };
 
-    const handleUpload = (event) => {
+    const handleUpload = async (event) => {
         const files = Array.from(event.target.files);
         const validImageTypes = ['image/jpeg', 'image/png'];
         const imageFiles = files.filter(file => validImageTypes.includes(file.type));
@@ -117,9 +117,22 @@ function HomePage() {
             return;
         }
 
-        setUploadedImages(prev => [...prev, ...imageFiles]);
+        const existingImages = wardrobeItems.map(item => item.image);
+        const newImageFiles = [];
 
-        const previewUrls = imageFiles.map(file => URL.createObjectURL(file));
+        for (let file of imageFiles) {
+            const base64String = await convertToBase64(file);
+            if (!existingImages.includes(base64String)) { newImageFiles.push(file); }
+        }
+
+        if (newImageFiles.length === 0) {
+            alert('This image has already been uploaded.');
+            return;
+        }
+
+        setUploadedImages(prev => [...prev, ...newImageFiles]);
+
+        const previewUrls = newImageFiles.map(file => URL.createObjectURL(file));
         setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
