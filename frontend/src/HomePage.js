@@ -122,7 +122,7 @@ function HomePage() {
         if (wardrobeItems.length > 0) {
             setConfirmationData({
                 existingClassifications: wardrobeItems,
-                newClassifications: null });
+                newClassifications: [] });
             setShowConfirmation(true);
         }
     }
