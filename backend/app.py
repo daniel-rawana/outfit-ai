@@ -80,8 +80,8 @@ def get_wardrobe():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/wardrobe/items', methods=['POST'])
-def add_clothing():
+@app.route('/wardrobe/classify-clothing', methods=['POST'])
+def classify_clothing():
     try:
         # add clothing logic (adds a single clothing item to the user's wardrobe)
         # 1. Get user ID from auth token
@@ -101,19 +101,59 @@ def add_clothing():
             classification['image'] = base64_string
             classifications.append(classification)
 
+        # printing purposes only
+        print("ITEM CLASSIFICATIONS:\n")
+        for index, classification in enumerate(classifications):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
+
         return jsonify({"message": classifications}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/wardrobe/update-classifications', methods=['POST'])
 def update_classifications():
-    # Update clothing classifications to ones selected by user
+    # Update clothing classifications for existing items in database
     try:
-        classifications = request.get_json()
+        items = request.get_json()
 
-        #save clothing items and their classifications in database
+        #update classifications in database
 
-        return jsonify(classifications), 200
+        # printing purposes only
+        print("UPDATED ITEMS:\n")
+        for index, classification in enumerate(items):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
+
+        return jsonify(items), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/wardrobe/save-clothing-items', methods=['POST'])
+def save_clothing_items():
+    # Save new items and their classifications to database
+    try:
+        newItems = request.get_json()
+
+        # save new clothing items and their classifications in database
+
+        # printing purposes only
+        print("NEW ITEMS:\n")
+        for index, classification in enumerate(newItems):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
+
+        return jsonify(newItems), 200
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e)}), 400

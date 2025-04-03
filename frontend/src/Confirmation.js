@@ -1,7 +1,7 @@
 import "./App.css";
 import React, {useState, useEffect} from "react";
 
-const Confirmation = ({classifications, onClose}) => {
+const Confirmation = ({existingClassifications, newClassifications, onClose}) => {
     const categoryOptions = {
         top: [
             "t-shirt", "button-up shirt", "blouse", "polo shirt", "tank top", "sweater", "sweatshirt", "cardigan",
@@ -36,7 +36,8 @@ const Confirmation = ({classifications, onClose}) => {
     const occasionOptions = ["casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event",
         "beach", "travel"];
 
-    const [updatedClassifications, setUpdatedClassifications] = useState(() => classifications.map(data => ({...data})));
+    const [updatedNewClassifications, setUpdatedNewClassifications] = useState(() => newClassifications.map(data => ({...data})));
+    const [updatedExistingClassifications, setUpdatedExistingClassifications] = useState(() => existingClassifications.map(data => ({...data})));
 
     // disable scroll on main page when popup is open
     useEffect(() => {
@@ -46,12 +47,75 @@ const Confirmation = ({classifications, onClose}) => {
         };
     }, []);
 
-    //update with new selections
-    const handleChange = (index, field, value) => {
-        setUpdatedClassifications((prev) => {
-            const updated = [...prev];
-            updated[index] = { ...updated[index], [field]: value };
-            return updated;
+    //update with new selections for existing and new classifications
+    const handleChange = (index, field, value, type) => {
+        if (type === "new") {
+            setUpdatedNewClassifications((prev) => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], [field]: value };
+                return updated;
+            });
+        } else {
+            setUpdatedExistingClassifications((prev) => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], [field]: value };
+                return updated;
+            });
+        }
+    };
+
+    const renderClassificationRow = (classification, index, type) => (
+        <div key={index} className={type === "new" ? "new-classification-row" : "existing-classification-row"}>
+            <div className="image-container">
+                <img src={`data:image/png;base64,${classification.image}`} alt={`Outfit piece ${index}`} />
+            </div>
+            <div className="classifications-container">
+                {Object.entries({
+                    main_category: Object.keys(categoryOptions),
+                    sub_category: categoryOptions[classification.main_category],
+                    style: styleOptions,
+                    silhouette: silhouetteOptions,
+                    color: colorOptions,
+                    pattern: patternOptions,
+                    season: seasonOptions,
+                    occasion: occasionOptions
+                }).map(([key, selectionOptions]) => (
+                    <div key={key} className="classification-container">
+                        <p>{key.replace("_", " ")}:</p>
+                        <select
+                            className="attribute-select"
+                            value={classification[key] || ""}
+                            onChange={(e) => handleChange(index, key, e.target.value, type)}
+                        >
+                            <option value="">Select</option>
+                            {selectionOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const handleConfirm = () => {
+        // filter existing classifications to only include modified ones
+        const modifiedExisting = updatedExistingClassifications.filter((item, index) =>
+            JSON.stringify(item) !== JSON.stringify(existingClassifications[index])
+        );
+
+        // send back classifications for new items + existing items that have been modified
+        onClose({
+            newItems: updatedNewClassifications,
+            modifiedExisting: modifiedExisting
+        });
+    };
+
+    const handleClose = () => {
+        // send back unmodified classifications for new items
+        onClose({
+            newItems: newClassifications,
+            modifiedExisting: []
         });
     };
 
@@ -62,45 +126,13 @@ const Confirmation = ({classifications, onClose}) => {
                 <p>Please confirm the classifications RunwAI has assigned to your clothing items.</p>
 
                 <div className="classifications-list">
-                    {updatedClassifications.map((classification, index) => (
-                        <div key={index} className="classification-row">
-                            <div className="image-container">
-                                <img src={`data:image/png;base64,${classification.image}`}
-                                     alt={`Outfit piece ${index}`}/>
-                            </div>
-                            <div className="classifications-container">
-                                {Object.entries({
-                                    main_category: Object.keys(categoryOptions),
-                                    sub_category: categoryOptions[classification.main_category],
-                                    style: styleOptions,
-                                    silhouette: silhouetteOptions,
-                                    color: colorOptions,
-                                    pattern: patternOptions,
-                                    season: seasonOptions,
-                                    occasion: occasionOptions
-                                }).map(([key, selectionOptions]) => (
-                                    <div key={key} className="classification-container">
-                                        <p>{key.replace("_", " ")}:</p>
-                                        <select
-                                            className="attribute-select"
-                                            value={classification[key] || ""}
-                                            onChange={(e) => handleChange(index, key, e.target.value)}
-                                        >
-                                            <option value="">Select</option>
-                                            {selectionOptions.map(option => (
-                                                <option key={option} value={option}>{option}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+                    {updatedNewClassifications.map((classification, index) => renderClassificationRow(classification, index, "new"))}
+                    {updatedExistingClassifications.map((classification, index) => renderClassificationRow(classification, index, "existing"))}
                 </div>
 
                 <div className="buttons-container">
-                    <button className="confirm-btn" onClick={() => onClose(updatedClassifications)}>Confirm</button>
-                    <button className="cancel-btn" onClick={() => onClose(null)}>Cancel</button>
+                    <button className="confirm-btn" onClick={handleConfirm}>Confirm</button>
+                    <button className="cancel-btn" onClick={handleClose}>Cancel</button>
                 </div>
 
             </div>

@@ -12,42 +12,10 @@ function HomePage() {
     const imagesPerPage = 9; // 3x3 grid, 9 images per page
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [confirmationData, setConfirmationData] = useState({ classifications: [] });
+    const [confirmationData, setConfirmationData] = useState({existingClassifications: [], newClassifications: []});
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
-        const fetchWardrobe = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/wardrobe");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const wardrobeData = await response.json();
-
-                if (wardrobeData.length > 0) {
-                    const wardrobe = wardrobeData.map(item => ({
-                        image: item.image,
-                        main_category: item.main_category || "",
-                        sub_category: item.sub_category || "",
-                        style: item.style || "",
-                        silhouette: item.silhouette || "",
-                        color: item.color || "",
-                        pattern: item.pattern || "",
-                        season: item.season || "",
-                        occasion: item.occasion || "",
-                    }));
-
-                    setWardrobeItems(wardrobe);
-
-                    // Convert base64 to object URLs for display
-                    const previewUrls = wardrobe.map(item => `data:image/jpeg;base64,${item.image}`);
-                    setPreviewImages(previewUrls);
-                }
-            } catch (error) {
-                console.error("Error fetching wardrobe: ", error);
-            }
-        };
         fetchWardrobe();
     }, []);
 
@@ -56,6 +24,39 @@ function HomePage() {
             uploadImages();
         }
     }, [uploadedImages]);
+
+    const fetchWardrobe = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/wardrobe");
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const wardrobeData = await response.json();
+
+            if (wardrobeData.length > 0) {
+                const wardrobe = wardrobeData.map(item => ({
+                    image: item.image,
+                    main_category: item.main_category || "",
+                    sub_category: item.sub_category || "",
+                    style: item.style || "",
+                    silhouette: item.silhouette || "",
+                    color: item.color || "",
+                    pattern: item.pattern || "",
+                    season: item.season || "",
+                    occasion: item.occasion || "",
+                }));
+
+                setWardrobeItems(wardrobe);
+
+                // Convert base64 to object URLs for display
+                const previewUrls = wardrobe.map(item => `data:image/jpeg;base64,${item.image}`);
+                setPreviewImages(previewUrls);
+            }
+        } catch (error) {
+            console.error("Error fetching wardrobe: ", error);
+        }
+    };
 
     const uploadImages = async () => {
         if (uploadedImages.length === 0) return;
@@ -67,7 +68,7 @@ function HomePage() {
         );
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/wardrobe/items", {
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/classify-clothing", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -82,17 +83,15 @@ function HomePage() {
             const result = await response.json();
             console.log("Upload successful:", result);
 
-            const classifications = result.message;
-
-            // update wardrobe items and then open confirmation popup with updated data
-            setWardrobeItems((prev) => {
-                const updatedWardrobe = [...prev, ...classifications];
-                setConfirmationData({classifications: updatedWardrobe});
-                return updatedWardrobe;
-            });
+            const newClassifications = result.message;
 
             setUploadedImages([]);
             setIsAnalyzing(false);
+
+            setConfirmationData({
+                existingClassifications: wardrobeItems,
+                newClassifications: newClassifications
+            });
             setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images: ", error);
@@ -121,36 +120,86 @@ function HomePage() {
 
     const handleEdit = () => {
         if (wardrobeItems.length > 0) {
-            setConfirmationData({classifications: wardrobeItems});
+            setConfirmationData({
+                existingClassifications: wardrobeItems,
+                newClassifications: null });
             setShowConfirmation(true);
         }
     }
 
-    const handleConfirmationClose = async (updatedClassifications = null) => {
+    const handleConfirmationClose = async ({newItems, modifiedExisting}) => {
         setShowConfirmation(false);
 
-        // discard changes if user clicked cancel
-        if (!updatedClassifications) { return; }
+        // only send data if there are new or modified items
+        if (newItems.length === 0 && modifiedExisting.length === 0) {
+            return;
+        }
 
-        // need to update to only send updated selections
-        try {
-            const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedClassifications),
-            });
+        let updateSuccess = false;
+        let saveSuccess = false;
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+        // update existing items
+        if (modifiedExisting.length > 0) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(modifiedExisting),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                updateSuccess = true;
+
+                // temporary way to update wardrobeItems while DB connections get set up
+                const updatedWardrobe = [...wardrobeItems];
+                modifiedExisting.forEach(modifiedItem => {
+                    const index = updatedWardrobe.findIndex(item => item.image === modifiedItem.image);
+                    if (index !== -1) {
+                        updatedWardrobe[index] = modifiedItem;
+                    }
+                });
+                setWardrobeItems(updatedWardrobe);
+            } catch (error) {
+                console.error("Error updating classifications: ", error);
             }
+        }
 
-            setWardrobeItems(updatedClassifications);
-        } catch (error) {
-            console.error("Error updating classifications: ", error);
+        // add new items to database
+        if (newItems.length > 0) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/wardrobe/save-clothing-items", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newItems),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                saveSuccess = true;
+
+                // temporary way to update wardrobeItems while DB connections get set up
+                const updatedWardrobe = [...wardrobeItems, ...newItems];
+                setWardrobeItems(updatedWardrobe);
+            } catch (error) {
+                console.error("Error saving items: ", error);
+            }
+        }
+
+        if (updateSuccess || saveSuccess) {
+            // get wardrobe again to ensure UI is synchronized with wardrobe in DB
+            //await fetchWardrobe();
         }
     };
+
 
     const totalPages = Math.ceil(previewImages.length / imagesPerPage);
 
@@ -237,8 +286,8 @@ function HomePage() {
             {/* Show confirmation popup */}
             {showConfirmation && (
                 <Confirmation
-                    wardrobeImages={confirmationData.wardrobeImages}
-                    classifications={confirmationData.classifications}
+                    existingClassifications={confirmationData.existingClassifications}
+                    newClassifications={confirmationData.newClassifications}
                     onClose={handleConfirmationClose}
                 />
             )}
