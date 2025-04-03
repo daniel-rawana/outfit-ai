@@ -109,12 +109,17 @@ function HomePage() {
 
     const handleUpload = (event) => {
         const files = Array.from(event.target.files);
-        if (files.length === 0) return;
+        const validImageTypes = ['image/jpeg', 'image/png'];
+        const imageFiles = files.filter(file => validImageTypes.includes(file.type));
 
-        setUploadedImages(prev => [...prev, ...files])
+        if (imageFiles.length === 0) {
+            alert('Please upload only JPEG or PNG images.');
+            return;
+        }
 
-        // Generate preview URLs for display
-        const previewUrls = files.map(file => URL.createObjectURL(file));
+        setUploadedImages(prev => [...prev, ...imageFiles]);
+
+        const previewUrls = imageFiles.map(file => URL.createObjectURL(file));
         setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
