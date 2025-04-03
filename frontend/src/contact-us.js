@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./contact-us.css";
-import Navbar from "./Navbar"; // Ensure Navbar is imported correctly
+import "./styling/contact-us.css";
+import Navbar from "./navbar"; // Ensure Navbar is imported correctly
 import placeholderImg from "./assets/placeholder.jpg"; // Placeholder image path
 
 const teamMembers = [
@@ -144,10 +144,10 @@ const TeamSlider = () => {
             .map((member) => (
               <td key={member.id}>
                 <div className="member">
-                  <h2>{member.name}, {member.role}</h2>
+                  <h2 id="member-info-text">{member.name}, {member.role}</h2>
                   <div className="blurb">
                     <img src={member.img} alt={member.name} />
-                    <p>{member.blurb}</p>
+                    <p id='blurb-text'>{member.blurb}</p>
                   </div>
                 </div>
               </td>

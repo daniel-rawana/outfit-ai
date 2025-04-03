@@ -206,6 +206,7 @@ body {
     height: 50px;
     fill: black;
     margin-right: 15px;
+    border-radius: 50px;
 }
 
 .preference-text-container {
@@ -313,7 +314,7 @@ select {
     margin: 15px;
 }
 
-.classification-row {
+.classification-row, .new-classification-row {
     display: flex;
     flex-direction: row;
     margin: 20px;
@@ -323,6 +324,11 @@ select {
     padding-left: 40px;
     border-radius: 8px;
     align-items: center;
+}
+
+.new-classification-row {
+    border: 1px solid #739fe5;
+    background-color: #f8fcff;
 }
 
 .classifications-container {
