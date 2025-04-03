@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Icons } from "./assets/icons";
+import logo from './assets/runwai_logo.png';
 
 function Navbar() {
     return (
         <nav className="navbar">
             <div className="logo">
-                <Icons.Logo className="logo-icon"/> RunwAI
+                <img src={logo} className="logo-icon"/> RunwAI
             </div>
             <ul>
                 <li><Link to="/">Home</Link></li>

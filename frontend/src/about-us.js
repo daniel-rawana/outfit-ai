@@ -1,6 +1,6 @@
 import React from 'react';
-import './about-us.css';
-import runwAILogo from './assets/runwai-logo.png';
+import './styling/about-us.css';
+import runwAILogo from './assets/runwai_logo.png';
 
 
 const AboutUs = () => {

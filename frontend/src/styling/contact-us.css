@@ -77,7 +77,7 @@ div{
     font-family: Poppins, sans-serif;
 }
 
-div h2 {
+#member-info-text {
     font-size: 1.5rem;
     color: #000000;
     text-align: center;
@@ -85,7 +85,7 @@ div h2 {
     width: 100%;
 }
 
-div p {
+#blurb-text {
     font-size: 0.75rem;
     color: #727272;
     text-align: left;

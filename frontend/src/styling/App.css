@@ -206,6 +206,7 @@ body {
     height: 50px;
     fill: black;
     margin-right: 15px;
+    border-radius: 50px;
 }
 
 .preference-text-container {
