@@ -1,0 +1,47 @@
+# Flask Backend Code: Detailed Function Breakdown
+
+## Imports
+- **Flask**: The web framework used to handle HTTP requests and responses.
+- **CORS**: Allows cross-origin requests (needed if the frontend is hosted separately from this backend).
+- **classify**: A custom function (probably using OpenAI's CLIP or similar) that analyzes an image and returns a classification.
+
+## Initialization
+- Initializes the Flask app.
+- Enables CORS so the frontend can talk to the backend without getting blocked by browser security policies.
+
+## Core Routes
+1. **/users/register (POST)**:
+   - Placeholder for user registration logic.
+   - Expected to get user data, validate input, store in the database, and return an auth token.
+   - Currently returns a static success message.
+
+2. **/users/login (POST)**:
+   - Placeholder for user login logic.
+   - Should check credentials and return a token if successful.
+   - Also just returns a static message for now.
+
+3. **/wardrobe (GET)**:
+   - Would return all wardrobe items for a user.
+   - Needs user authentication to identify the right wardrobe.
+   - Right now, it returns an empty list.
+
+4. **/wardrobe/items (POST)**:
+   - Lets users upload clothing images.
+   - Uses the `classify(image)` function on each uploaded image to identify it (e.g., "red shirt", "blue jeans").
+   - Returns the classification results in a list.
+
+5. **/outfits/generate (POST)**:
+   - Placeholder for future outfit generation (e.g., AI suggests a matching outfit).
+   - Currently returns an empty outfit.
+
+6. **/outfits (GET)**:
+   - Would return saved outfits (if that becomes a feature).
+   - Currently returns an empty list.
+
+SUMMARY
+- Starts the Flask app in debug mode.
+- Helpful during development to auto-reload and show detailed error messages.
+- This is a starter backend for a wardrobe/outfit recommendation app.
+- Some endpoints are placeholders (e.g., login, register, generate outfit).
+- Real logic like authentication, database storage, and AI model integration still needs to be added.
+- The `classify()` function is already integrated for image-based clothing recognition.

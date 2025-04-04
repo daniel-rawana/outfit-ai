@@ -1,0 +1,78 @@
+# Clothing Recommendation System: Detailed Function Breakdown
+
+## Imports
+- **Clothing Class**: Imported from external clothing.py file which contains the class definition for clothing items.
+
+## Core Functions
+1. **/generate_ranked_outfits (Main Function)**:
+   - Takes wardrobe, user preferences, and limit as inputs.
+   - Categorizes clothing by type.
+   - Validates minimum requirements.
+   - Scores and filters items.
+   - Generates and ranks complete outfits.
+
+2. **/score_individual_items**:
+   - Calculates scores for each clothing item.
+   - Evaluates weather appropriateness (using match_weather).
+   - Assesses occasion suitability (using match_occasion).
+   - Returns items sorted by score.
+
+3. **/match_weather**:
+   - Maps weather conditions to seasons.
+   - Assigns scores: perfect (1.0) for direct matches, partial (0.7) for adjacent seasons, low (0.3) for unsuitable seasons.
+
+4. **/match_occasion**:
+   - Defines compatible occasions for each category.
+   - Assigns scores: perfect (1.0) for direct matches, partial (0.7) for compatible occasions, low (0.3) for unsuitable occasions.
+
+5. **/find_best_shoe**:
+   - Evaluates each shoe option with selected top and bottom.
+   - Weights color compatibility (70%) and pattern compatibility (30%).
+   - Returns highest-scoring footwear option.
+
+6. **/calculate_outfit_score**:
+   - Computes overall outfit score using weighted criteria:
+     - Weather appropriateness (30%)
+     - Occasion suitability (25%)
+     - Color compatibility (20%)
+     - Pattern compatibility (15%)
+
+7. **/calculate_weather_score**:
+   - Evaluates outfit pieces' suitability for current weather.
+   - Returns percentage of weather-appropriate items.
+
+8. **/calculate_occasion_score**:
+   - Evaluates outfit pieces' suitability for intended occasion.
+   - Returns percentage of occasion-appropriate items.
+
+9. **/calculate_color_compatibility**:
+   - Analyzes color relationships between all pieces.
+   - Weights top-bottom compatibility heavily (50%).
+   - Bottom-footwear and top-footwear each worth 25%.
+
+10. **/color_pair_compatibility**:
+    - Assigns high scores (0.9) for matching colors.
+    - Gives good scores (0.85) for neutral combinations.
+    - Gives low scores (0.2) for clashing colors.
+    - Default score (0.7) for other combinations.
+
+11. **/calculate_pattern_compatibility**:
+    - Categorizes patterns (statement, structured, subtle).
+    - Applies pattern-matching rules:
+      - Penalizes multiple statement patterns.
+      - Rewards balanced combinations.
+      - Considers all-solid as safe but less interesting.
+
+12. **/create_sample_wardrobe**:
+    - Generates 50 sample clothing items:
+      - 10 t-shirts
+      - 10 dress shirts
+      - 10 pants
+      - 10 shorts
+      - 10 shoes
+    - Each with detailed attributes for testing.
+    
+SUMMARY
+- Creates sample wardrobe.
+- Generates outfit recommendations for "cool" weather and "formal" occasion.
+- Displays top-ranked outfits with their scores.

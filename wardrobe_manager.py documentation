@@ -1,0 +1,40 @@
+# Database Operations Code Breakdown
+## Imports
+- **os**: For environment variable access and file path handling.
+- **supabase**: Client library for Supabase database interactions.
+- **dotenv**: Loads environment variables from .env file.
+- **clip_classifier**: Custom module with classify function for image analysis.
+- **base64**: For encoding binary image data to text.
+- **PIL**: Python Imaging Library for image processing.
+- **io**: For handling binary data streams.
+- **clothing**: Custom module containing the Clothing class.
+## Initialization
+- Loads environment variables from .env file.
+- Retrieves Supabase credentials from environment variables.
+- Creates a Supabase client instance for database operations.
+
+## Core Functions
+1. **/add_image_with_items**:
+   - Takes an image file path as input.
+   - Reads the image as binary data.
+   - Converts the binary data to Base64 encoding.
+   - Extracts the image filename.
+   - Classifies the image using CLIP to determine clothing attributes.
+   - Inserts the classification data into the "clothing_items" table.
+   - Inserts the image data with a reference to the clothing item into "clothing_images" table.
+   - Returns IDs for the newly created records.
+   - Includes error handling for database operations.
+
+2. **/get_clothing_data**:
+   - Takes a user_id as input.
+   - Queries the database for all clothing images associated with the user.
+   - Performs a join with the clothing_items table to get metadata.
+   - Decodes the binary image data from hexadecimal format.
+   - Prints detailed information about each clothing item.
+   - Creates Clothing objects with the retrieved data.
+   - Returns a list of Clothing objects.
+
+SUMMARY
+- Sets a hardcoded user_id (1) for testing.
+- When run as a script, fetches all clothing data for the specified user.
+- Prints summary information for each clothing item to the console.
