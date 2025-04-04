@@ -1,0 +1,139 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: linear-gradient(to bottom, #ffffff, #dedede);
+}
+
+.main-content {
+    max-width: 2000px;
+    margin: 0 auto;
+}
+
+.header-container {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 500px;
+}
+.header-container p {
+    font-size: 20px;
+}
+.team-members {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-spacing: 20px;
+    margin: 0 auto;
+}
+
+tr {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+td {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.member {
+    width: 400px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-top: 25px solid rgb(65, 78, 97);
+    border-radius: 20px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.39) 0px 0px 15px 0px;
+    transition: transform 0.3s ease;
+}
+
+.blurb {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.blurb img {
+    width: 100px;
+    height: 100px;
+    border-width: 4px;
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+}
+div{
+    font-family: Poppins, sans-serif;
+}
+
+#member-info-text {
+    font-size: 1.5rem;
+    color: #000000;
+    text-align: center;
+    margin: 10px 0;
+    width: 100%;
+}
+
+#blurb-text {
+    font-size: 0.75rem;
+    color: #727272;
+    text-align: left;
+    margin: 10px 0;
+    flex-grow: 1;
+}
+
+.header {
+    font-size: 48px;
+    color: #242424;
+    text-align: center;
+    margin: 10px 30px;
+    display: block;
+}
+
+.member:hover {
+    transform: scale(1.05);
+}
+
+.prev-btn, .next-btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: medium;
+    color: white;
+    margin: 0 10px;
+}
+
+.prev-btn {
+    background: linear-gradient(to right, #212121, #6d6d6a);
+}
+.next-btn{
+    background: linear-gradient(to left, #212121, #6d6d6a);
+}
+
+.btn-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    tr {
+        flex-direction: column;
+        align-items: center;
+    }
+}
