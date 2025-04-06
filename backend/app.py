@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from clip_classifier import classify
+from PIL import Image
+import io
+import base64
 
 app = Flask(__name__)
 CORS(app)  
@@ -47,29 +50,112 @@ def get_wardrobe():
         # 3. Format items for response
         # 4. Return wardrobe items
 
-        return jsonify({"items": []}), 200
+        # return list of clothing items + classifications pulled from database
+        wardrobe = []
+
+        dummy_wardrobe = [
+            {
+                'image': 'image1',
+                'main_category': 'top',
+                'sub_category': 't-shirt',
+                'style': 'casual',
+                'silhouette': 'relaxed',
+                'color': 'blue',
+                'pattern': 'graphic',
+                'season': 'summer',
+                'occasion': 'casual'},
+            {
+                'image': 'image2',
+                'main_category': 'bottom',
+                'sub_category': 'jeans',
+                'style': 'casual',
+                'silhouette': 'straight',
+                'color': 'blue',
+                'pattern': 'solid',
+                'season': 'summer',
+                'occasion': 'casual'
+            }
+        ]
+        return jsonify(wardrobe), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/wardrobe/items', methods=['POST'])
-def add_clothing():
+@app.route('/wardrobe/classify-clothing', methods=['POST'])
+def classify_clothing():
     try:
         # add clothing logic (adds a single clothing item to the user's wardrobe)
         # 1. Get user ID from auth token
         # 2. Get clothing data from request
         # 3. Handle image upload if present (depending on what the ai/ml team does, we could allow a user to choose a clothing item from the database,
         #                                   in addition to uploading their own)
-        # 4. Save clothing item to database
-        # 5. Return success with item details
+        # 4. Return success with clothing classifications
 
-        image_files = request.files.getlist('images')
+        images = request.get_json().get("images", []) # base64 images
         classifications = []
 
-        for image in image_files:
-            classifications.append(classify(image))
+        for base64_string in images:
+            image_bytes = base64.b64decode(base64_string)
+            image = Image.open(io.BytesIO(image_bytes))
+
+            classification = classify(image)
+            classification['image'] = base64_string
+            classifications.append(classification)
+
+        # printing purposes only
+        print("ITEM CLASSIFICATIONS:\n")
+        for index, classification in enumerate(classifications):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
 
         return jsonify({"message": classifications}), 201
     except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/wardrobe/update-classifications', methods=['POST'])
+def update_classifications():
+    # Update clothing classifications for existing items in database
+    try:
+        items = request.get_json()
+
+        #update classifications in database
+
+        # printing purposes only
+        print("UPDATED ITEMS:\n")
+        for index, classification in enumerate(items):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
+
+        return jsonify(items), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/wardrobe/save-clothing-items', methods=['POST'])
+def save_clothing_items():
+    # Save new items and their classifications to database
+    try:
+        newItems = request.get_json()
+
+        # save new clothing items and their classifications in database
+
+        # printing purposes only
+        print("NEW ITEMS:\n")
+        for index, classification in enumerate(newItems):
+            classification_copy = classification.copy()
+            classification_copy.pop('image', None)
+            print(f"Item {index}:\n")
+            print(classification_copy)
+            print("\n")
+
+        return jsonify(newItems), 200
+    except Exception as e:
+        print(str(e))
         return jsonify({"error": str(e)}), 400
 
 # Outfit generation route

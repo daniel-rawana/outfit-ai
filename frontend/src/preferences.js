@@ -1,7 +1,7 @@
-import "./App.css";
+import "./styling/App.css";
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {Icons} from "./assets/icons";
+import {Icons} from "./icons";
 
 // Sample images for testing
 import shirt1 from "./sampleImages/shirt_1.jpg";
@@ -17,6 +17,7 @@ const Preferences = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [weather, setWeather] = useState('');
     const [occasion, setOccasion] = useState('');
+    const [color, setColor] = useState('');
 
     const weather_options = [
         "hot", "warm", "cool", "cold", "rainy"
@@ -24,6 +25,11 @@ const Preferences = () => {
 
     const occasions = [
         "casual", "work", "formal", "athletic", "outdoor", "lounge", "party", "special event"
+    ];
+
+    const colors = [
+        "black", "white", "red", "blue", "green", "yellow", "purple", "pink", "orange", "brown",
+        "gray", "navy", "beige", "cream"
     ];
 
     const handleGenerate = async () => {
@@ -72,7 +78,11 @@ const Preferences = () => {
 
     return (
         <div className="preferences-container">
-            <h1>Select Your Preferences</h1>
+            <div className="preference-text-container">
+                <h1>Select Your Preferences</h1>
+                <h3>Customize your outfit with these selections—optional but recommended for the
+                    perfect look!</h3>
+            </div>
 
             <div className="preference-container">
                 <h2>Weather:</h2>
@@ -90,6 +100,16 @@ const Preferences = () => {
                     <option value="" disabled>Select</option>
                     {occasions.map((occ) => (
                         <option key={occ} value={occ}>{occ}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="preference-container">
+                <h2>Color:</h2>
+                <select value={color} onChange={(e) => setColor(e.target.value)}>
+                    <option value="" disabled>Select</option>
+                    {colors.map((col) => (
+                        <option key={col} value={col}>{col}</option>
                     ))}
                 </select>
             </div>
