@@ -7,6 +7,7 @@ from clip_classifier import classify
 from PIL import Image
 import io
 import base64
+import uuid
 
 load_dotenv()
 
@@ -161,14 +162,35 @@ def save_clothing_items():
             print(f"Item {index}:\n")
             print(classification_copy)
             print("\n")
+
             items_response = supabase.table("clothing_items").insert(classification_copy).execute()
             clothing_id = items_response.data[0]["id"]
+
+            # Convert base64 to binary for storage upload
+            if "," in imgData:
+                imgData = imgData.split(",")[1]
+
+            image_bytes = base64.b64decode(imgData)
+
+            # create a unique filename
+            file_name = f"clothing_{clothing_id}_{uuid.uuid4()}.jpg"
+            file_path = f"user_clothes/user_1/{file_name}" # FIXME: Using user_id 1 for now 
+
+            # upload to Supabase Storage
+            storage_response = supabase.storage.from_("images").upload(
+                file_path,
+                image_bytes,
+                file_option={"content-type": "image/jpeg"}
+            )
+
+            # get the public url 
+            image_url = supabase.storage.from_("images").get_public_url(file_path)
 
             # Insert the image with reference to lothing_items
             image_record = {
                 "clothing_id": clothing_id,
-                "image_data": imgData,
-                "image_name": "",
+                "image_url": image_url,
+                "image_name": file_name,
                 "user_id": 1 #FIXME: Implement user_id features
             }
             image_response = supabase.table("clothing_images").insert(image_record).execute()
