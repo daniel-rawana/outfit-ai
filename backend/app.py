@@ -8,6 +8,7 @@ from PIL import Image
 import io
 import base64
 import uuid
+from clothing import Clothing
 
 load_dotenv()
 
@@ -205,8 +206,30 @@ def save_clothing_items():
 @app.route('/outfits/generate', methods=['POST'])
 def generate_outfit():
     try:
-        # outfit generation logic (generates an outfit for the user based on their preferences)
-        # no idea what this will look like
+        print(request.get_json())
+
+        user_id = 1
+
+        response = (
+            supabase
+            .table("clothing_images")
+            .select("user_id, clothing_id, image_url, clothing_items(*)")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        clothing_list = []
+
+        for row in response.data:
+            metadata = row.get("clothing_items")
+
+            if metadata:
+                clothing_list.append(Clothing(
+                    row["image_url"], metadata['main_category'], metadata['sub_category'], metadata['style'], metadata['silhouette'],
+                    metadata['color'], metadata['pattern'], metadata['season'], metadata['occasion'], row['clothing_id']
+                ))
+            else:
+                print("No metadata found for this image")
 
         return jsonify({"outfit": {}}), 200
     except Exception as e:
