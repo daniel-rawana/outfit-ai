@@ -1,9 +1,21 @@
+import os
+from supabase import create_client, Client
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from clip_classifier import classify
 from PIL import Image
 import io
 import base64
+
+load_dotenv()
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
+
+if (Client):
+    print("Connected")
 
 app = Flask(__name__)
 CORS(app)  
@@ -41,7 +53,7 @@ def login_user():
         return jsonify({"error": str(e)}), 401
 
 # Wardrobe routes
-@app.route('/wardrobe', methods=['GET'])
+@app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
     try:
         # wardrobe logic (gets the entire wardrobe for the user) need more input from the ai/ml team in order to implement this
@@ -52,30 +64,18 @@ def get_wardrobe():
 
         # return list of clothing items + classifications pulled from database
         wardrobe = []
+        response = (
+            supabase
+            .table("clothing_images")
+            .select("user_id, clothing_id, image_data, clothing_items(*)")
+            .eq("user_id", user_id)
+            .execute()
+        )   
 
-        dummy_wardrobe = [
-            {
-                'image': 'image1',
-                'main_category': 'top',
-                'sub_category': 't-shirt',
-                'style': 'casual',
-                'silhouette': 'relaxed',
-                'color': 'blue',
-                'pattern': 'graphic',
-                'season': 'summer',
-                'occasion': 'casual'},
-            {
-                'image': 'image2',
-                'main_category': 'bottom',
-                'sub_category': 'jeans',
-                'style': 'casual',
-                'silhouette': 'straight',
-                'color': 'blue',
-                'pattern': 'solid',
-                'season': 'summer',
-                'occasion': 'casual'
-            }
-        ]
+        
+        
+
+
         return jsonify(wardrobe), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -148,10 +148,23 @@ def save_clothing_items():
         print("NEW ITEMS:\n")
         for index, classification in enumerate(newItems):
             classification_copy = classification.copy()
-            classification_copy.pop('image', None)
+            imgData = classification_copy.pop('image', None)
             print(f"Item {index}:\n")
             print(classification_copy)
             print("\n")
+            items_response = supabase.table("clothing_items").insert(classification_copy).execute()
+            clothing_id = items_response.data[0]["id"]
+
+            # Insert the image with reference to lothing_items
+            image_record = {
+                "clothing_id": clothing_id,
+                "image_data": imgData,
+                "image_name": "",
+                "user_id": 1 #FIXME: Implement user_id features
+            }
+            image_response = supabase.table("clothing_images").insert(image_record).execute()
+            print(image_response.data[0]["id"])
+            print("Success!")
 
         return jsonify(newItems), 200
     except Exception as e:
