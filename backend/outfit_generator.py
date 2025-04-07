@@ -1,4 +1,5 @@
 from clothing import Clothing
+from wardrobe_manager import get_clothing_data
 
 def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     categories = {

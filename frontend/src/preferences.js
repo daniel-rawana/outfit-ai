@@ -36,8 +36,20 @@ const Preferences = () => {
         setIsGenerating(true);
 
         try {
+            // Create an object with the preferences
+            const preferences = {
+                weather: weather,
+                occasion: occasion,
+                color: color
+            };
+
+
             const generateResponse = await fetch("http://127.0.0.1:5000/outfits/generate", {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(preferences)
             });
 
             if (!generateResponse.ok) {
