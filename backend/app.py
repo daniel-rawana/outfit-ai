@@ -56,14 +56,12 @@ def login_user():
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
     try:
-        # wardrobe logic (gets the entire wardrobe for the user) need more input from the ai/ml team in order to implement this
-        # 1. Get user ID from auth token
-        # 2. Fetch user's wardrobe from database
-        # 3. Format items for response
-        # 4. Return wardrobe items
+        
+        user_id = 1
 
         # return list of clothing items + classifications pulled from database
         wardrobe = []
+
         response = (
             supabase
             .table("clothing_images")
@@ -72,9 +70,20 @@ def get_wardrobe():
             .execute()
         )   
 
-        
-        
-
+        # format items for response 
+        for row in response.data: 
+            clothing_data = row["clothing_items"]
+            wardrobe.append({
+                "image": row["image_data"],
+                "main_category": clothing_data.get("main_category", ""),
+                "sub_category": clothing_data.get("sub_category", ""),
+                "style": clothing_data.get("style", ""),
+                "silhouette": clothing_data.get("silhouette", ""),
+                "color": clothing_data.get("color", ""),
+                "pattern": clothing_data.get("pattern", ""),
+                "season": clothing_data.get("season", ""),
+                "occasion": clothing_data.get("occasion", ""),
+            })
 
         return jsonify(wardrobe), 200
     except Exception as e:
