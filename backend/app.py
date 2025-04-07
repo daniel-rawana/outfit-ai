@@ -66,7 +66,7 @@ def get_wardrobe():
         response = (
             supabase
             .table("clothing_images")
-            .select("user_id, clothing_id, image_data, clothing_items(*)")
+            .select("user_id, clothing_id, image_url, clothing_items(*)")
             .eq("user_id", user_id)
             .execute()
         )   
@@ -75,7 +75,7 @@ def get_wardrobe():
         for row in response.data: 
             clothing_data = row["clothing_items"]
             wardrobe.append({
-                "image": row["image_data"],
+                "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
                 "sub_category": clothing_data.get("sub_category", ""),
                 "style": clothing_data.get("style", ""),
@@ -179,8 +179,7 @@ def save_clothing_items():
             # upload to Supabase Storage
             storage_response = supabase.storage.from_("images").upload(
                 file_path,
-                image_bytes,
-                file_option={"content-type": "image/jpeg"}
+                image_bytes
             )
 
             # get the public url 

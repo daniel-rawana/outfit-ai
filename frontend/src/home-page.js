@@ -50,7 +50,7 @@ function HomePage() {
                 setWardrobeItems(wardrobe);
 
                 // Convert base64 to object URLs for display
-                const previewUrls = wardrobe.map(item => `data:image/jpeg;base64,${item.image}`);
+                const previewUrls = wardrobe.map(item => item.image);
                 setPreviewImages(previewUrls);
             }
         } catch (error) {
