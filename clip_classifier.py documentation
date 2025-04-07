@@ -1,0 +1,40 @@
+# CLIP Image Classifier: Detailed Function Breakdown
+
+## Imports
+- **torch**: PyTorch deep learning framework.
+- **clip**: OpenAI's CLIP model for connecting images and text.
+
+## Core Functions
+1. **/classify**:
+   - Takes an image file as input.
+   - Preprocesses the image for CLIP model input.
+   - Encodes the image into feature vectors and normalizes them.
+   - Verifies all category prompts and labels match in length.
+   - First classifies main_category, then sub_category based on the result.
+   - Processes remaining categories (style, color, pattern, etc.).
+   - Returns a comprehensive classification dictionary.
+
+2. **/compute_similarity**:
+   - Takes image features, labels, and text prompts as inputs.
+   - Validates that prompts and labels have matching lengths.
+   - Tokenizes and encodes text prompts into feature vectors.
+   - Computes cosine similarity between image and text features.
+   - Returns the best matching label based on highest similarity.
+
+## Classification Categories
+- **Main Categories**: top, bottom, footwear, outerwear, dress
+- **Sub-Categories**: Nested by main category (e.g., top → t-shirt, button-up, blouse)
+- **Additional Attributes**:
+  - style (casual, formal, business, athletic, etc.)
+  - silhouette (fitted, relaxed, oversized, etc.)
+  - color (red, blue, black, white, etc.)
+  - pattern (solid, striped, plaid, floral, etc.)
+  - season (spring, summer, fall, winter)
+  - occasion (casual, work, formal, athletic, etc.)
+  
+SUMMARY
+- Loads CLIP model with ViT-B/32 architecture.
+- Uses natural language prompts to create text embeddings.
+- Compares image embeddings against text embeddings via cosine similarity.
+- Implements a hierarchical classification approach for clothing categories.
+- Contains comprehensive dictionaries of clothing attributes with corresponding text prompts.
