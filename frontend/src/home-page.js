@@ -27,7 +27,7 @@ function HomePage() {
 
     const fetchWardrobe = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/wardrobe");
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items");
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
