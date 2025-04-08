@@ -232,7 +232,10 @@ def generate_outfit():
             else:
                 print("No metadata found for this image")
 
-        generated_outfits = generate_ranked_outfits(clothing_list, request.get_json) 
+        generated_outfits = generate_ranked_outfits(clothing_list, request.get_json()) 
+
+        for outfit in generated_outfits:
+            print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
 
         # Format outfits for frontend
         formatted_outfits = []
@@ -242,6 +245,9 @@ def generate_outfit():
 
             # Process each clothing item in the outfit 
             for category, clothing_item in outfit.items():
+                if category == "score":
+                    continue
+
                 if clothing_item:
                     formatted_outfit.append({
                         "id": clothing_item.id,
