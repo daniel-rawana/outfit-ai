@@ -181,8 +181,8 @@ def calculate_outfit_score(outfit, user_preferences):
     score += pattern_score * 15
     
     # Style consistency (0-10 points)
-    # style_score = calculate_style_consistency(top, bottom, footwear)
-    # score += style_score * 10
+    style_score = calculate_style_consistency(top, bottom, footwear)
+    score += style_score * 10
     
     return score
 
