@@ -316,6 +316,7 @@ def calculate_pattern_compatibility(top, bottom, footwear):
 
 
 def calculate_style_consistency(top, bottom, footwear):
+    
 
     # This function returns a score between 0 and 1
     # 0 means no style consistency, 1 means perfect style match
@@ -325,10 +326,16 @@ def calculate_style_consistency(top, bottom, footwear):
     
     # Define style compatibility groups
     style_groups = {
-        "casual": ["casual", "athletic"],
-        "business": ["business", "formal"],
-        "formal": ["formal", "business"],
-        "athletic": ["athletic", "casual"]
+        "casual": ["casual", "athletic", "streetwear", "minimalist"],
+        "formal": ["formal", "business", "luxury"],
+        "business": ["business", "formal", "minimalist", "preppy"],
+        "athletic": ["athletic", "casual", "streetwear"],
+        "streetwear": ["streetwear", "casual", "athletic", "urban", "vintage"],
+        "bohemian": ["bohemian", "vintage", "casual"],
+        "vintage": ["vintage", "bohemian", "preppy", "streetwear"],
+        "preppy": ["preppy", "business", "casual", "vintage"],
+        "minimalist": ["minimalist", "casual", "formal", "business"],
+        "luxury": ["luxury", "formal", "business"]
     }
     
     # Count matching styles
@@ -340,16 +347,28 @@ def calculate_style_consistency(top, bottom, footwear):
     compatibility_scores = []
     
     # Check top-bottom compatibility
-    top_bottom_compatible = (bottom.style in style_groups.get(top.style, [top.style]))
-    compatibility_scores.append(1.0 if top_bottom_compatible else 0.5)
+    if bottom.style in style_groups.get(top.style, []):
+        compatibility_scores.append(1.0)  # Fully compatible
+    elif any(bottom.style in style_groups.get(s, []) for s in style_groups.get(top.style, [])):
+        compatibility_scores.append(0.7)  # Second-degree compatible
+    else:
+        compatibility_scores.append(0.3)  # Not compatible
     
     # Check bottom-footwear compatibility
-    bottom_footwear_compatible = (footwear.style in style_groups.get(bottom.style, [bottom.style]))
-    compatibility_scores.append(1.0 if bottom_footwear_compatible else 0.5)
+    if footwear.style in style_groups.get(bottom.style, []):
+        compatibility_scores.append(1.0)
+    elif any(footwear.style in style_groups.get(s, []) for s in style_groups.get(bottom.style, [])):
+        compatibility_scores.append(0.7)
+    else:
+        compatibility_scores.append(0.3)
     
     # Check top-footwear compatibility
-    top_footwear_compatible = (footwear.style in style_groups.get(top.style, [top.style]))
-    compatibility_scores.append(1.0 if top_footwear_compatible else 0.5)
+    if footwear.style in style_groups.get(top.style, []):
+        compatibility_scores.append(1.0)
+    elif any(footwear.style in style_groups.get(s, []) for s in style_groups.get(top.style, [])):
+        compatibility_scores.append(0.7)
+    else:
+        compatibility_scores.append(0.3)
     
     # Calculate weighted average (top-bottom compatibility is most important)
     weighted_score = (0.5 * compatibility_scores[0]) + (0.3 * compatibility_scores[1]) + (0.2 * compatibility_scores[2])
