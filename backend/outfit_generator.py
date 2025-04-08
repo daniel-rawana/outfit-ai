@@ -45,7 +45,7 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     for top in best_tops:
         for bottom in best_bottoms:
 
-            best_shoe = find_best_shoe(top, bottom, best_shoes)
+            best_shoe = find_best_shoe(top, bottom, best_shoes, user_preferences)
 
             outfit = {
                 "top": top,
@@ -136,13 +136,13 @@ def match_occasion(item, occasion):
     # Not suitable
     return 0.3
 
-def find_best_shoe(top, bottom, shoes):
+def find_best_shoe(top, bottom, shoes, user_preferences):
     best_score = -1
     best_shoe = shoes[0] if shoes else None
 
     for shoe in shoes: 
         # Calculate color compatibility 
-        color_score = calculate_color_compatibility(top, bottom, shoe)
+        color_score = calculate_color_compatibility(top, bottom, shoe, user_preferences)
 
         # Calculate pattern compatibility 
         pattern_score = calculate_pattern_compatibility(top, bottom, shoe)
@@ -173,7 +173,7 @@ def calculate_outfit_score(outfit, user_preferences):
     score += occasion_score * 25
     
     # Color compatibility (0-20 points)
-    color_score = calculate_color_compatibility(top, bottom, footwear)
+    color_score = calculate_color_compatibility(top, bottom, footwear, user_preferences)
     score += color_score * 20
     
     # Pattern compatibility (0-15 points)
@@ -219,7 +219,7 @@ def calculate_occasion_score(items, occasion):
     matches = sum(1 for item in items if item.occasion in target_occasions)
     return matches / len(items)
 
-def calculate_color_compatibility(top, bottom, footwear):
+def calculate_color_compatibility(top, bottom, footwear, user_preferences=None):
     # Get colors from each item
     top_color = top.color.lower()
     bottom_color = bottom.color.lower()
@@ -232,6 +232,21 @@ def calculate_color_compatibility(top, bottom, footwear):
 
     # Weight the scores (top-bottom pairing is most important)
     weighted_score = (0.5 * top_bottom_score) + (0.25 * bottom_footwear_score) + (0.25 * top_footwear_score)
+
+    # Calculate bonus if outfit matches user preferred color 
+    if user_preferences and "color" in user_preferences:
+        preferred_color = user_preferences["color"].lower()
+
+        top_preferred_score = color_pair_compatibility(top_color, preferred_color)
+        bottom_preferred_score = color_pair_compatibility(bottom_color, preferred_color)
+        footwear_preferred_score = color_pair_compatibility(footwear_color, preferred_color)
+
+        # Average the scores and apply bonus (up to 0.2)
+        preference_score = (top_preferred_score + bottom_preferred_score + footwear_preferred_score) / 3
+        color_match_bonus = 0.2 * preference_score
+    
+        # Apply the bonus 
+        weighted_score = min(1.0, weighted_score + color_match_bonus)
 
     return weighted_score
 
