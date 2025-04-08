@@ -9,6 +9,7 @@ import io
 import base64
 import uuid
 from clothing import Clothing
+from outfit_generator import generate_ranked_outfits
 
 load_dotenv()
 
@@ -231,7 +232,36 @@ def generate_outfit():
             else:
                 print("No metadata found for this image")
 
-        return jsonify({"outfit": {}}), 200
+        generated_outfits = generate_ranked_outfits(clothing_list, request.get_json()) 
+
+        for outfit in generated_outfits:
+            print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
+
+        # Format outfits for frontend
+        formatted_outfits = []
+
+        for outfit in generated_outfits:
+            formatted_outfit = []       
+
+            # Process each clothing item in the outfit 
+            for category, clothing_item in outfit.items():
+                if category == "score":
+                    continue
+
+                if clothing_item:
+                    formatted_outfit.append({
+                        "id": clothing_item.id,
+                        "image": clothing_item.image_url,
+                        "category": category,
+                        "main_category": clothing_item.main_category,
+                        "sub_category": clothing_item.sub_category,
+                        "color": clothing_item.color
+                    })
+
+            if formatted_outfit:
+                formatted_outfits.append(formatted_outfit)
+
+        return jsonify({"outfit": formatted_outfits}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
