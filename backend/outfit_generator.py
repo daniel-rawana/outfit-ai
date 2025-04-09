@@ -1,4 +1,5 @@
 from clothing import Clothing
+from wardrobe_manager import get_clothing_data
 
 def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     categories = {
@@ -30,9 +31,9 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     scored_shoes = score_individual_items(footwear, user_preferences)
 
     # Get top items from each category 
-    top_limit = min(limit, len(tops))
-    bottom_limit = min(limit, len(bottoms))
-    shoe_limit = min(limit, len(footwear))
+    top_limit = min(limit * 2, len(tops))
+    bottom_limit = min(limit * 2, len(bottoms))
+    shoe_limit = min(limit * 2, len(footwear))
 
     best_tops = [item for item, _ in scored_tops[:top_limit]]
     best_bottoms = [item for item, _ in scored_bottoms[:bottom_limit]]
@@ -44,7 +45,7 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     for top in best_tops:
         for bottom in best_bottoms:
 
-            best_shoe = find_best_shoe(top, bottom, best_shoes)
+            best_shoe = find_best_shoe(top, bottom, best_shoes, user_preferences)
 
             outfit = {
                 "top": top,
@@ -61,8 +62,35 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     # Sort outfits by score
     ranked_outfits = sorted(possible_outfits, key=lambda x: x["score"], reverse=True)
 
+    # Apply diversity penalty to ensure variety
+    final_outfits = []
+    used_items = set()
+
+    for outfit in ranked_outfits:
+        # Calculate penalty based on repetition
+        repetition_penalty = calculate_repetition_penalty(outfit, used_items)
+
+        # Apply penalty
+        outfit["score"] = max(0, outfit["score"] - repetition_penalty)
+
+        # Add to final outfits if we haven't rached the limti 
+        if len(final_outfits) < limit:
+            final_outfits.append(outfit)
+
+            # Add items to used set
+            used_items.add(outfit["top"].id)
+            used_items.add(outfit["bottom"].id)
+            used_items.add(outfit["footwear"].id)
+        
+        # Re-sort after each addition to account for penalties
+        final_outfits.sort(key=lambda x: x["score"], reverse=True)
+
+        # If we have enough outfits and the next one has a much lower score, we can stop
+        if len(final_outfits) >= limit and outfit["score"] < final_outfits[-1]["score"] * 0.7:
+            break
+
     # Return top outfits
-    return ranked_outfits[:limit]
+    return final_outfits[:limit]
 
 def score_individual_items(items, user_preferences):
     scored_items = []
@@ -135,13 +163,13 @@ def match_occasion(item, occasion):
     # Not suitable
     return 0.3
 
-def find_best_shoe(top, bottom, shoes):
+def find_best_shoe(top, bottom, shoes, user_preferences):
     best_score = -1
     best_shoe = shoes[0] if shoes else None
 
     for shoe in shoes: 
         # Calculate color compatibility 
-        color_score = calculate_color_compatibility(top, bottom, shoe)
+        color_score = calculate_color_compatibility(top, bottom, shoe, user_preferences)
 
         # Calculate pattern compatibility 
         pattern_score = calculate_pattern_compatibility(top, bottom, shoe)
@@ -172,7 +200,7 @@ def calculate_outfit_score(outfit, user_preferences):
     score += occasion_score * 25
     
     # Color compatibility (0-20 points)
-    color_score = calculate_color_compatibility(top, bottom, footwear)
+    color_score = calculate_color_compatibility(top, bottom, footwear, user_preferences)
     score += color_score * 20
     
     # Pattern compatibility (0-15 points)
@@ -180,8 +208,8 @@ def calculate_outfit_score(outfit, user_preferences):
     score += pattern_score * 15
     
     # Style consistency (0-10 points)
-    # style_score = calculate_style_consistency(top, bottom, footwear)
-    # score += style_score * 10
+    style_score = calculate_style_consistency(top, bottom, footwear)
+    score += style_score * 10
     
     return score
 
@@ -218,7 +246,7 @@ def calculate_occasion_score(items, occasion):
     matches = sum(1 for item in items if item.occasion in target_occasions)
     return matches / len(items)
 
-def calculate_color_compatibility(top, bottom, footwear):
+def calculate_color_compatibility(top, bottom, footwear, user_preferences=None):
     # Get colors from each item
     top_color = top.color.lower()
     bottom_color = bottom.color.lower()
@@ -231,6 +259,21 @@ def calculate_color_compatibility(top, bottom, footwear):
 
     # Weight the scores (top-bottom pairing is most important)
     weighted_score = (0.5 * top_bottom_score) + (0.25 * bottom_footwear_score) + (0.25 * top_footwear_score)
+
+    # Calculate bonus if outfit matches user preferred color 
+    if user_preferences and "color" in user_preferences:
+        preferred_color = user_preferences["color"].lower()
+
+        top_preferred_score = color_pair_compatibility(top_color, preferred_color)
+        bottom_preferred_score = color_pair_compatibility(bottom_color, preferred_color)
+        footwear_preferred_score = color_pair_compatibility(footwear_color, preferred_color)
+
+        # Average the scores and apply bonus (up to 0.2)
+        preference_score = (top_preferred_score + bottom_preferred_score + footwear_preferred_score) / 3
+        color_match_bonus = 0.2 * preference_score
+    
+        # Apply the bonus 
+        weighted_score = min(1.0, weighted_score + color_match_bonus)
 
     return weighted_score
 
@@ -315,6 +358,7 @@ def calculate_pattern_compatibility(top, bottom, footwear):
 
 
 def calculate_style_consistency(top, bottom, footwear):
+    
 
     # This function returns a score between 0 and 1
     # 0 means no style consistency, 1 means perfect style match
@@ -324,10 +368,16 @@ def calculate_style_consistency(top, bottom, footwear):
     
     # Define style compatibility groups
     style_groups = {
-        "casual": ["casual", "athletic"],
-        "business": ["business", "formal"],
-        "formal": ["formal", "business"],
-        "athletic": ["athletic", "casual"]
+        "casual": ["casual", "athletic", "streetwear", "minimalist"],
+        "formal": ["formal", "business", "luxury"],
+        "business": ["business", "formal", "minimalist", "preppy"],
+        "athletic": ["athletic", "casual", "streetwear"],
+        "streetwear": ["streetwear", "casual", "athletic", "urban", "vintage"],
+        "bohemian": ["bohemian", "vintage", "casual"],
+        "vintage": ["vintage", "bohemian", "preppy", "streetwear"],
+        "preppy": ["preppy", "business", "casual", "vintage"],
+        "minimalist": ["minimalist", "casual", "formal", "business"],
+        "luxury": ["luxury", "formal", "business"]
     }
     
     # Count matching styles
@@ -339,16 +389,28 @@ def calculate_style_consistency(top, bottom, footwear):
     compatibility_scores = []
     
     # Check top-bottom compatibility
-    top_bottom_compatible = (bottom.style in style_groups.get(top.style, [top.style]))
-    compatibility_scores.append(1.0 if top_bottom_compatible else 0.5)
+    if bottom.style in style_groups.get(top.style, []):
+        compatibility_scores.append(1.0)  # Fully compatible
+    elif any(bottom.style in style_groups.get(s, []) for s in style_groups.get(top.style, [])):
+        compatibility_scores.append(0.7)  # Second-degree compatible
+    else:
+        compatibility_scores.append(0.3)  # Not compatible
     
     # Check bottom-footwear compatibility
-    bottom_footwear_compatible = (footwear.style in style_groups.get(bottom.style, [bottom.style]))
-    compatibility_scores.append(1.0 if bottom_footwear_compatible else 0.5)
+    if footwear.style in style_groups.get(bottom.style, []):
+        compatibility_scores.append(1.0)
+    elif any(footwear.style in style_groups.get(s, []) for s in style_groups.get(bottom.style, [])):
+        compatibility_scores.append(0.7)
+    else:
+        compatibility_scores.append(0.3)
     
     # Check top-footwear compatibility
-    top_footwear_compatible = (footwear.style in style_groups.get(top.style, [top.style]))
-    compatibility_scores.append(1.0 if top_footwear_compatible else 0.5)
+    if footwear.style in style_groups.get(top.style, []):
+        compatibility_scores.append(1.0)
+    elif any(footwear.style in style_groups.get(s, []) for s in style_groups.get(top.style, [])):
+        compatibility_scores.append(0.7)
+    else:
+        compatibility_scores.append(0.3)
     
     # Calculate weighted average (top-bottom compatibility is most important)
     weighted_score = (0.5 * compatibility_scores[0]) + (0.3 * compatibility_scores[1]) + (0.2 * compatibility_scores[2])
@@ -362,198 +424,18 @@ def calculate_style_consistency(top, bottom, footwear):
     
     return weighted_score
 
+def calculate_repetition_penalty(outfit, used_items):
+    penalty = 0
 
-def create_sample_wardrobe():
-    wardrobe = []
+    # Check if top is repeated (Higher penalty)
+    if outfit["top"].id in used_items:
+        penalty += 15
     
-    # Create 10 t-shirts
-    t_shirts = [
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="blue", pattern="solid", 
-                season="summer", occasion="casual", id=1),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="red", pattern="solid", 
-                season="summer", occasion="casual", id=2),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="black", pattern="solid", 
-                season="summer", occasion="casual", id=3),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="white", pattern="solid", 
-                season="summer", occasion="casual", id=4),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="gray", pattern="solid", 
-                season="summer", occasion="casual", id=5),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="green", pattern="solid", 
-                season="summer", occasion="casual", id=6),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="yellow", pattern="solid", 
-                season="summer", occasion="casual", id=7),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="navy", pattern="striped", 
-                season="summer", occasion="casual", id=8),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="green", pattern="graphic", 
-                season="summer", occasion="casual", id=9),
-        Clothing(image_data=None, main_category="top", sub_category="t-shirt", 
-                style="casual", silhouette="regular", color="pink", pattern="solid", 
-                season="summer", occasion="casual", id=10)
-    ]
-    wardrobe.extend(t_shirts)
+    # Check if bottom is repeated (Moderate penalty)
+    if outfit["bottom"].id in used_items:
+        penalty += 10
+
+    if outfit["footwear"].id in used_items:
+        penalty += 5
     
-    # Create 10 dress shirts
-    dress_shirts = [
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="formal", silhouette="fitted", color="white", pattern="solid", 
-                season="all", occasion="formal", id=11),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="formal", silhouette="fitted", color="light blue", pattern="solid", 
-                season="all", occasion="formal", id=12),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="regular", color="pink", pattern="solid", 
-                season="spring", occasion="work", id=13),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="regular", color="lavender", pattern="solid", 
-                season="spring", occasion="work", id=14),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="fitted", color="blue", pattern="striped", 
-                season="all", occasion="work", id=15),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="fitted", color="white", pattern="striped", 
-                season="all", occasion="work", id=16),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="regular", color="gray", pattern="solid", 
-                season="fall", occasion="work", id=17),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="formal", silhouette="fitted", color="black", pattern="solid", 
-                season="all", occasion="formal", id=18),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="regular", color="blue", pattern="checkered", 
-                season="all", occasion="work", id=19),
-        Clothing(image_data=None, main_category="top", sub_category="button-up shirt", 
-                style="business", silhouette="regular", color="yellow", pattern="solid", 
-                season="spring", occasion="work", id=20)
-    ]
-    wardrobe.extend(dress_shirts)
-    
-    # Create 10 pants
-    pants = [
-        Clothing(image_data=None, main_category="bottom", sub_category="jeans", 
-                style="casual", silhouette="regular", color="blue", pattern="solid", 
-                season="all", occasion="casual", id=21),
-        Clothing(image_data=None, main_category="bottom", sub_category="jeans", 
-                style="casual", silhouette="slim", color="black", pattern="solid", 
-                season="all", occasion="casual", id=22),
-        Clothing(image_data=None, main_category="bottom", sub_category="jeans", 
-                style="casual", silhouette="regular", color="gray", pattern="solid", 
-                season="all", occasion="casual", id=23),
-        Clothing(image_data=None, main_category="bottom", sub_category="chinos", 
-                style="business", silhouette="slim", color="navy", pattern="solid", 
-                season="all", occasion="work", id=24),
-        Clothing(image_data=None, main_category="bottom", sub_category="chinos", 
-                style="business", silhouette="regular", color="beige", pattern="solid", 
-                season="all", occasion="work", id=25),
-        Clothing(image_data=None, main_category="bottom", sub_category="slacks", 
-                style="formal", silhouette="tailored", color="gray", pattern="solid", 
-                season="all", occasion="formal", id=26),
-        Clothing(image_data=None, main_category="bottom", sub_category="slacks", 
-                style="formal", silhouette="tailored", color="black", pattern="solid", 
-                season="all", occasion="formal", id=27),
-        Clothing(image_data=None, main_category="bottom", sub_category="slacks", 
-                style="formal", silhouette="tailored", color="navy", pattern="solid", 
-                season="all", occasion="formal", id=28),
-        Clothing(image_data=None, main_category="bottom", sub_category="jeans", 
-                style="casual", silhouette="regular", color="brown", pattern="solid", 
-                season="fall", occasion="casual", id=29),
-        Clothing(image_data=None, main_category="bottom", sub_category="chinos", 
-                style="casual", silhouette="slim", color="green", pattern="solid", 
-                season="fall", occasion="casual", id=30)
-    ]
-    wardrobe.extend(pants)
-    
-    # Create 10 shorts
-    shorts = [
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="beige", pattern="solid", 
-                season="summer", occasion="casual", id=31),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="navy", pattern="solid", 
-                season="summer", occasion="casual", id=32),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="black", pattern="solid", 
-                season="summer", occasion="casual", id=33),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="gray", pattern="solid", 
-                season="summer", occasion="casual", id=34),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="blue", pattern="solid", 
-                season="summer", occasion="casual", id=35),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="green", pattern="solid", 
-                season="summer", occasion="casual", id=36),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="red", pattern="solid", 
-                season="summer", occasion="casual", id=37),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="blue", pattern="plaid", 
-                season="summer", occasion="casual", id=38),
-        Clothing(image_data=None, main_category="bottom", sub_category="shorts", 
-                style="casual", silhouette="regular", color="white", pattern="solid", 
-                season="summer", occasion="casual", id=39),
-        Clothing(image_data=None, main_category="bottom", sub_category="athletic shorts", 
-                style="athletic", silhouette="loose", color="black", pattern="solid", 
-                season="summer", occasion="athletic", id=40)
-    ]
-    wardrobe.extend(shorts)
-    
-    # Create 10 shoes
-    shoes = [
-        Clothing(image_data=None, main_category="footwear", sub_category="dress shoes", 
-                style="formal", silhouette="slim", color="black", pattern="solid", 
-                season="all", occasion="formal", id=41),
-        Clothing(image_data=None, main_category="footwear", sub_category="dress shoes", 
-                style="formal", silhouette="slim", color="brown", pattern="solid", 
-                season="all", occasion="formal", id=42),
-        Clothing(image_data=None, main_category="footwear", sub_category="sneakers", 
-                style="casual", silhouette="regular", color="white", pattern="solid", 
-                season="all", occasion="casual", id=43),
-        Clothing(image_data=None, main_category="footwear", sub_category="sneakers", 
-                style="casual", silhouette="regular", color="black", pattern="solid", 
-                season="all", occasion="casual", id=44),
-        Clothing(image_data=None, main_category="footwear", sub_category="running shoes", 
-                style="athletic", silhouette="athletic", color="blue", pattern="solid", 
-                season="all", occasion="athletic", id=45),
-        Clothing(image_data=None, main_category="footwear", sub_category="loafers", 
-                style="business", silhouette="slim", color="brown", pattern="solid", 
-                season="spring", occasion="work", id=46),
-        Clothing(image_data=None, main_category="footwear", sub_category="boots", 
-                style="casual", silhouette="heavy", color="black", pattern="solid", 
-                season="winter", occasion="casual", id=47),
-        Clothing(image_data=None, main_category="footwear", sub_category="boots", 
-                style="casual", silhouette="heavy", color="brown", pattern="solid", 
-                season="fall", occasion="casual", id=48),
-        Clothing(image_data=None, main_category="footwear", sub_category="sandals", 
-                style="casual", silhouette="open", color="brown", pattern="solid", 
-                season="summer", occasion="casual", id=49),
-        Clothing(image_data=None, main_category="footwear", sub_category="boat shoes", 
-                style="casual", silhouette="slim", color="navy", pattern="solid", 
-                season="summer", occasion="casual", id=50)
-    ]
-    wardrobe.extend(shoes)
-    
-    return wardrobe
-
-def main():
-    # Code to be executed when the script is run directly
-    print("This is the main function.")
-
-    wardrobe = create_sample_wardrobe()
-
-    outfits = generate_ranked_outfits(wardrobe, {"weather": "cool", "occasion": "formal"})
-
-    for outfit in outfits:
-        print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
-
-if __name__ == "__main__":
-    main()
-
+    return penalty
