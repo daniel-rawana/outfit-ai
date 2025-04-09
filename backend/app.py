@@ -1,9 +1,24 @@
+import os
+from supabase import create_client, Client
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from clip_classifier import classify
 from PIL import Image
 import io
 import base64
+import uuid
+from clothing import Clothing
+from outfit_generator import generate_ranked_outfits
+
+load_dotenv()
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
+
+if (Client):
+    print("Connected")
 
 app = Flask(__name__)
 CORS(app)  
@@ -41,41 +56,38 @@ def login_user():
         return jsonify({"error": str(e)}), 401
 
 # Wardrobe routes
-@app.route('/wardrobe', methods=['GET'])
+@app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
     try:
-        # wardrobe logic (gets the entire wardrobe for the user) need more input from the ai/ml team in order to implement this
-        # 1. Get user ID from auth token
-        # 2. Fetch user's wardrobe from database
-        # 3. Format items for response
-        # 4. Return wardrobe items
+        
+        user_id = 1
 
         # return list of clothing items + classifications pulled from database
         wardrobe = []
 
-        dummy_wardrobe = [
-            {
-                'image': 'image1',
-                'main_category': 'top',
-                'sub_category': 't-shirt',
-                'style': 'casual',
-                'silhouette': 'relaxed',
-                'color': 'blue',
-                'pattern': 'graphic',
-                'season': 'summer',
-                'occasion': 'casual'},
-            {
-                'image': 'image2',
-                'main_category': 'bottom',
-                'sub_category': 'jeans',
-                'style': 'casual',
-                'silhouette': 'straight',
-                'color': 'blue',
-                'pattern': 'solid',
-                'season': 'summer',
-                'occasion': 'casual'
-            }
-        ]
+        response = (
+            supabase
+            .table("clothing_images")
+            .select("user_id, clothing_id, image_url, clothing_items(*)")
+            .eq("user_id", user_id)
+            .execute()
+        )   
+
+        # format items for response 
+        for row in response.data: 
+            clothing_data = row["clothing_items"]
+            wardrobe.append({
+                "image": row["image_url"],
+                "main_category": clothing_data.get("main_category", ""),
+                "sub_category": clothing_data.get("sub_category", ""),
+                "style": clothing_data.get("style", ""),
+                "silhouette": clothing_data.get("silhouette", ""),
+                "color": clothing_data.get("color", ""),
+                "pattern": clothing_data.get("pattern", ""),
+                "season": clothing_data.get("season", ""),
+                "occasion": clothing_data.get("occasion", ""),
+            })
+
         return jsonify(wardrobe), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -148,10 +160,43 @@ def save_clothing_items():
         print("NEW ITEMS:\n")
         for index, classification in enumerate(newItems):
             classification_copy = classification.copy()
-            classification_copy.pop('image', None)
+            imgData = classification_copy.pop('image', None)
             print(f"Item {index}:\n")
             print(classification_copy)
             print("\n")
+
+            items_response = supabase.table("clothing_items").insert(classification_copy).execute()
+            clothing_id = items_response.data[0]["id"]
+
+            # Convert base64 to binary for storage upload
+            if "," in imgData:
+                imgData = imgData.split(",")[1]
+
+            image_bytes = base64.b64decode(imgData)
+
+            # create a unique filename
+            file_name = f"clothing_{clothing_id}_{uuid.uuid4()}.jpg"
+            file_path = f"user_clothes/user_1/{file_name}" # FIXME: Using user_id 1 for now 
+
+            # upload to Supabase Storage
+            storage_response = supabase.storage.from_("images").upload(
+                file_path,
+                image_bytes
+            )
+
+            # get the public url 
+            image_url = supabase.storage.from_("images").get_public_url(file_path)
+
+            # Insert the image with reference to lothing_items
+            image_record = {
+                "clothing_id": clothing_id,
+                "image_url": image_url,
+                "image_name": file_name,
+                "user_id": 1 #FIXME: Implement user_id features
+            }
+            image_response = supabase.table("clothing_images").insert(image_record).execute()
+            print(image_response.data[0]["id"])
+            print("Success!")
 
         return jsonify(newItems), 200
     except Exception as e:
@@ -162,10 +207,61 @@ def save_clothing_items():
 @app.route('/outfits/generate', methods=['POST'])
 def generate_outfit():
     try:
-        # outfit generation logic (generates an outfit for the user based on their preferences)
-        # no idea what this will look like
+        print(request.get_json())
 
-        return jsonify({"outfit": {}}), 200
+        user_id = 1
+
+        response = (
+            supabase
+            .table("clothing_images")
+            .select("user_id, clothing_id, image_url, clothing_items(*)")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        clothing_list = []
+
+        for row in response.data:
+            metadata = row.get("clothing_items")
+
+            if metadata:
+                clothing_list.append(Clothing(
+                    row["image_url"], metadata['main_category'], metadata['sub_category'], metadata['style'], metadata['silhouette'],
+                    metadata['color'], metadata['pattern'], metadata['season'], metadata['occasion'], row['clothing_id']
+                ))
+            else:
+                print("No metadata found for this image")
+
+        generated_outfits = generate_ranked_outfits(clothing_list, request.get_json()) 
+
+        for outfit in generated_outfits:
+            print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
+
+        # Format outfits for frontend
+        formatted_outfits = []
+
+        for outfit in generated_outfits:
+            formatted_outfit = []       
+
+            # Process each clothing item in the outfit 
+            for category, clothing_item in outfit.items():
+                if category == "score":
+                    continue
+
+                if clothing_item:
+                    formatted_outfit.append({
+                        "id": clothing_item.id,
+                        "image": clothing_item.image_url,
+                        "category": category,
+                        "main_category": clothing_item.main_category,
+                        "sub_category": clothing_item.sub_category,
+                        "color": clothing_item.color
+                    })
+
+            if formatted_outfit:
+                formatted_outfits.append(formatted_outfit)
+
+        return jsonify({"outfit": formatted_outfits}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

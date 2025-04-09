@@ -128,7 +128,7 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
 
                 <div className="classifications-list">
                     {updatedNewClassifications.map((classification, index) => renderClassificationRow(classification, index, "new"))}
-                    {updatedExistingClassifications.map((classification, index) => renderClassificationRow(classification, index, "existing"))}
+                    {/* {updatedExistingClassifications.map((classification, index) => renderClassificationRow(classification, index, "existing"))} */}
                 </div>
 
                 <div className="buttons-container">

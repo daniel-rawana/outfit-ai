@@ -58,7 +58,7 @@ def get_clothing_data(user_id):
     response = (
         supabase
         .table("clothing_images")
-        .select("user_id, clothing_id, image_data, clothing_items(*)")
+        .select("user_id, clothing_id, image_url, clothing_items(*)")
         .eq("user_id", user_id)
         .execute()
     )
@@ -66,15 +66,9 @@ def get_clothing_data(user_id):
     clothing_list = []
 
     for row in response.data:
-        # Decode BYTEA hex
-        hex_str = row["image_data"]
-        if hex_str.startswith("\\x"):
-            hex_str = hex_str[2:]
-        binary_data = bytes.fromhex(hex_str)
-
         print("--- Combined Result ---")
         print(f"user_id: {row['user_id']}\nclothing_id: {row['clothing_id']}")
-        print(f"image_data (first 20 bytes): {binary_data[:20]}")
+        print(f"image_url: {row['image_url']}")
 
         metadata = row.get("clothing_items")
         if metadata:
@@ -83,7 +77,7 @@ def get_clothing_data(user_id):
                   f"\nsilhouette: {metadata['silhouette']}\nstyle: {metadata['style']}\n")
             
             clothing_list.append(Clothing(
-                binary_data, metadata['main_category'], metadata['sub_category'], metadata['style'], metadata['silhouette'],
+                row["image_url"], metadata['main_category'], metadata['sub_category'], metadata['style'], metadata['silhouette'],
                 metadata['color'], metadata['pattern'], metadata['season'], metadata['occasion'], row['clothing_id']
             ))
         else:
