@@ -31,9 +31,9 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     scored_shoes = score_individual_items(footwear, user_preferences)
 
     # Get top items from each category 
-    top_limit = min(limit, len(tops))
-    bottom_limit = min(limit, len(bottoms))
-    shoe_limit = min(limit, len(footwear))
+    top_limit = min(limit * 2, len(tops))
+    bottom_limit = min(limit * 2, len(bottoms))
+    shoe_limit = min(limit * 2, len(footwear))
 
     best_tops = [item for item, _ in scored_tops[:top_limit]]
     best_bottoms = [item for item, _ in scored_bottoms[:bottom_limit]]
@@ -62,8 +62,35 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     # Sort outfits by score
     ranked_outfits = sorted(possible_outfits, key=lambda x: x["score"], reverse=True)
 
+    # Apply diversity penalty to ensure variety
+    final_outfits = []
+    used_items = set()
+
+    for outfit in ranked_outfits:
+        # Calculate penalty based on repetition
+        repetition_penalty = calculate_repetition_penalty(outfit, used_items)
+
+        # Apply penalty
+        outfit["score"] = max(0, outfit["score"] - repetition_penalty)
+
+        # Add to final outfits if we haven't rached the limti 
+        if len(final_outfits) < limit:
+            final_outfits.append(outfit)
+
+            # Add items to used set
+            used_items.add(outfit["top"].id)
+            used_items.add(outfit["bottom"].id)
+            used_items.add(outfit["footwear"].id)
+        
+        # Re-sort after each addition to account for penalties
+        final_outfits.sort(key=lambda x: x["score"], reverse=True)
+
+        # If we have enough outfits and the next one has a much lower score, we can stop
+        if len(final_outfits) >= limit and outfit["score"] < final_outfits[-1]["score"] * 0.7:
+            break
+
     # Return top outfits
-    return ranked_outfits[:limit]
+    return final_outfits[:limit]
 
 def score_individual_items(items, user_preferences):
     scored_items = []
@@ -396,3 +423,19 @@ def calculate_style_consistency(top, bottom, footwear):
         weighted_score = max(0.2, weighted_score - 0.1)  # Penalty for all different styles
     
     return weighted_score
+
+def calculate_repetition_penalty(outfit, used_items):
+    penalty = 0
+
+    # Check if top is repeated (Higher penalty)
+    if outfit["top"].id in used_items:
+        penalty += 15
+    
+    # Check if bottom is repeated (Moderate penalty)
+    if outfit["bottom"].id in used_items:
+        penalty += 10
+
+    if outfit["footwear"].id in used_items:
+        penalty += 5
+    
+    return penalty
