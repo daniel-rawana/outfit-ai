@@ -1,5 +1,5 @@
 import "./styling/App.css";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {Icons} from "./icons";
 
 const Gallery = ({previewImages, onClose}) => {
@@ -7,10 +7,12 @@ const Gallery = ({previewImages, onClose}) => {
     const imagesPerPage = 6;
     const totalPages = Math.ceil(previewImages.length / imagesPerPage);
 
-    const displayedImages = previewImages.slice(
-        currentPage * imagesPerPage,
-        (currentPage + 1) * imagesPerPage
-    );
+    const displayedImages = useMemo(() => {
+        return previewImages.slice(
+            currentPage * imagesPerPage,
+            (currentPage + 1) * imagesPerPage
+        );
+    }, [previewImages, currentPage]);
 
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -23,6 +25,20 @@ const Gallery = ({previewImages, onClose}) => {
             setCurrentPage((prev) => prev - 1);
         }
     };
+
+    const preloadImages = useMemo(() => {
+        const nextPageStart = (currentPage + 1) * imagesPerPage;
+        const prevPageStart = (currentPage - 1) * imagesPerPage;
+
+        const next = previewImages.slice(nextPageStart, nextPageStart + imagesPerPage);
+        const prev = previewImages.slice(prevPageStart, prevPageStart + imagesPerPage);
+        return [...next, ...prev];
+    }, [previewImages, currentPage]);
+
+    preloadImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
 
     return (
         <div className="gallery-container">
@@ -40,7 +56,7 @@ const Gallery = ({previewImages, onClose}) => {
                     <div className="image-grid">
                         {displayedImages.map((src, index) => (
                             <div key={index} className="image-container">
-                                <img src={src} alt={`Item ${index}`}/>
+                                <img src={src} alt={`Item ${index}`} loading="lazy" />
                             </div>
                         ))}
                         {/* Fill empty slots with placeholders */}
@@ -61,4 +77,4 @@ const Gallery = ({previewImages, onClose}) => {
     );
 };
 
-export default Gallery;
+export default React.memo(Gallery);
