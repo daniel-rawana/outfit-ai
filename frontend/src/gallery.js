@@ -2,43 +2,53 @@ import "./styling/App.css";
 import React, { useState, useMemo } from "react";
 import {Icons} from "./icons";
 
-const Gallery = ({previewImages, wardrobeItems, onClose, onImageClick}) => {
+const categoryMap = {
+    Tops: "top",
+    Bottoms: "bottom",
+    Shoes: "footwear",
+    Outerwear: "outerwear",
+    Dress: "dress",
+    All: null,
+};
+
+const Gallery = ({ previewImages, wardrobeItems, selectedCategory, onClose, onImageClick }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9;
-    const totalPages = Math.ceil(previewImages.length / imagesPerPage);
-
-    const displayedImages = useMemo(() => {
-        return previewImages.slice(
+    const filteredItems = useMemo(() => {
+        const categoryKey = categoryMap[selectedCategory];
+        if (!categoryKey) return wardrobeItems;
+        return wardrobeItems.filter(item => item.main_category === categoryKey);
+    }, [wardrobeItems, selectedCategory]);
+    const totalPages = Math.ceil(filteredItems.length / imagesPerPage);
+    const displayedItems = useMemo(() => {
+        return filteredItems.slice(
             currentPage * imagesPerPage,
             (currentPage + 1) * imagesPerPage
         );
-    }, [previewImages, currentPage]);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages - 1) {
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prev) => prev - 1);
-        }
-    };
+    }, [filteredItems, currentPage]);
 
     const preloadImages = useMemo(() => {
-        const nextPageStart = (currentPage + 1) * imagesPerPage;
-        const prevPageStart = (currentPage - 1) * imagesPerPage;
-
-        const next = previewImages.slice(nextPageStart, nextPageStart + imagesPerPage);
-        const prev = previewImages.slice(prevPageStart, prevPageStart + imagesPerPage);
-        return [...next, ...prev];
-    }, [previewImages, currentPage]);
+        const next = filteredItems.slice((currentPage + 1) * imagesPerPage, (currentPage + 2) * imagesPerPage);
+        const prev = filteredItems.slice((currentPage - 1) * imagesPerPage, currentPage * imagesPerPage);
+        return [...next, ...prev].map(item => item.image);
+    }, [filteredItems, currentPage]);
 
     preloadImages.forEach(src => {
         const img = new Image();
         img.src = src;
     });
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage(prev => prev + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(prev => prev - 1);
+        }
+    };
 
     return (
         <div className="gallery-container">
@@ -50,26 +60,20 @@ const Gallery = ({previewImages, wardrobeItems, onClose, onImageClick}) => {
                     onClick={currentPage > 0 ? handlePrevPage : null}
                 />
 
-                {previewImages.length === 0 ? (
-                    <div className="gallery-placeholder">No images uploaded yet.</div>
+                {filteredItems.length === 0 ? (
+                    <div className="gallery-placeholder">No clothing items found.</div>
                 ) : (
                     <div className="image-grid">
-                        {displayedImages.map((src, index) => {
-                            const clothingItem = wardrobeItems.find(item => item.image === src);
-                            return (
-                                <div
-                                    key={index}
-                                    className="image-container"
-                                    onClick={() => onImageClick(clothingItem)}
-                                >
-                                    <img src={src} alt={`Item ${index}`} loading="lazy" />
-                                </div>
-                            );
-                        })}
-                        {/* Fill empty slots with placeholders */}
-                        {Array.from({
-                            length: imagesPerPage - displayedImages.length,
-                        }).map((_, index) => (
+                        {displayedItems.map((item, index) => (
+                            <div
+                                key={index}
+                                className="image-container"
+                                onClick={() => onImageClick(item)}
+                            >
+                                <img src={item.image} alt={`Item ${index}`} loading="lazy" />
+                            </div>
+                        ))}
+                        {Array.from({ length: imagesPerPage - displayedItems.length }).map((_, index) => (
                             <div key={`placeholder-${index}`} className="image-placeholder"></div>
                         ))}
                     </div>

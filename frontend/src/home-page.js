@@ -15,6 +15,7 @@ function HomePage() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
     const [showCategories, setShowCategories] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     useEffect(() => {
         fetchWardrobe();
@@ -231,6 +232,7 @@ function HomePage() {
                                         key={label}
                                         className="category-box"
                                         onClick={() => {
+                                            setSelectedCategory(label);
                                             setShowGallery(true);
                                             setShowCategories(false);
                                         }}
@@ -254,6 +256,7 @@ function HomePage() {
                     <Gallery
                         previewImages={previewImages}
                         wardrobeItems={wardrobeItems}
+                        selectedCategory={selectedCategory}
                         onClose={handleGalleryClose}
                         onImageClick={(imageData) => {
                             openConfirmation({
