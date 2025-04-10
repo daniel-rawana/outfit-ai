@@ -7,7 +7,7 @@ const teamMembers = [
     id: 1,
     name: "Daniel Rawana",
     role: "Team Leader",
-    blurb:"lorem ispum doloor sit amet. lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
+    blurb:"I’m Daniel and I’ve been the team lead for this project. I’ve learned so much through this amazing journey with an incredible team. Keep an eye out for more fun AI projects from me in the future!",
     img: "daniel.jpg",
     email: "",
   },
@@ -16,7 +16,7 @@ const teamMembers = [
     name: "Francesco Combatti",
     role: "Backend, Database",
     blurb: "Hey! I'm Francesco, a Computer Science student passionate about Cybersecurity, AI, and solving real-world problems. On our team, I focused on data testing, backend logic, and secure code. I enjoy working out, learning new tools, watching shows, and reading.",
-    img: "francesco.jpg",
+    img: "francesco.jpeg",
     email: "francombatti@hotmail.com"
   },
   {
@@ -101,10 +101,12 @@ const teamMembers = [
 ];
 
 const getHeadshot = (imgName) => {
+if(!imgName){ return placeholderImg; } // Return placeholder image if imgName is not provided
+
   try{
-    return require(`./assets/headshots/${imgName}.jpg`);
+    return require(`./assets/headshots/${imgName}`);
   }catch(err){
-    return placeholderImg;
+    return placeholderImg; // Return placeholder image if the image is not found
   }
 
 }
