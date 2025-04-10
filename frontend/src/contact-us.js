@@ -35,8 +35,8 @@ const teamMembers = [
     id: 5,
     name: "Christopher Belizaire",
     role: "Frontend, Database",
-    blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
+    blurb: "Hey! I'm Chris, a Sophomore in CS at FIU. I love ",
+    img: "christopher.jpg",
   },
   {
     id: 6,
@@ -143,7 +143,7 @@ const TeamSlider = () => {
             .map((member) => (
               <td key={member.id}>
                 <div className="member">
-                  <h2 id="member-info-text">{member.name}, {member.role}</h2>
+                  <h2 id="member-info-text">{member.name} [{member.role}]</h2>
                   <div className="blurb">
                     <img src={getHeadshot(member.img)} alt={member.name} />
                     <p id='blurb-text'>{member.blurb}</p>
