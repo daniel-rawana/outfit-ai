@@ -77,7 +77,7 @@ body {
     color: white;
 }
 
-.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .edit-btn {
+.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -222,7 +222,7 @@ body {
     margin: 10px;
 }
 
-.upload, .edit {
+.upload {
     width: 20px;
     height: 20px;
     cursor: pointer;

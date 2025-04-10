@@ -65,13 +65,14 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
     };
 
     const renderClassificationRow = (classification, index, type) => {
-        const isBase64 = classification.image && classification.image.startsWith("data:image/png;base64,");
-        const imageSrc = isBase64 ? classification.image : classification.image;
-
+        const isBase64 = classification.image && !classification.image.startsWith("http");
+        const imageSrc = isBase64
+            ? `data:image/png;base64,${classification.image}`
+            : classification.image;
         return (
             <div key={index} className={type === "new" ? "new-classification-row" : "classification-row"}>
                 <div className="image-container">
-                    <img src={imageSrc} alt={`Outfit piece ${index}`}/>
+                    <img src={imageSrc} alt={`Outfit piece ${index}`} />
                     {type === "new" && <h4>New Item</h4>}
                 </div>
                 <div className="classifications-container">
