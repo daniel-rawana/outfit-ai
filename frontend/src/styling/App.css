@@ -113,6 +113,7 @@ body {
 .image-container {
     position: relative;
     height: 175px;
+    cursor: pointer;
 }
 
 .image-container img {
@@ -120,6 +121,11 @@ body {
     height: 175px;
     border-radius: 8px;
     object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.image-container:hover {
+    transform: scale(1.05);
 }
 
 .large-image-container img {
@@ -144,10 +150,12 @@ body {
     align-items: center;
     padding-top: 15px;
     box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(24, 30, 45, 0.4);
 }
 
 .category-box:hover {
-    background-color: #8cc0f3;
+    background-color: #bee6ff;
+    transform: scale(1.05);
 }
 
 .category-icon {
@@ -157,6 +165,11 @@ body {
 
 .gallery-container {
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .gallery-placeholder {
@@ -193,7 +206,7 @@ body {
     width: 40px;
     height: 40px;
     cursor: pointer;
-    fill: lightgray;
+    fill: #a7abad;
     margin: 10px;
 }
 

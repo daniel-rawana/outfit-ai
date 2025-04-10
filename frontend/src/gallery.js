@@ -4,7 +4,7 @@ import {Icons} from "./icons";
 
 const Gallery = ({previewImages, onClose}) => {
     const [currentPage, setCurrentPage] = useState(0);
-    const imagesPerPage = 6;
+    const imagesPerPage = 9;
     const totalPages = Math.ceil(previewImages.length / imagesPerPage);
 
     const displayedImages = useMemo(() => {
@@ -42,7 +42,7 @@ const Gallery = ({previewImages, onClose}) => {
 
     return (
         <div className="gallery-container">
-            <button onClick={onClose}>Back</button>
+            <button className="cancel-btn" onClick={onClose}>Back</button>
 
             <div className="gallery">
                 <Icons.LeftArrow
