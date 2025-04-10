@@ -371,3 +371,25 @@ select {
     text-align: center;
     white-space: nowrap; /* Prevents wrapping */
 }
+.sidebar {
+    justify-content: center; /* centra el contenido verticalmente */
+    gap: 40px; /* espacio entre título e iconos */
+    height: 100vh; /* ocupa toda la altura visible */
+}
+
+.sidebar h1 {
+    font-size: 70px;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.upload-btn, .generate-btn, .save-btn {
+    width: 200px;
+    height: 60px;
+    border-radius: 30px;
+    font-size: 18px;
+    gap: 10px;
+}
+
