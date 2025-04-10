@@ -113,7 +113,6 @@ body {
 .image-container {
     position: relative;
     height: 175px;
-    cursor: pointer;
 }
 
 .image-container img {
@@ -124,8 +123,9 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.image-container:hover {
+.image-grid .image-container:hover {
     transform: scale(1.05);
+    cursor: pointer;
 }
 
 .large-image-container img {

@@ -74,11 +74,10 @@ function HomePage() {
             const newClassifications = result.message;
             setUploadedImages([]);
             setIsAnalyzing(false);
-            setConfirmationData({
-                existingClassifications: wardrobeItems,
-                newClassifications: newClassifications
+            openConfirmation({
+                newItems: newClassifications,
+                existingItems: wardrobeItems,
             });
-            setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images: ", error);
             setIsAnalyzing(false);
@@ -132,6 +131,14 @@ function HomePage() {
         setShowGallery(false)
         setShowCategories(true)
     }
+
+    const openConfirmation = ({ newItems = [], existingItems = [] }) => {
+        setConfirmationData({
+            existingClassifications: existingItems,
+            newClassifications: newItems,
+        });
+        setShowConfirmation(true);
+    };
 
     const handleConfirmationClose = async ({ newItems, modifiedExisting }) => {
         setShowConfirmation(false);
@@ -261,7 +268,14 @@ function HomePage() {
                 {showGallery && (
                     <Gallery
                         previewImages={previewImages}
+                        wardrobeItems={wardrobeItems}
                         onClose={handleGalleryClose}
+                        onImageClick={(imageData) => {
+                            openConfirmation({
+                                newItems: [],
+                                existingItems: [imageData],
+                            });
+                        }}
                     />
                 )}
             </div>

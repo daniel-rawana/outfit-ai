@@ -2,7 +2,7 @@ import "./styling/App.css";
 import React, { useState, useMemo } from "react";
 import {Icons} from "./icons";
 
-const Gallery = ({previewImages, onClose}) => {
+const Gallery = ({previewImages, wardrobeItems, onClose, onImageClick}) => {
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9;
     const totalPages = Math.ceil(previewImages.length / imagesPerPage);
@@ -54,11 +54,18 @@ const Gallery = ({previewImages, onClose}) => {
                     <div className="gallery-placeholder">No images uploaded yet.</div>
                 ) : (
                     <div className="image-grid">
-                        {displayedImages.map((src, index) => (
-                            <div key={index} className="image-container">
-                                <img src={src} alt={`Item ${index}`} loading="lazy" />
-                            </div>
-                        ))}
+                        {displayedImages.map((src, index) => {
+                            const clothingItem = wardrobeItems.find(item => item.image === src);
+                            return (
+                                <div
+                                    key={index}
+                                    className="image-container"
+                                    onClick={() => onImageClick(clothingItem)}
+                                >
+                                    <img src={src} alt={`Item ${index}`} loading="lazy" />
+                                </div>
+                            );
+                        })}
                         {/* Fill empty slots with placeholders */}
                         {Array.from({
                             length: imagesPerPage - displayedImages.length,
