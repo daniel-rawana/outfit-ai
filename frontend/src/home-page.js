@@ -3,17 +3,18 @@ import React, { useState, useEffect } from "react";
 import { Icons } from "./icons";
 import { useNavigate } from "react-router-dom";
 import Confirmation from "./confirmation";
+import Gallery from "./gallery";
 
 function HomePage() {
     const [wardrobeItems, setWardrobeItems] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
-    const imagesPerPage = 6; // Adjusted for potentially better centering layout
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [showGallery, setShowGallery] = useState(false);
+    const [showCategories, setShowCategories] = useState(true);
 
     useEffect(() => {
         fetchWardrobe();
@@ -127,6 +128,11 @@ function HomePage() {
         }
     }
 
+    const handleGalleryClose = () => {
+        setShowGallery(false)
+        setShowCategories(true)
+    }
+
     const handleConfirmationClose = async ({ newItems, modifiedExisting }) => {
         setShowConfirmation(false);
         if (newItems.length === 0 && modifiedExisting.length === 0) {
@@ -179,25 +185,6 @@ function HomePage() {
         }
     };
 
-    const totalPages = Math.ceil(previewImages.length / imagesPerPage);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages - 1) {
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prev) => prev - 1);
-        }
-    };
-
-    const displayedImages = previewImages.slice(
-        currentPage * imagesPerPage,
-        (currentPage + 1) * imagesPerPage
-    );
-
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -209,52 +196,77 @@ function HomePage() {
 
     return (
         <div className="app-container">
-            <div className="main-content-centered">
-                <h1 className="my-wardrobe-heading">My Wardrobe</h1>
-                <div className="image-gallery">
-                    <Icons.LeftArrow
-                        className={`arrow ${currentPage === 0 ? "hidden" : ""}`}
-                        onClick={currentPage > 0 ? handlePrevPage : null}
-                    />
-                    {previewImages.length === 0 ? (
-                        <div className="gallery-placeholder">No images uploaded yet.</div>
-                    ) : (
-                        <div className="image-grid centered-grid">
-                            {displayedImages.map((src, index) => (
-                                <div key={index} className="image-container">
-                                    <img src={src} alt={`Item ${index}`} />
-                                </div>
-                            ))}
-                            {Array.from({
-                                length: imagesPerPage - displayedImages.length,
-                            }).map((_, index) => (
-                                <div key={`placeholder-${index}`} className="image-placeholder"></div>
-                            ))}
-                        </div>
-                    )}
-                    <Icons.RightArrow
-                        className={`arrow ${currentPage >= totalPages - 1 ? "hidden" : ""}`}
-                        onClick={currentPage < totalPages - 1 ? handleNextPage : null}
-                    />
-                </div>
-                <div className="home-page-actions">
+            {/* Main Section */}
+            <div className="main-content">
+                <div className="sidebar">
                     <h1>Welcome to RunwAI</h1>
                     <h2>
                         An AI-powered styling assistant that curates outfit suggestions
                         based on your uploaded wardrobe.
                     </h2>
                     <label className="upload-btn">
-                        <Icons.Upload className="upload" /> Upload
-                        <input type="file" multiple onChange={handleUpload} hidden />
+                        <Icons.Upload className="upload"/> Upload
+                        <input type="file" multiple onChange={handleUpload} hidden/>
                     </label>
                     <button className="edit-btn" onClick={handleEdit}>
-                        <Icons.Edit className="edit" /> Edit
+                        <Icons.Edit className="edit"/> Edit
                     </button>
                     <button className="generate-btn" onClick={handleGenerate}>
-                        <Icons.Generate className="generate" /> Generate
+                        <Icons.Generate className="generate"/> Generate
                     </button>
                 </div>
+
+                {showCategories && (
+                    <div className="gallery-container">
+                        <h1>My Wardrobe</h1>
+
+                        <div className="gallery">
+                            {/*arrows are here and invis as temp solution for spacing*/}
+                            <Icons.LeftArrow
+                                className={`arrow hidden`}
+                            />
+
+                            <div className="image-grid">
+                                {[
+                                    {icon: <Icons.Shirt className="category-icon"/>, label: "Tops"},
+                                    {icon: <Icons.Pants className="category-icon"/>, label: "Bottoms"},
+                                    {icon: <Icons.Shoe className="category-icon"/>, label: "Shoes"},
+                                    {icon: <Icons.Jacket className="category-icon"/>, label: "Outerwear"},
+                                    {icon: <Icons.Dress className="category-icon"/>, label: "Dress"},
+                                    {icon: <Icons.Clothing className="category-icon"/>, label: "All"},
+                                ].map(({icon, label}) => (
+                                    <div
+                                        key={label}
+                                        className="category-box"
+                                        onClick={() => {
+                                            setShowGallery(true);
+                                            setShowCategories(false);
+                                        }}
+                                    >
+                                        {icon}
+                                        <h3>{label}</h3>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <Icons.RightArrow
+                                className={`arrow hidden`}
+                            />
+
+                        </div>
+                    </div>
+                )}
+
+
+                {showGallery && (
+                    <Gallery
+                        previewImages={previewImages}
+                        onClose={handleGalleryClose}
+                    />
+                )}
             </div>
+
+            {/* Show confirmation popup */}
             {showConfirmation && (
                 <Confirmation
                     existingClassifications={confirmationData.existingClassifications}
@@ -262,10 +274,12 @@ function HomePage() {
                     onClose={handleConfirmationClose}
                 />
             )}
+
+            {/* "generating" popup */}
             {isAnalyzing && (
                 <div className="popup-overlay">
                     <div className="popup-content">
-                        <Icons.Loading className="spinner" />
+                        <Icons.Loading className="spinner"/>
                         <p id="popup-text">Analyzing clothing items...</p>
                     </div>
                 </div>
