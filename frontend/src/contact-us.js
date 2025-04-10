@@ -1,115 +1,115 @@
 import React, { useState } from "react";
 import "./styling/contact-us.css";
-import placeholderImg from "./assets/placeholder.jpg"; // Placeholder image path
+import placeholderImg from "./assets/placeholder.jpg"; // Placeholder image path'
 
 const teamMembers = [
    {
     id: 1,
     name: "Daniel Rawana",
     role: "Team Leader",
-    blurb:
-      "lorem ispum doloor sit amet. lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: placeholderImg,
+    blurb:"I’m Daniel and I’ve been the team lead for this project. I’ve learned so much through this amazing journey with an incredible team. Keep an eye out for more fun AI projects from me in the future!",
+    img: "daniel.jpg",
+    email: "",
   },
   {
     id: 2,
-    name: "Member 2",
-    role: "Role",
-    blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: placeholderImg,
+    name: "Francesco Combatti",
+    role: "Backend, Database",
+    blurb: "Hey! I'm Francesco, a Computer Science student passionate about Cybersecurity, AI, and solving real-world problems. On our team, I focused on data testing, backend logic, and secure code. I enjoy working out, learning new tools, watching shows, and reading.",
+    img: "francesco.jpeg",
+    email: "francombatti@hotmail.com"
   },
   {
     id: 3,
-    name: "Member 3",
-    role: "Role",
+    name: "Eduardo Goncalvez",
+    role: "AI/ML, Backend",
     blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 4,
-    name: "Member 4",
-    role: "Role",
+    name: "Camila Gloria",
+    role: "Frontend",
     blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 5,
-    name: "Member 5",
-    role: "Role",
-    blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
+    name: "Christopher Belizaire",
+    role: "Frontend, Database",
+    blurb: "Hey! I'm Chris, a Sophomore in CS at FIU. I love ",
+    img: "christopher.jpg",
   },
   {
     id: 6,
-    name: "Member 6",
-    role: "Role",
+    name: "Kevon Williams",
+    role: "Backend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 7,
-    name: "Member 7",
-    role: "Role",
+    name: "Miles Weatherspoon",
+    role: "Project Support",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 8,
-    name: "Member 8",
-    role: "Role",
+    name: "Alec Borque",
+    role: "AI/ML, Backend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 9,
-    name: "Member 9",
-    role: "Role",
+    name: "Alessandra Uribe",
+    role: "Fashion SME, Backend, Database",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 10,
-    name: "Member 10",
-    role: "Role",
+    name: "Laisha Brez",
+    role: "Frontend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 11,
-    name: "Member 11",
-    role: "Role",
+    name: "Nathan Chen",
+    role: "AI/ML, Backend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 12,
-    name: "Member 12",
-    role: "Role",
+    name: "Abhiram Bhogi",
+    role: "AI/ML, Backend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 13,
-    name: "Member 13",
-    role: "Role",
+    name: "Tyler Coy",
+    role: "AI/ML",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 14,
-    name: "Member 14",
-    role: "Role",
+    name: "Ruben Perez",
+    role: "AI/ML",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
   {
     id: 15,
-    name: "Member 15",
-    role: "Role",
+    name: "Jayden Krishna",
+    role: "Frontend",
     blurb: "lorem ispum doloor sit amet.",
-    img: placeholderImg,
   },
 ];
+
+const getHeadshot = (imgName) => {
+if(!imgName){ return placeholderImg; } // Return placeholder image if imgName is not provided
+
+  try{
+    return require(`./assets/headshots/${imgName}`);
+  }catch(err){
+    return placeholderImg; // Return placeholder image if the image is not found
+  }
+
+}
 
 const TeamSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -143,10 +143,13 @@ const TeamSlider = () => {
             .map((member) => (
               <td key={member.id}>
                 <div className="member">
-                  <h2 id="member-info-text">{member.name}, {member.role}</h2>
+                  <h2 id="member-info-text">{member.name} [{member.role}]</h2>
                   <div className="blurb">
-                    <img src={member.img} alt={member.name} />
+                    <img src={getHeadshot(member.img)} alt={member.name} />
                     <p id='blurb-text'>{member.blurb}</p>
+                  </div>
+                  <div className="email-section">
+                    Email: {member.email || "N/A"}
                   </div>
                 </div>
               </td>
