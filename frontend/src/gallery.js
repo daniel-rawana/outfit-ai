@@ -1,6 +1,6 @@
 import "./styling/App.css";
 import React, { useState, useMemo } from "react";
-import {Icons} from "./icons";
+import { Icons } from "./icons";
 
 const categoryMap = {
     Tops: "top",
@@ -11,7 +11,7 @@ const categoryMap = {
     All: null,
 };
 
-const Gallery = ({ previewImages, wardrobeItems, selectedCategory, onClose, onImageClick }) => {
+const Gallery = ({ wardrobeItems, selectedCategory, onClose, onImageClick }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const imagesPerPage = 9;
     const filteredItems = useMemo(() => {
@@ -52,7 +52,12 @@ const Gallery = ({ previewImages, wardrobeItems, selectedCategory, onClose, onIm
 
     return (
         <div className="gallery-container">
-            <button className="cancel-btn" onClick={onClose}>Back</button>
+            <div className="gallery-top-bar">
+                <button className="cancel-btn" onClick={onClose}>Back</button>
+                <div className="page-count">
+                    Page {currentPage + 1} of {totalPages}
+                </div>
+            </div>
 
             <div className="gallery">
                 <Icons.LeftArrow

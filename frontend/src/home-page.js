@@ -8,7 +8,6 @@ import Gallery from "./gallery";
 function HomePage() {
     const [wardrobeItems, setWardrobeItems] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
-    const [previewImages, setPreviewImages] = useState([]);
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
@@ -47,8 +46,6 @@ function HomePage() {
                     occasion: item.occasion || "",
                 }));
                 setWardrobeItems(wardrobe);
-                const previewUrls = wardrobe.map(item => item.image);
-                setPreviewImages(previewUrls);
             }
         } catch (error) {
             console.error("Error fetching wardrobe: ", error);
@@ -112,8 +109,6 @@ function HomePage() {
             return;
         }
         setUploadedImages(prev => [...prev, ...newImageFiles]);
-        const previewUrls = newImageFiles.map(file => URL.createObjectURL(file));
-        setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
     const handleGalleryClose = () => {
@@ -254,7 +249,6 @@ function HomePage() {
 
                 {showGallery && (
                     <Gallery
-                        previewImages={previewImages}
                         wardrobeItems={wardrobeItems}
                         selectedCategory={selectedCategory}
                         onClose={handleGalleryClose}

@@ -113,6 +113,7 @@ body {
 .image-container {
     position: relative;
     height: 175px;
+    transition: transform 0.2s ease;
 }
 
 .image-container img {
@@ -151,6 +152,7 @@ body {
     padding-top: 15px;
     box-sizing: border-box;
     box-shadow: 0 4px 8px rgba(24, 30, 45, 0.4);
+    transition: transform 0.2s ease;
 }
 
 .category-box:hover {
@@ -161,6 +163,13 @@ body {
 .category-icon {
     width: 100px;
     height: 100px;
+}
+
+.gallery-top-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    align-items: center;
 }
 
 .gallery-container {
