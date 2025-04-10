@@ -9,7 +9,6 @@ const teamMembers = [
     role: "Team Leader",
     blurb:"I’m Daniel and I’ve been the team lead for this project. I’ve learned so much through this amazing journey with an incredible team. Keep an eye out for more fun AI projects from me in the future!",
     img: "daniel.jpg",
-    email: "",
   },
   {
     id: 2,
@@ -35,8 +34,9 @@ const teamMembers = [
     id: 5,
     name: "Christopher Belizaire",
     role: "Frontend, Database",
-    blurb: "Hey! I'm Chris, a Sophomore in CS at FIU. I love ",
+    blurb: "Hey! I'm Chris, a Sophomore in CS at FIU. I have an interest in AI and Data Science, but I'm always open to learning new things. I've learned so much throughout this journey and I can't wait to see what opporutnities await me in the future!",
     img: "christopher.jpg",
+    email: "chrisb.9085@gmail.com"
   },
   {
     id: 6,
