@@ -73,7 +73,6 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
             <div key={index} className={type === "new" ? "new-classification-row" : "classification-row"}>
                 <div className="image-container">
                     <img src={imageSrc} alt={`Outfit piece ${index}`} />
-                    {type === "new" && <h4>New Item</h4>}
                 </div>
                 <div className="classifications-container">
                     {Object.entries({

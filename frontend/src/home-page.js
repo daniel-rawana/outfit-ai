@@ -222,7 +222,7 @@ function HomePage() {
                             <div className="image-grid">
                                 {[
                                     {icon: <Icons.Shirt className="category-icon"/>, label: "Tops"},
-                                    {icon: <Icons.Pants className="category-icon"/>, label: "Bottoms"},
+                                    {icon: <Icons.Shorts className="category-icon"/>, label: "Bottoms"},
                                     {icon: <Icons.Shoe className="category-icon"/>, label: "Shoes"},
                                     {icon: <Icons.Jacket className="category-icon"/>, label: "Outerwear"},
                                     {icon: <Icons.Dress className="category-icon"/>, label: "Dress"},
@@ -238,7 +238,7 @@ function HomePage() {
                                         }}
                                     >
                                         {icon}
-                                        <h3>{label}</h3>
+                                        <p className="category-label">{label}</p>
                                     </div>
                                 ))}
                             </div>

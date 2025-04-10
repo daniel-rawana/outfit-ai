@@ -77,7 +77,7 @@ body {
     color: white;
 }
 
-.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn {
+.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,7 +154,7 @@ body {
 }
 
 .category-box:hover {
-    background-color: #bee6ff;
+    background: linear-gradient(to bottom, #a0e1ff, #739fe5);
     transform: scale(1.05);
 }
 
@@ -359,11 +359,6 @@ select {
     padding-left: 40px;
     border-radius: 8px;
     align-items: center;
-}
-
-.new-classification-row {
-    border: 1px solid #739fe5;
-    background-color: #f8fcff;
 }
 
 .classifications-container {
