@@ -1,19 +1,20 @@
 import "./styling/App.css";
-import React, {useState, useEffect, useRef} from "react";
-import {Icons} from "./icons";
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Icons } from "./icons";
+import { useNavigate } from "react-router-dom";
 import Confirmation from "./confirmation";
+import Gallery from "./gallery";
 
 function HomePage() {
-    const [wardrobeItems, setWardrobeItems] = useState([]); // existing wardrobe (items + classifications)
-    const [uploadedImages, setUploadedImages] = useState([]); // new images uploaded
-    const [previewImages, setPreviewImages] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
-    const imagesPerPage = 9; // 3x3 grid, 9 images per page
+    const [wardrobeItems, setWardrobeItems] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState([]);
     const navigate = useNavigate();
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [confirmationData, setConfirmationData] = useState({existingClassifications: [], newClassifications: []});
+    const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [showGallery, setShowGallery] = useState(false);
+    const [showCategories, setShowCategories] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     useEffect(() => {
         fetchWardrobe();
@@ -31,9 +32,7 @@ function HomePage() {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
             const wardrobeData = await response.json();
-
             if (wardrobeData.length > 0) {
                 const wardrobe = wardrobeData.map(item => ({
                     image: item.image,
@@ -46,12 +45,7 @@ function HomePage() {
                     season: item.season || "",
                     occasion: item.occasion || "",
                 }));
-
                 setWardrobeItems(wardrobe);
-
-                // Convert base64 to object URLs for display
-                const previewUrls = wardrobe.map(item => item.image);
-                setPreviewImages(previewUrls);
             }
         } catch (error) {
             console.error("Error fetching wardrobe: ", error);
@@ -60,39 +54,28 @@ function HomePage() {
 
     const uploadImages = async () => {
         if (uploadedImages.length === 0) return;
-
-        setIsAnalyzing(true); // Show analyzing popup
-
+        setIsAnalyzing(true);
         const base64Images = await Promise.all(
             uploadedImages.map((image) => convertToBase64(image))
         );
-
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/classify-clothing", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({images: base64Images}),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ images: base64Images }),
             });
-
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
             const result = await response.json();
             console.log("Upload successful:", result);
-
             const newClassifications = result.message;
-
             setUploadedImages([]);
             setIsAnalyzing(false);
-
-            setConfirmationData({
-                existingClassifications: wardrobeItems,
-                newClassifications: newClassifications
+            openConfirmation({
+                newItems: newClassifications,
+                existingItems: [],
             });
-            setShowConfirmation(true);
         } catch (error) {
             console.error("Error uploading images: ", error);
             setIsAnalyzing(false);
@@ -111,69 +94,54 @@ function HomePage() {
         const files = Array.from(event.target.files);
         const validImageTypes = ['image/jpeg', 'image/png'];
         const imageFiles = files.filter(file => validImageTypes.includes(file.type));
-
         if (imageFiles.length === 0) {
             alert('Please upload only JPEG or PNG images.');
             return;
         }
-
         const existingImages = wardrobeItems.map(item => item.image);
         const newImageFiles = [];
-
         for (let file of imageFiles) {
             const base64String = await convertToBase64(file);
             if (!existingImages.includes(base64String)) { newImageFiles.push(file); }
         }
-
         if (newImageFiles.length === 0) {
             alert('This image has already been uploaded.');
             return;
         }
-
         setUploadedImages(prev => [...prev, ...newImageFiles]);
-
-        const previewUrls = newImageFiles.map(file => URL.createObjectURL(file));
-        setPreviewImages(prev => [...prev, ...previewUrls]);
     };
 
-    const handleEdit = () => {
-        if (wardrobeItems.length > 0) {
-            setConfirmationData({
-                existingClassifications: wardrobeItems,
-                newClassifications: [] });
-            setShowConfirmation(true);
-        } else { alert("Please upload some wardrobe items first."); }
+    const handleGalleryClose = () => {
+        setShowGallery(false)
+        setShowCategories(true)
     }
 
-    const handleConfirmationClose = async ({newItems, modifiedExisting}) => {
-        setShowConfirmation(false);
+    const openConfirmation = ({ newItems = [], existingItems = [] }) => {
+        setConfirmationData({
+            existingClassifications: existingItems,
+            newClassifications: newItems,
+        });
+        setShowConfirmation(true);
+    };
 
-        // only send data if there are new or modified items
+    const handleConfirmationClose = async ({ newItems, modifiedExisting }) => {
+        setShowConfirmation(false);
         if (newItems.length === 0 && modifiedExisting.length === 0) {
             return;
         }
-
         let updateSuccess = false;
         let saveSuccess = false;
-
-        // update existing items
         if (modifiedExisting.length > 0) {
             try {
                 const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(modifiedExisting),
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
                 updateSuccess = true;
-
-                // temporary way to update wardrobeItems while DB connections get set up
                 const updatedWardrobe = [...wardrobeItems];
                 modifiedExisting.forEach(modifiedItem => {
                     const index = updatedWardrobe.findIndex(item => item.image === modifiedItem.image);
@@ -186,58 +154,27 @@ function HomePage() {
                 console.error("Error updating classifications: ", error);
             }
         }
-
-        // add new items to database
         if (newItems.length > 0) {
             try {
                 const response = await fetch("http://127.0.0.1:5000/wardrobe/save-clothing-items", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newItems),
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
                 saveSuccess = true;
-
-                // temporary way to update wardrobeItems while DB connections get set up
                 const updatedWardrobe = [...wardrobeItems, ...newItems];
                 setWardrobeItems(updatedWardrobe);
             } catch (error) {
                 console.error("Error saving items: ", error);
             }
         }
-
         if (updateSuccess || saveSuccess) {
-            // get wardrobe again to ensure UI is synchronized with wardrobe in DB
-            //await fetchWardrobe();
+            await fetchWardrobe();
         }
     };
-
-
-    const totalPages = Math.ceil(previewImages.length / imagesPerPage);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages - 1) {
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
-
-    const handlePrevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prev) => prev - 1);
-        }
-    };
-
-    // Calculate the images to display for the current page
-    const displayedImages = previewImages.slice(
-        currentPage * imagesPerPage,
-        (currentPage + 1) * imagesPerPage
-    );
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -262,45 +199,69 @@ function HomePage() {
                         <Icons.Upload className="upload"/> Upload
                         <input type="file" multiple onChange={handleUpload} hidden/>
                     </label>
-                    <button className="edit-btn" onClick={handleEdit}>
-                        <Icons.Edit className="edit"/> Edit
-                    </button>
                     <button className="generate-btn" onClick={handleGenerate}>
                         <Icons.Generate className="generate"/> Generate
                     </button>
                 </div>
 
-                {/* Image Grid with Arrows */}
-                <div className="image-gallery">
-                    <Icons.LeftArrow
-                        className={`arrow ${currentPage === 0 ? "hidden" : ""}`}
-                        onClick={currentPage > 0 ? handlePrevPage : null}
-                    />
+                {showCategories && (
+                    <div className="gallery-container">
+                        <h1>My Wardrobe</h1>
 
-                    {previewImages.length === 0 ? (
-                        <div className="gallery-placeholder">No images uploaded yet.</div>
-                    ) : (
-                        <div className="image-grid">
-                            {displayedImages.map((src, index) => (
-                                <div key={index} className="image-container">
-                                    <img src={src} alt={`Item ${index}`}/>
-                                </div>
-                            ))}
-                            {/* Fill empty slots with placeholders */}
-                            {Array.from({
-                                length: imagesPerPage - displayedImages.length,
-                            }).map((_, index) => (
-                                <div key={`placeholder-${index}`} className="image-placeholder"></div>
-                            ))}
+                        <div className="gallery">
+                            {/*arrows are here and invis as temp solution for spacing*/}
+                            <Icons.LeftArrow
+                                className={`arrow hidden`}
+                            />
+
+                            <div className="image-grid">
+                                {[
+                                    {icon: <Icons.Shirt className="category-icon"/>, label: "Tops"},
+                                    {icon: <Icons.Shorts className="category-icon"/>, label: "Bottoms"},
+                                    {icon: <Icons.Shoe className="category-icon"/>, label: "Shoes"},
+                                    {icon: <Icons.Jacket className="category-icon"/>, label: "Outerwear"},
+                                    {icon: <Icons.Dress className="category-icon"/>, label: "Dress"},
+                                    {icon: <Icons.Clothing className="category-icon"/>, label: "All"},
+                                ].map(({icon, label}) => (
+                                    <div
+                                        key={label}
+                                        className="category-box"
+                                        onClick={() => {
+                                            setSelectedCategory(label);
+                                            setShowGallery(true);
+                                            setShowCategories(false);
+                                        }}
+                                    >
+                                        {icon}
+                                        <p className="category-label">{label}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <Icons.RightArrow
+                                className={`arrow hidden`}
+                            />
+
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    <Icons.RightArrow
-                        className={`arrow ${currentPage >= totalPages - 1 ? "hidden" : ""}`}
-                        onClick={currentPage < totalPages - 1 ? handleNextPage : null}
+
+                {showGallery && (
+                    <Gallery
+                        wardrobeItems={wardrobeItems}
+                        selectedCategory={selectedCategory}
+                        onClose={handleGalleryClose}
+                        onImageClick={(imageData) => {
+                            openConfirmation({
+                                newItems: [],
+                                existingItems: [imageData],
+                            });
+                        }}
                     />
-                </div>
+                )}
             </div>
+
             {/* Show confirmation popup */}
             {showConfirmation && (
                 <Confirmation
@@ -309,6 +270,7 @@ function HomePage() {
                     onClose={handleConfirmationClose}
                 />
             )}
+
             {/* "generating" popup */}
             {isAnalyzing && (
                 <div className="popup-overlay">
