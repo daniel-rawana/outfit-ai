@@ -44,12 +44,12 @@ td {
 }
 
 .member {
-    width: 400px;
+    width: 450px;
     height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px 20px;
     border-top: 25px solid rgb(65, 78, 97);
     border-radius: 20px;
     background-color: rgb(255, 255, 255);
@@ -72,6 +72,7 @@ td {
     border-radius: 50%;
     margin-right: 20px;
     object-fit: cover;
+    aspect-ratio: 1/1;
 }
 div{
     font-family: Poppins, sans-serif;
@@ -100,6 +101,19 @@ div{
     margin: 10px 30px;
     display: block;
 }
+
+.email-section {
+    width: 100%;
+    background-color: #d1d1d1; 
+    color: #333;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-top: 1px solid #c0c0c0;
+    margin-top: auto;
+    text-align: center;
+    border-radius: 10px;
+}
+
 
 .member:hover {
     transform: scale(1.05);
