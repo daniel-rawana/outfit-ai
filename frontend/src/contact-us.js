@@ -142,7 +142,7 @@ const TeamSlider = () => {
             .filter(Boolean)
             .map((member) => (
               <td key={member.id}>
-                <div className="member">
+                <div className="member animate-pop">
                   <h2 id="member-info-text">{member.name}
                     <span className="role">[{member.role}]</span>
                   </h2>
