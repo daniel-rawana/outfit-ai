@@ -165,7 +165,7 @@ const TeamSlider = () => {
 
   return (
     <div>
-      <div className="main-content">
+      <div className="main-container">
         <div className="header-container">
           <h1 className="header">Meet the Team</h1>
           <p className="subheader">Here at RunwAI, we are a team of passionate individuals dedicated to revolutionizing the fashion and AI industry.</p>
