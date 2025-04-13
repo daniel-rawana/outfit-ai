@@ -61,7 +61,7 @@ td {
     padding: 15px 20px;
     border-radius: 20px;
     background: linear-gradient(to bottom right, #ffffff, #f1f1f1);
-    border-top: 10px solid #3e4a5b;
+    border-top: 20px solid #3e4a5b;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease-in-out;
 }
@@ -74,6 +74,7 @@ td {
 .blurb {
     display: flex;
     align-items: center;
+    overflow: hidden;
     gap: 1rem;
     width: 100%;
     justify-content: center;
