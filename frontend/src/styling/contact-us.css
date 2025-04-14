@@ -140,7 +140,13 @@ div {
     border-radius: 10px;
     cursor: default;
 }
-  
+
+.email-section:hover {
+    cursor: pointer;
+}
+.email-section a:hover {
+    text-decoration: underline;
+}
   /* Navigation Buttons */
 .prev-btn, .next-btn {
     border: none;

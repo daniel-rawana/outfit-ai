@@ -151,7 +151,8 @@ const TeamSlider = () => {
                     <p id='blurb-text'>{member.blurb}</p>
                   </div>
                   <div className="email-section">
-                    Email: {member.email || "N/A"}
+                    Email: {member.email ?
+                      <a href={`mailto:${member.email}`}>{member.email}</a> : "N/A"}
                   </div>
                 </div>
               </td>
