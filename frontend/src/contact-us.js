@@ -64,7 +64,7 @@ const teamMembers = [
   },
   {
     id: 10,
-    name: "Laisha Brez",
+    name: "Laisha Bravo",
     role: "Frontend",
     blurb: "lorem ispum doloor sit amet.",
   },
@@ -142,14 +142,17 @@ const TeamSlider = () => {
             .filter(Boolean)
             .map((member) => (
               <td key={member.id}>
-                <div className="member">
-                  <h2 id="member-info-text">{member.name} [{member.role}]</h2>
+                <div className="member animate-pop">
+                  <h2 id="member-info-text">{member.name}
+                    <span className="role">[{member.role}]</span>
+                  </h2>
                   <div className="blurb">
                     <img src={getHeadshot(member.img)} alt={member.name} />
                     <p id='blurb-text'>{member.blurb}</p>
                   </div>
                   <div className="email-section">
-                    Email: {member.email || "N/A"}
+                    Email: {member.email ?
+                      <a href={`mailto:${member.email}`}>{member.email}</a> : "N/A"}
                   </div>
                 </div>
               </td>
@@ -163,7 +166,7 @@ const TeamSlider = () => {
 
   return (
     <div>
-      <div className="main-content">
+      <div className="main-container">
         <div className="header-container">
           <h1 className="header">Meet the Team</h1>
           <p className="subheader">Here at RunwAI, we are a team of passionate individuals dedicated to revolutionizing the fashion and AI industry.</p>
