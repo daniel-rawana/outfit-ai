@@ -55,7 +55,7 @@ body {
 
 .sidebar {
     width: 50%;
-    min-height: 550px;
+    min-height: 75vh;
     align-content: center;
     background: linear-gradient(to top, #a0e1ff, #739fe5);
     padding: 70px;
@@ -77,7 +77,7 @@ body {
     color: white;
 }
 
-.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label {
+.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label, .continue-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -267,13 +267,13 @@ body {
     background: linear-gradient(to top, #a0e1ff, #739fe5);
     padding: 50px;
     gap: 30px;
-    min-height: 500px;
+    min-height: 75vh;
 }
 
 .outfit-container, .buttons-container {
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    gap: 25px;
     align-items: center;
     justify-content: center;
 }
@@ -408,5 +408,190 @@ select {
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
     text-align: center;
-    white-space: nowrap; /* Prevents wrapping */
+    white-space: nowrap;
+}
+
+.outfit-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.outfit-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6);
+    z-index: 2;
+}
+
+.large-image-container {
+    animation: outfitFadeIn 0.8s ease-in-out;
+}
+
+.suggestion-container h1 {
+    background: linear-gradient(to left, #212f57, #2d4883);
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+@keyframes outfitFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.results-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sparkle-spinner {
+    width: 80px;
+    height: 80px;
+    border: 6px dotted white;
+    border-radius: 50%;
+    animation: sparkle-spin 2s linear infinite;
+    position: relative;
+}
+
+@keyframes sparkle-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out infinite alternate;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 20, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-reveal-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    text-align: center;
+    color: #2d4883;
+    max-width: 80vw;
+    min-height: 60vh;
+    animation: fadeIn 1s ease;
+}
+
+.continue-btn {
+    display: inline;
+    margin-top: 45px;
+}
+
+.continue-btn:hover {
+    background: linear-gradient(to right, #2d4883, #212f57);
+}
+
+.reveal-title {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.popup-outfits-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.outfit-preview-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #80ceff, #8cb0e8);
+    border-radius: 15px;
+    padding: 20px;
+    width: 200px;
+    height: 200px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.outfit-preview-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-20deg);
+    animation: shimmer 2s infinite;
+    z-index: 1;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -75%;
+    }
+    100% {
+        left: 125%;
+    }
+}
+
+.outfit-preview-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.outfit-label {
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    margin-bottom: 20px;
+    margin-top: 0;
+    background-color: #2d4883;
+    border-radius: 8px;
+    width: auto;
+}
+
+.mini-outfit-pieces {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.mini-outfit-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
 }
