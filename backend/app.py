@@ -89,12 +89,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print("FETCHED WARDROBE ITEMS:\n")
-        for index, item in enumerate(wardrobe):
-            item_copy = item.copy()
-            print(f"Item {index}:\n")
-            print(item_copy)
-            print("\n")
+        print(f"Fetched {len(wardrobe)} items from database. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
