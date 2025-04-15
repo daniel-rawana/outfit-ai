@@ -41,6 +41,10 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
 
     for top in best_tops:
         print(top)
+    for bottom in best_bottoms:
+        print(bottom)
+    for shoe in best_shoes:
+        print(shoe)
 
     # Generate outfits using only these top items
     possible_outfits = []
