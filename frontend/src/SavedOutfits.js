@@ -1,62 +1,45 @@
 import React, { useEffect, useState } from "react";
 
 function SavedOutfits() {
-    const [outfits, setOutfits] = useState([]);
+    const [savedOutfits, setSavedOutfits] = useState([]);
 
     useEffect(() => {
-        const saved = JSON.parse(localStorage.getItem("savedOutfits")) || [];
-        setOutfits(saved);
+        const data = localStorage.getItem("savedOutfits");
+        if (data) {
+            setSavedOutfits(JSON.parse(data));
+        }
     }, []);
-
-    const deleteOutfit = (indexToDelete) => {
-        const updated = outfits.filter((_, i) => i !== indexToDelete);
-        setOutfits(updated);
-        localStorage.setItem("savedOutfits", JSON.stringify(updated));
-    };
 
     return (
         <div style={{ padding: '2rem' }}>
-            <h2>Saved Outfits</h2>
-            {outfits.length === 0 ? (
-                <p>No hay atuendos guardados aún.</p>
+            <h2>👗 Saved Outfits</h2>
+            {savedOutfits.length === 0 ? (
+                <p>No saved outfits yet. Go generate and save some!</p>
             ) : (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                    {outfits.map((outfitObj, index) => (
-                        <div key={index} style={{
-                            border: '1px solid #ccc',
-                            padding: '1rem',
-                            borderRadius: '8px',
-                            width: '250px',
-                            backgroundColor: '#f9f9f9'
-                        }}>
-                            <p style={{ fontSize: '0.8rem', color: '#666' }}>
-                                Guardado: {new Date(outfitObj.timestamp).toLocaleString()}
-                            </p>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                {outfitObj.outfit.map((item, i) => (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
+                    {savedOutfits.map((entry, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                border: '1px solid #ccc',
+                                borderRadius: '12px',
+                                padding: '1rem',
+                                background: '#fafafa',
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                width: 'fit-content'
+                            }}
+                        >
+                            <h4 style={{ textAlign: 'center' }}>Outfit #{index + 1}</h4>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                {entry.outfit.map((piece, idx) => (
                                     <img
-                                        key={i}
-                                        src={item.image}
-                                        alt={`Outfit piece ${i}`}
-                                        style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '6px' }}
+                                        key={idx}
+                                        src={piece.image}
+                                        alt={`Outfit ${index + 1} - Piece ${idx + 1}`}
+                                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
                                     />
                                 ))}
                             </div>
-                            <button
-                                onClick={() => deleteOutfit(index)}
-                                style={{
-                                    marginTop: '0.5rem',
-                                    padding: '0.3rem 0.6rem',
-                                    fontSize: '0.8rem',
-                                    color: 'white',
-                                    backgroundColor: 'crimson',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Eliminar
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -66,3 +49,4 @@ function SavedOutfits() {
 }
 
 export default SavedOutfits;
+
