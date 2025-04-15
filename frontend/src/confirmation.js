@@ -64,40 +64,45 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
         }
     };
 
-    const renderClassificationRow = (classification, index, type) => (
-        <div key={index} className={type === "new" ? "new-classification-row" : "classification-row"}>
-            <div className="image-container">
-                <img src={`data:image/png;base64,${classification.image}`} alt={`Outfit piece ${index}`}/>
-                {type === "new" && <h4>New Item</h4>}
+    const renderClassificationRow = (classification, index, type) => {
+        const isBase64 = classification.image && !classification.image.startsWith("http");
+        const imageSrc = isBase64
+            ? `data:image/png;base64,${classification.image}`
+            : classification.image;
+        return (
+            <div key={index} className={type === "new" ? "new-classification-row" : "classification-row"}>
+                <div className="image-container">
+                    <img src={imageSrc} alt={`Outfit piece ${index}`} />
+                </div>
+                <div className="classifications-container">
+                    {Object.entries({
+                        main_category: Object.keys(categoryOptions),
+                        sub_category: categoryOptions[classification.main_category],
+                        style: styleOptions,
+                        silhouette: silhouetteOptions,
+                        color: colorOptions,
+                        pattern: patternOptions,
+                        season: seasonOptions,
+                        occasion: occasionOptions
+                    }).map(([key, selectionOptions]) => (
+                        <div key={key} className="classification-container">
+                            <p>{key.replace("_", " ")}:</p>
+                            <select
+                                className="attribute-select"
+                                value={classification[key] || ""}
+                                onChange={(e) => handleChange(index, key, e.target.value, type)}
+                            >
+                                <option value="">Select</option>
+                                {selectionOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div className="classifications-container">
-                {Object.entries({
-                    main_category: Object.keys(categoryOptions),
-                    sub_category: categoryOptions[classification.main_category],
-                    style: styleOptions,
-                    silhouette: silhouetteOptions,
-                    color: colorOptions,
-                    pattern: patternOptions,
-                    season: seasonOptions,
-                    occasion: occasionOptions
-                }).map(([key, selectionOptions]) => (
-                    <div key={key} className="classification-container">
-                        <p>{key.replace("_", " ")}:</p>
-                        <select
-                            className="attribute-select"
-                            value={classification[key] || ""}
-                            onChange={(e) => handleChange(index, key, e.target.value, type)}
-                        >
-                            <option value="">Select</option>
-                            {selectionOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+        );
+    };
 
     const handleConfirm = () => {
         // filter existing classifications to only include modified ones
@@ -128,7 +133,7 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
 
                 <div className="classifications-list">
                     {updatedNewClassifications.map((classification, index) => renderClassificationRow(classification, index, "new"))}
-                    {/* {updatedExistingClassifications.map((classification, index) => renderClassificationRow(classification, index, "existing"))} */}
+                    {updatedExistingClassifications.map((classification, index) => renderClassificationRow(classification, index, "existing"))}
                 </div>
 
                 <div className="buttons-container">

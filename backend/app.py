@@ -88,6 +88,14 @@ def get_wardrobe():
                 "occasion": clothing_data.get("occasion", ""),
             })
 
+        # printing purposes only
+        print("FETCHED WARDROBE ITEMS:\n")
+        for index, item in enumerate(wardrobe):
+            item_copy = item.copy()
+            print(f"Item {index}:\n")
+            print(item_copy)
+            print("\n")
+
         return jsonify(wardrobe), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -207,7 +215,10 @@ def save_clothing_items():
 @app.route('/outfits/generate', methods=['POST'])
 def generate_outfit():
     try:
-        print(request.get_json())
+        request_data = request.get_json()
+        print("GENERATE OUTFIT REQUEST:\n")
+        print(request_data)
+        print("\n")
 
         user_id = 1
 
@@ -232,10 +243,14 @@ def generate_outfit():
             else:
                 print("No metadata found for this image")
 
-        generated_outfits = generate_ranked_outfits(clothing_list, request.get_json()) 
+        generated_outfits = generate_ranked_outfits(clothing_list, request_data) 
 
-        for outfit in generated_outfits:
+        # printing purposes only
+        print("GENERATED OUTFITS:\n")
+        for index, outfit in enumerate(generated_outfits):
+            print(f"Outfit {index}:\n")
             print(f"Top: {outfit['top']} | Bottom: {outfit['bottom']} | Footwear: {outfit['footwear']} | Score: {outfit['score']}")
+            print("\n")
 
         # Format outfits for frontend
         formatted_outfits = []
@@ -270,8 +285,17 @@ def get_outfits():
     try:
         # get saved outfit logic (gets all the outfits that the user has saved)
         # not sure if we'll be allowing users to save outfits
+        
+        outfits = []  # This would be populated from the database
+        
+        # printing purposes only
+        print("FETCHED SAVED OUTFITS:\n")
+        for index, outfit in enumerate(outfits):
+            print(f"Outfit {index}:\n")
+            print(outfit)
+            print("\n")
 
-        return jsonify({"outfits": []}), 200
+        return jsonify({"outfits": outfits}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
