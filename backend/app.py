@@ -299,6 +299,80 @@ def get_outfits():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/outfits/saved', methods=['GET'])
+def get_saved_outfits():
+    try:
+        user_id = 1  # FIXME: Replace with real user ID if login logic is added
+        print(f"[INFO] Fetching saved outfits for user_id: {user_id}")
+
+        # Fetch saved outfits for the user
+        outfits_response = (
+            supabase
+            .table("saved_outfits")
+            .select("*")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        saved_outfits = outfits_response.data
+        print(f"[DEBUG] Found {len(saved_outfits)} saved outfits.")
+
+        all_outfits = []
+
+        for outfit in saved_outfits:
+            outfit_id = outfit["id"]
+            print(f"[INFO] Processing outfit ID: {outfit_id} | Name: {outfit.get('outfit_name')}")
+
+            # Fetch clothing item IDs for this outfit
+            items_response = (
+                supabase
+                .table("outfit_items")
+                .select("clothing_item_id")
+                .eq("outfit_id", outfit_id)
+                .execute()
+            )
+
+            clothing_ids = [item["clothing_item_id"] for item in items_response.data]
+            print(f"[DEBUG] Outfit {outfit_id} has clothing item IDs: {clothing_ids}")
+
+            # Fetch full clothing item data including image and metadata
+            if clothing_ids:
+                clothing_response = (
+                    supabase
+                    .table("clothing_images")
+                    .select("clothing_id, image_url, clothing_items(*)")
+                    .in_("clothing_id", clothing_ids)
+                    .execute()
+                )
+
+                clothing_items = []
+                for row in clothing_response.data:
+                    metadata = row.get("clothing_items", {})
+                    clothing_items.append({
+                        "id": row["clothing_id"],
+                        "image": row["image_url"],
+                        "main_category": metadata.get("main_category", ""),
+                        "sub_category": metadata.get("sub_category", ""),
+                        "color": metadata.get("color", ""),
+                        "style": metadata.get("style", "")
+                    })
+
+                print(f"[DEBUG] Fetched {len(clothing_items)} clothing items for outfit ID {outfit_id}")
+
+                all_outfits.append({
+                    "id": outfit_id,
+                    "name": outfit.get("outfit_name", ""),
+                    "items": clothing_items
+                })
+
+        print("[SUCCESS] Returning all saved outfits.")
+        return jsonify({"outfits": all_outfits}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch saved outfits: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
