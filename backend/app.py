@@ -372,6 +372,42 @@ def get_saved_outfits():
         print(f"[ERROR] Failed to fetch saved outfits: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/outfits/save', methods=['POST'])
+def save_outfit():
+    try:
+        data = request.get_json()
+        outfit_items = data.get("outfit", [])
+        outfit_name = data.get("outfit_name", "Untitled Outfit")
+        user_id = 1  # TODO: Replace with real user ID when auth is added
+
+        print(f"[INFO] Saving outfit: {outfit_name} with {len(outfit_items)} items.")
+
+        # Insert into saved_outfits table
+        outfit_response = supabase.table("saved_outfits").insert({
+            "user_id": user_id,
+            "outfit_name": outfit_name
+        }).execute()
+
+        saved_outfit_id = outfit_response.data[0]["id"]
+        print(f"[DEBUG] New outfit ID: {saved_outfit_id}")
+
+        # Insert each clothing item into outfit_items table
+        for item in outfit_items:
+            clothing_id = item.get("id")
+            if clothing_id:
+                supabase.table("outfit_items").insert({
+                    "outfit_id": saved_outfit_id,
+                    "clothing_item_id": clothing_id
+                }).execute()
+                print(f"[DEBUG] Linked clothing ID {clothing_id} to outfit {saved_outfit_id}")
+
+        print("[SUCCESS] Outfit saved successfully.")
+        return jsonify({"message": "Outfit saved successfully"}), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to save outfit: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
