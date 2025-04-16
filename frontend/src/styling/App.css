@@ -492,7 +492,7 @@ select {
     z-index: 999;
 }
 
-.popup-reveal-card {
+.popup-reveal-card, .popup-outfit-card {
     background: white;
     border-radius: 20px;
     padding: 40px;
@@ -513,12 +513,12 @@ select {
     background: linear-gradient(to right, #2d4883, #212f57);
 }
 
-.reveal-title {
+.reveal-title, .outfit-title {
     font-size: 30px;
     font-weight: bold;
 }
 
-.popup-outfits-grid {
+.popup-outfits-grid, .popup-clothes-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -594,4 +594,30 @@ select {
     height: 70px;
     object-fit: cover;
     border-radius: 8px;
+}
+
+.saved-outfit-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: linear-gradient(to top, #80ceff, #8cb0e8);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: fit-content;
+    max-width: 300px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.saved-outfit-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.saved-outfit-card .mini-outfit-img {
+    width: 90px;
+    height: 90px;
+}
+
+.popup-clothes-grid .large-image-container {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
