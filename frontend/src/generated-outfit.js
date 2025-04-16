@@ -57,23 +57,34 @@ const GeneratedOutfit = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + outfitSuggestions.length) % outfitSuggestions.length);
     };
 
-    const saveOutfit = () => {
+    const handleSaveOutfit = async () => {
         if (outfitSuggestions.length === 0) return;
-
-        const outfitToSave = outfitSuggestions[currentIndex].map(item => ({
-            image: item.image
-        }));
-
-        const existing = JSON.parse(localStorage.getItem("savedOutfits")) || [];
-        existing.push({
-            outfit: outfitToSave,
-            timestamp: Date.now()
-        });
-
-        localStorage.setItem("savedOutfits", JSON.stringify(existing));
-        alert("Outfit guardado exitosamente ✨");
+    
+        const currentOutfit = outfitSuggestions[currentIndex];
+        const outfitPayload = {
+            outfit_name: `Saved Outfit ${currentIndex + 1}`,
+            outfit: currentOutfit.map(item => ({ id: item.id })),
+        };
+    
+        try {
+            const response = await fetch("http://127.0.0.1:5000/outfits/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(outfitPayload),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            console.log("Outfit saved:", result);
+            alert("Outfit saved successfully!");
+        } catch (error) {
+            console.error("Error saving outfit:", error);
+            alert("Failed to save outfit.");
+        }
     };
-
     return loading ? (
         <div className="suggestion-container">
             <div className="results-loading">
@@ -137,7 +148,7 @@ const GeneratedOutfit = () => {
 
                 <div className="buttons-container">
                     <button className="new-outfit-btn">New Outfit</button>
-                    <button className="save-btn" onClick={saveOutfit}>Save</button>
+                    <button className="save-btn" onClick={handleSaveOutfit}>Save</button>
                 </div>
             </div>
         </>
