@@ -1,7 +1,7 @@
 import "./styling/App.css";
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Icons } from "./icons";
+import React, {useState, useEffect} from "react";
+import {useLocation} from "react-router-dom";
+import {Icons} from "./icons";
 import confetti from "canvas-confetti";
 
 const GeneratedOutfit = () => {
@@ -49,6 +49,7 @@ const GeneratedOutfit = () => {
         }
     }, [showPopup]);
 
+
     const nextOutfit = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % outfitSuggestions.length);
     };
@@ -57,90 +58,107 @@ const GeneratedOutfit = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + outfitSuggestions.length) % outfitSuggestions.length);
     };
 
-    const saveOutfit = () => {
+    const handleSaveOutfit = async () => {
         if (outfitSuggestions.length === 0) return;
-
-        const outfitToSave = outfitSuggestions[currentIndex].map(item => ({
-            image: item.image
-        }));
-
-        const existing = JSON.parse(localStorage.getItem("savedOutfits")) || [];
-        existing.push({
-            outfit: outfitToSave,
-            timestamp: Date.now()
-        });
-
-        localStorage.setItem("savedOutfits", JSON.stringify(existing));
-        alert("Outfit guardado exitosamente ✨");
+    
+        const currentOutfit = outfitSuggestions[currentIndex];
+        const outfitPayload = {
+            outfit_name: `Saved Outfit ${currentIndex + 1}`,
+            outfit: currentOutfit.map(item => ({ id: item.id })),
+        };
+    
+        try {
+            const response = await fetch("http://127.0.0.1:5000/outfits/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(outfitPayload),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            console.log("Outfit saved:", result);
+            alert("Outfit saved successfully!");
+        } catch (error) {
+            console.error("Error saving outfit:", error);
+            alert("Failed to save outfit.");
+        }
     };
-
-    return loading ? (
-        <div className="suggestion-container">
-            <div className="results-loading">
-                <div className="sparkle-spinner"></div>
-                <p className="loading-text">✨ Preparing your outfits... ✨</p>
-            </div>
-        </div>
-    ) : (
-        <>
-            {showPopup && (
-                <div className="popup-overlay">
-                    <div className="popup-reveal-card">
-                        <h2 className="reveal-title">✨ Your Outfits are Ready! ✨</h2>
-                        <div className="popup-outfits-grid">
-                            {outfitSuggestions.map((outfit, index) => (
-                                <div key={index} className="outfit-preview-card">
-                                    <p className="outfit-label">Outfit {index + 1}</p>
-                                    <div className="mini-outfit-pieces">
-                                        {outfit.map((piece, idx) => (
-                                            <img
-                                                key={idx}
-                                                src={piece.image}
-                                                alt={`Outfit ${index + 1} - Piece ${idx + 1}`}
-                                                className="mini-outfit-img"
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="continue-btn" onClick={() => setShowPopup(false)}>
-                            Continue
-                        </button>
+    
+    return (loading ?
+            (
+                <div className="suggestion-container">
+                    <div className="results-loading">
+                        <div className="sparkle-spinner"></div>
+                        <p className="loading-text">✨ Preparing your outfits... ✨</p>
                     </div>
                 </div>
-            )}
+            ) : (
+                <>
+                    {showPopup && (
+                        <div className="popup-overlay">
+                            <div className="popup-reveal-card">
+                                <h2 className="reveal-title">✨ Your Outfits are Ready! ✨</h2>
+                                <div className="popup-outfits-grid">
+                                    {outfitSuggestions.map((outfit, index) => (
+                                        <div key={index} className="outfit-preview-card">
+                                            <p className="outfit-label">Outfit {index + 1}</p>
+                                            <div className="mini-outfit-pieces">
+                                                {outfit.map((piece, idx) => (
+                                                    <img
+                                                        key={idx}
+                                                        src={piece.image}
+                                                        alt={`Outfit ${index + 1} - Piece ${idx + 1}`}
+                                                        className="mini-outfit-img"
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
 
-            <div className="suggestion-container">
-                {outfitSuggestions.length > 0 && (
-                    <h1>✨ Outfit Suggestion {currentIndex + 1} ✨</h1>
-                )}
-                <div className="outfit-container">
-                    {outfitSuggestions.length > 0 && (
-                        <Icons.LeftArrow fill="white" className="suggestion-arrow" onClick={prevOutfit} />
-                    )}
-
-                    {outfitSuggestions.length > 0 ? (
-                        outfitSuggestions[currentIndex].map((item, index) => (
-                            <div key={index} className="large-image-container">
-                                <img src={item.image} alt={`Outfit piece ${index}`} className="outfit-item" />
+                                <button
+                                    className="continue-btn"
+                                    onClick={() => setShowPopup(false)}
+                                >
+                                    Continue
+                                </button>
                             </div>
-                        ))
-                    ) : (
-                        <p>No wardrobe items in outfit.</p>
+                        </div>
                     )}
 
-                    {outfitSuggestions.length > 0 && (
-                        <Icons.RightArrow fill="white" className="suggestion-arrow" onClick={nextOutfit} />
-                    )}
-                </div>
+                    <div className="suggestion-container">
+                        {outfitSuggestions.length > 0 && (
+                            <h1>✨ Outfit Suggestion {currentIndex + 1} ✨</h1>
+                        )}
+                        <div className="outfit-container">
+                            {outfitSuggestions.length > 0 && (
+                                <Icons.LeftArrow fill="white" className="suggestion-arrow" onClick={prevOutfit}/>
+                            )}
 
-                <div className="buttons-container">
-                    <button className="new-outfit-btn">New Outfit</button>
-                    <button className="save-btn" onClick={saveOutfit}>Save</button>
-                </div>
-            </div>
-        </>
+                            {outfitSuggestions.length > 0 ? (
+                                outfitSuggestions[currentIndex].map((item, index) => (
+                                    <div key={index} className="large-image-container">
+                                        <img src={item.image} alt={`Outfit piece ${index}`} className="outfit-item"/>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No wardrobe items in outfit.</p>
+                            )}
+
+                            {outfitSuggestions.length > 0 && (
+                                <Icons.RightArrow fill="white" className="suggestion-arrow" onClick={nextOutfit}/>
+                            )}
+                        </div>
+                        <div className="buttons-container">
+                            <button className="new-outfit-btn">New Outfit</button>
+                            <button className="save-btn" onClick={handleSaveOutfit}>Save</button>
+                        </div>
+                    </div>
+                </>
+            )
     );
 };
 
