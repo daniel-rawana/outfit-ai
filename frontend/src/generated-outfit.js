@@ -87,7 +87,6 @@ const GeneratedOutfit = () => {
         }
     };
     
-
     return (loading ?
             (
                 <div className="suggestion-container">
