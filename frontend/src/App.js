@@ -6,7 +6,7 @@ import GeneratedOutfit from "./generated-outfit";
 import Preferences from "./preferences";
 import AboutUs from "./about-us.js";
 import ContactUs from "./contact-us.js";
-import SavedOutfits from "./SavedOutfits";
+import SavedOutfits from "./saved-outfits";
 
 function App() {
     return (
