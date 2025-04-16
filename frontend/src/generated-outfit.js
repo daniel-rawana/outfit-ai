@@ -145,13 +145,6 @@ const GeneratedOutfit = () => {
                         <Icons.RightArrow fill="white" className="suggestion-arrow" onClick={nextOutfit} />
                     )}
                 </div>
-
-                <div className="buttons-container">
-                    <button className="new-outfit-btn">New Outfit</button>
-                    <button className="save-btn" onClick={handleSaveOutfit}>Save</button>
-                </div>
-            </div>
-        </>
     );
 };
 
