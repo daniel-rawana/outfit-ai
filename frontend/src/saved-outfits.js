@@ -37,7 +37,7 @@ function SavedOutfits() {
 
     return (
         <div style={{ padding: '2rem', textAlign: 'center' }}>
-            <h1>My Wardrobe</h1>
+            <h1>My Outfits</h1>
             {savedOutfits.length === 0 ? (
                 <p>No saved outfits yet. Go generate and save some!</p>
             ) : (
