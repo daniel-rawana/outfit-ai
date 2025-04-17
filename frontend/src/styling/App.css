@@ -98,7 +98,7 @@ body {
     text-align: center;
 }
 
-.save-btn {
+.save-btn, .view-saved-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -678,4 +678,9 @@ select {
     flex-direction: row;
     align-items: center;
     gap: 10px;
+}
+
+.toast-notification {
+    text-align: center;
+    margin: 10px;
 }

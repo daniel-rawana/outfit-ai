@@ -1,13 +1,14 @@
 import "./styling/App.css";
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "./icons";
 import confetti from "canvas-confetti";
 
 const GeneratedOutfit = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const outfitSuggestions = location.state?.outfitSuggestions || [];
-
+    const [showToast, setShowToast] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
@@ -53,6 +54,7 @@ const GeneratedOutfit = () => {
         }
     }, [showPopup]);
 
+
     const nextOutfit = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % outfitSuggestions.length);
         setEditing(false);
@@ -87,8 +89,9 @@ const GeneratedOutfit = () => {
         if (outfitSuggestions.length === 0) return;
 
         const currentOutfit = outfitSuggestions[currentIndex];
+        const outfitName = editedNames[currentIndex] || `Saved Outfit ${currentIndex + 1}`;
         const outfitPayload = {
-            outfit_name: editedNames[currentIndex] || `Saved Outfit ${currentIndex + 1}`,
+            outfit_name: outfitName,
             outfit: currentOutfit.map(item => ({ id: item.id })),
         };
 
@@ -104,8 +107,27 @@ const GeneratedOutfit = () => {
             }
 
             const result = await response.json();
-            console.log("Outfit saved:", result);
-            alert("Outfit saved successfully!");
+            console.log("Outfit saved to backend:", result);
+
+            const outfitToSave = currentOutfit.map(item => ({ image: item.image }));
+            const existing = JSON.parse(localStorage.getItem("savedOutfits")) || [];
+            existing.push({
+                outfit: outfitToSave,
+                outfit_name: outfitName,
+                timestamp: Date.now(),
+            });
+            localStorage.setItem("savedOutfits", JSON.stringify(existing));
+
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 1800);
         } catch (error) {
             console.error("Error saving outfit:", error);
             alert("Failed to save outfit.");
@@ -203,8 +225,17 @@ const GeneratedOutfit = () => {
                         )}
                     </div>
 
+                    {showToast && (
+                        <div className="toast-notification">
+                            🎉 Outfit saved successfully!
+                        </div>
+                    )}
+
                     <div className="buttons-container">
                         <button className="save-btn" onClick={handleSaveOutfit}>Save Outfit</button>
+                        <button className="view-saved-btn" onClick={() => navigate("/saved-outfits")}>
+                            View Saved Outfits
+                        </button>
                     </div>
                 </div>
             </div>
