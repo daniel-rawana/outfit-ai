@@ -684,3 +684,16 @@ select {
     text-align: center;
     margin: 10px;
 }
+
+.logo {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo:visited {
+    color: inherit;
+}
+
+.logo:hover {
+    text-decoration: none;
+}
