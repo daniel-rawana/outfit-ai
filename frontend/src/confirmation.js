@@ -118,9 +118,8 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
     };
 
     const handleClose = () => {
-        // send back unmodified classifications for new items
         onClose({
-            newItems: newClassifications,
+            newItems: [],
             modifiedExisting: []
         });
     };
