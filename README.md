@@ -1,36 +1,38 @@
+# 👗 RunwAI — AI-Powered Virtual Stylist
 
-# 🧠 RunwAI — Your AI Styling Assistant 👗👟
-
-RunwAI is an **AI-powered fashion assistant** that curates personalized outfit suggestions based on your uploaded wardrobe and custom preferences. Whether you're dressing for a hot summer day or a cool night out, RunwAI helps you **generate smart, stylish looks in seconds**.
+Welcome to **RunwAI**, your personalized virtual stylist that curates smart outfit combinations based on your uploaded wardrobe. Powered by AI, RunwAI makes fashion effortless and fun.
 
 ---
 
 ## ✨ Features
 
-🔹 **Upload Wardrobe Items**  
-Add clothing pieces from your closet to build your digital wardrobe.
-
-🔹 **Edit Your Closet**  
-Easily manage and update your uploaded items.
-
-🔹 **AI-Powered Outfit Generator**  
-Automatically get outfit suggestions tailored to your style, weather, and occasion preferences.
-
-🔹 **Custom Preferences**  
-Choose your weather, occasion, and color palette for a personalized styling experience.
-
-🔹 **Save & Explore Looks**  
-Save generated outfits or create a new one with the click of a button.
+- 🤖 **AI Outfit Generation** – Create smart, stylish outfit suggestions using AI.
+- 📤 **Wardrobe Upload** – Add items to your digital closet via easy image uploads.
+- 🧠 **Smart Attribute Editing** – AI auto-classifies clothing by category, style, color, and more.
+- 🎯 **Personalized Suggestions** – Get outfit combos tailored for seasons, occasions, and style preferences.
+- 💾 **Save Favorites** – Keep your best looks handy for later.
 
 ---
 
-## 📸 Preview
+## 🖼️ Screenshots
 
-### 🏠 Welcome Page  
-Upload, edit, and generate outfits with a clean, intuitive interface.  
-![Welcome Page](https://raw.githubusercontent.com/Milestoocutt/outfit-ai/f1a8959940a343eb6659427d6d0d8fdce8ea7ce4/Screenshot%202025-04-07%20171719.png)
+### 🏠 Homepage / Landing View
+
+This is the main landing page where users are greeted and prompted to upload their wardrobe.
+
+![Landing Page](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-07%20171719.png?raw=true)
 
 ---
+
+### 🧺 Wardrobe Upload & Edit
+
+Once an image is uploaded, users can confirm or adjust AI-assigned tags.
+
+![Edit Attributes](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-15%20163650.png?raw=true)
+
+---
+
+
 
 ### 🎛️ Preferences Page  
 Fine-tune your outfit suggestions by selecting weather, occasion, and color.  
@@ -38,59 +40,61 @@ Fine-tune your outfit suggestions by selecting weather, occasion, and color.
 
 ---
 
-### 👕 Outfit Results Page  
-Generate outfits instantly—save them or start fresh!  
-![Generated Outfit Page](https://raw.githubusercontent.com/Milestoocutt/outfit-ai/f1a8959940a343eb6659427d6d0d8fdce8ea7ce4/Screenshot%202025-04-07%20171455.png)
+### 🧠 Outfit Generation
+
+AI curates full outfits using wardrobe items. Swipe to view more suggestions.
+
+![Outfit Suggestion](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-15%20163220.png?raw=true)
+
+---
+
+### 🔁 Example Outfit Workflow
+
+From upload ➝ tagging ➝ generation ➝ save — here’s a full example user flow.
+
+- Uploading items  
+  ![Upload Example](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-15%20175428.png?raw=true)
+
+- Attribute Editing  
+  ![Edit Modal](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-15%20163650.png?raw=true)
+
+- Generated Outfit  
+  ![Generated Fit](https://github.com/Milestoocutt/outfit-ai/blob/Screenshots/Screenshot%202025-04-15%20163220.png?raw=true)
+
+---
+
+## 🚀 How to Run Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/daniel-rawana/outfit-ai/
+cd runwai
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm start
+```
+
+Access the app at `http://localhost:3000`
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js  
+- **Frontend**: React
 - **Backend**: Flask
-- **AI Integration**: CLIP Nueral Network from OpenAI 
-- **Storage**: Supabase Database/File storage
+- **AI**:  CLIP Nueral Network from OpenAI
+- **Supabase** Database/File storage
+- **Hosting**: Local development (Docker/AWS ready)
 
----
 
-## 🚀 Getting Started
-
-1. Clone the repo  
-```bash
-git clone https://github.com/daniel-rawana/outfit-ai/
-cd outfit-ai
-```
-
-2. Install backend dependencies  
-```bash
-cd backend
-pip install -r 'requirements.txt'
-```
-
-2. Install frontend dependencies  
-```bash
-# from outfit-ai directory
-cd frontend
-npm install
-```
-
-3. Run the backend  
-```bash
-flask run
-```
-
-3. Run the frontend  
-```bash
-npm start
-```
-
-4. Navigate to `http://localhost:3000`
 
 ---
 
 ## 💡 Future Enhancements
-
-- User authentication & wardrobe history  
+ 
 - Outfit rating system  
 - Enhanced outfit generation with seasonal trends  
 - Mobile responsiveness  
@@ -98,8 +102,11 @@ npm start
 
 ---
 
+
+
+
+> Created with ❤️ by the RunwAI Team
 ## 🧵 Meet the Team
 
-Made with style and code by Daniel Rawana, Miles Weatherspoon, Alec Borque, Christopher Belizaire, Camila Gloria, Kevon Williams, Eduardo Goncalves, Abhiram Bhogi, Alessandra Uribe, Francesco Combatti ✨  
+Made with style and code by Daniel Rawana, Miles Weatherspoon, Alec Borque, Christopher Belizaire, Camila Gloria, Kevon Williams, Eduardo Goncalves, Abhiram Bhogi, Alessandra Uribe, Francesco Combatti ✨ 
 *Looking good has never been smarter.*
-
