@@ -28,6 +28,9 @@ const AboutUs = () => {
           We believe that everyone deserves to feel confident and express themselves through fashion, regardless of their styling expertise.
         </p>
       </div>
+      <footer class="site-footer">
+        <p>© 2025 RunwAI – All rights reserved.</p>
+      </footer>
     </>
   );
 };
