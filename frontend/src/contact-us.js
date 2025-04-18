@@ -53,6 +53,7 @@ const teamMembers = [
     role: "Project Support",
     blurb: "Hey! I’m Miles Weatherspoon, a management and information systems major working on the  project support team. In this project I learned a lot about what goes into the creation and management of an AI and I’m excited to learn more.",
     img: "miles.png",
+    email: "milesweatherspoon15@gmail.com"
   },
   {
     id: 8,
@@ -64,7 +65,7 @@ const teamMembers = [
     id: 9,
     name: "Alessandra Uribe",
     role: "Fashion SME, Backend, Database",
-    blurb: "Hi! I'm Alessandra",
+    blurb: "Hi, I'm Alessandra.",
     img: "alessandra.png",
   },
   {
@@ -78,7 +79,8 @@ const teamMembers = [
     id: 11,
     name: "Nathan Chen",
     role: "AI/ML, Backend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hi! I'm Nathan Chen and a Computer Science major at FIU, aspiring to become a software engineer. I helped with fine-tuning our data and assiting on additional features. The journey to learning never ends! Looking forward to more opportunities in the future!",
+    img: "nathan.png",
   },
   {
     id: 12,
