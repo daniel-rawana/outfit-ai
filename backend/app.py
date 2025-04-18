@@ -14,6 +14,7 @@ from outfit_generator import generate_ranked_outfits
 load_dotenv()
 
 url: str = os.environ.get("SUPABASE_URL")
+print(url)
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 

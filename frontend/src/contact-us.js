@@ -22,13 +22,16 @@ const teamMembers = [
     id: 3,
     name: "Eduardo Goncalvez",
     role: "AI/ML, Backend",
-    blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
+    blurb: "Hey! I'm Eduardo, a Computer Science student passionate about software development, AI, and creating tech that makes life easier. On our team, I focused on image categorization, outfit generation, and backend development. This project has been an incredible learning adventure, and I can't wait to build even more innovative AI solutions!",
+    img: "eduardo.png",
+    email: "eduardogoncalvez00@gmail.com" 
   },
   {
     id: 4,
     name: "Camila Gloria",
     role: "Frontend",
-    blurb: "lorem ispum doloor sit amet. lorem ispum doloor sit amet.",
+    blurb: "Hi, I'm Camila and I'm a Computer Science student working on the frontend team. I'm passionate about software engineering and UI/UX design! I learned a lot through this project and I'm excited to continue learning more.",
+    img: "camila.png",
   },
   {
     id: 5,
@@ -48,7 +51,8 @@ const teamMembers = [
     id: 7,
     name: "Miles Weatherspoon",
     role: "Project Support",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey! I’m Miles Weatherspoon, a management and information systems major working on the  project support team. In this project I learned a lot about what goes into the creation and management of an AI and I’m excited to learn more.",
+    img: "miles.png",
   },
   {
     id: 8,
@@ -60,13 +64,15 @@ const teamMembers = [
     id: 9,
     name: "Alessandra Uribe",
     role: "Fashion SME, Backend, Database",
+    img: "alessandra.png",
     blurb: "Hey! I’m Alessandra Uribe, a Computer Science student and the Fashion SME on this project. I worked on AI/ML, data testing, and helped align our tech with real-world trends. I love challenges, learning, and blending creativity with tech to make meaningful impact. Looking to continue working in future projects!",
   },
   {
     id: 10,
     name: "Laisha Bravo",
     role: "Frontend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hi my name is Laisha, I’m a junior at FIU studying CS. I contributed on the frontend, I like to make things look pretty :))",
+    img: "laisha.png",
   },
   {
     id: 11,
