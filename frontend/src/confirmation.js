@@ -38,6 +38,8 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
 
     const [updatedNewClassifications, setUpdatedNewClassifications] = useState(() => newClassifications.map(data => ({...data})));
     const [updatedExistingClassifications, setUpdatedExistingClassifications] = useState(() => existingClassifications.map(data => ({...data})));
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     // disable scroll on main page when popup is open
     useEffect(() => {
@@ -64,6 +66,60 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
         }
     };
 
+    const handleDelete = async () => {
+        try {
+          setIsDeleting(true);
+          // Get the item to delete
+          const itemToDelete = updatedExistingClassifications[0];
+          // Extract clothing_id from image URL
+          const imageUrl = itemToDelete.image;
+          // More robust pattern matching
+          const regex = /clothing_(\d+)_/;
+          const match = imageUrl.match(regex);
+          
+          if (!match) {
+            throw new Error('Could not extract clothing ID from image URL');
+          }
+          
+          const itemId = match[1];
+          
+          const response = await fetch(`http://127.0.0.1:5000/wardrobe/delete-clothing/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          // Remove the deleted item from your state
+          setUpdatedExistingClassifications(prev => 
+            prev.filter(item => item.id !== itemId)
+          );
+          
+          // If you also have the item in newClassifications, remove it there too
+          setUpdatedNewClassifications(prev => 
+            prev.filter(item => item.id !== itemId)
+          );
+          
+          console.log(`Successfully deleted item with ID: ${itemId}`);
+          
+          // Close the confirmation dialog and pass back the deleted item ID
+          onClose({
+            newItems: [],
+            modifiedExisting: [],
+            deletedItems: [itemId] // Fallback to clothingId if id is not available
+          });
+        } catch (error) {
+          console.error('Error deleting item:', error);
+          alert('Failed to delete item. Please try again.');
+        } finally {
+          setIsDeleting(false);
+        }
+      };
+
     const renderClassificationRow = (classification, index, type) => {
         const isBase64 = classification.image && !classification.image.startsWith("http");
         const imageSrc = isBase64
@@ -83,7 +139,7 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
                         color: colorOptions,
                         pattern: patternOptions,
                         season: seasonOptions,
-                        occasion: occasionOptions
+                        occasion: occasionOptions,
                     }).map(([key, selectionOptions]) => (
                         <div key={key} className="classification-container">
                             <p>{key.replace("_", " ")}:</p>
@@ -93,7 +149,7 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
                                 onChange={(e) => handleChange(index, key, e.target.value, type)}
                             >
                                 <option value="">Select</option>
-                                {selectionOptions.map(option => (
+                                {selectionOptions && selectionOptions.map(option => (
                                     <option key={option} value={option}>{option}</option>
                                 ))}
                             </select>
@@ -113,7 +169,8 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
         // send back classifications for new items + existing items that have been modified
         onClose({
             newItems: updatedNewClassifications,
-            modifiedExisting: modifiedExisting
+            modifiedExisting: modifiedExisting,
+            deletedItems: []
         });
     };
 
@@ -121,7 +178,8 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
         // send back unmodified classifications for new items
         onClose({
             newItems: newClassifications,
-            modifiedExisting: []
+            modifiedExisting: [],
+            deletedItems: []
         });
     };
 
@@ -139,6 +197,13 @@ const Confirmation = ({existingClassifications, newClassifications, onClose}) =>
                 <div className="buttons-container">
                     <button className="confirm-btn" onClick={handleConfirm}>Confirm</button>
                     <button className="cancel-btn" onClick={handleClose}>Cancel</button>
+                    <button 
+                        className="delete-btn" 
+                        onClick={handleDelete} 
+                        disabled={isDeleting}
+                    >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                    </button>
                 </div>
 
             </div>

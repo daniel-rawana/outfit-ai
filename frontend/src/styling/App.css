@@ -77,7 +77,7 @@ body {
     color: white;
 }
 
-.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label, .continue-btn {
+.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .delete-btn, .category-label, .continue-btn {
     display: flex;
     align-items: center;
     justify-content: center;

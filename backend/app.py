@@ -21,8 +21,7 @@ if (Client):
     print("Connected")
 
 app = Flask(__name__)
-CORS(app)  
-
+CORS(app, origins="http://localhost:3000", methods=["GET", "POST", "DELETE", "OPTIONS"])
 
 # User routes
 @app.route('/users/register', methods=['POST'])
@@ -294,6 +293,75 @@ def get_outfits():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Delete clothing
+@app.route('/wardrobe/delete-clothing/<int:clothing_id>', methods=['DELETE'])
+def delete_clothing(clothing_id):
+    try:
+        # Get the user_id (in a real app, you'd get this from auth)
+        user_id = 1  # FIXME: Implement proper user authentication
+
+        # First, find all images associated with this clothing item
+        images_response = (
+            supabase
+            .table("clothing_images")
+            .select("id, image_name")
+            .eq("clothing_id", clothing_id)
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        # Delete images from storage
+        for image in images_response.data:
+            file_path = f"user_clothes/user_{user_id}/{image['image_name']}"
+            try:
+                # Delete from storage
+                supabase.storage.from_("images").remove([file_path])
+            except Exception as e:
+                print(f"Error deleting file {file_path}: {str(e)}")
+
+        # Delete the clothing image records
+        image_delete_response = (
+            supabase
+            .table("clothing_images")
+            .delete()
+            .eq("clothing_id", clothing_id)
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        # Delete the clothing item record
+        clothing_delete_response = (
+            supabase
+            .table("clothing_items")
+            .delete()
+            .eq("id", clothing_id)
+            .execute()
+        )
+
+        # Check if any outfit items reference this clothing
+        # First just get the count to see if we need to do anything
+        outfit_items_count = (
+            supabase
+            .table("outfit_items")
+            .select("id", count="exact")
+            .eq("clothing_item_id", clothing_id)
+            .execute()
+        )
+
+        # If there are outfit items referencing this clothing, delete them
+        if outfit_items_count.count > 0:
+            outfit_items_delete_response = (
+                supabase
+                .table("outfit_items")
+                .delete()
+                .eq("clothing_item_id", clothing_id)
+                .execute()
+            )
+
+        return jsonify({"message": f"Clothing item with ID {clothing_id} deleted successfully"}), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

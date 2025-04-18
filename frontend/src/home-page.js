@@ -124,9 +124,9 @@ function HomePage() {
         setShowConfirmation(true);
     };
 
-    const handleConfirmationClose = async ({ newItems, modifiedExisting }) => {
+    const handleConfirmationClose = async ({ newItems, modifiedExisting, deletedItems }) => {
         setShowConfirmation(false);
-        if (newItems.length === 0 && modifiedExisting.length === 0) {
+        if (newItems.length === 0 && modifiedExisting.length === 0 && deletedItems.length === 0) {
             return;
         }
         let updateSuccess = false;
@@ -171,11 +171,19 @@ function HomePage() {
                 console.error("Error saving items: ", error);
             }
         }
+
+         // Handle deleted items first
+        if (deletedItems.length > 0) {
+            // Remove deleted items from the local state immediately
+            saveSuccess = true;
+        }
         if (updateSuccess || saveSuccess) {
             await fetchWardrobe();
         }
+
     };
 
+    
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
