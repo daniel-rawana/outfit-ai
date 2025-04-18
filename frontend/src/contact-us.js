@@ -88,25 +88,26 @@ const teamMembers = [
     id: 12,
     name: "Abhiram Bhogi",
     role: "AI/ML, Backend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey, I'm Abhriam!",
+    img: "abhiram.png",
   },
   {
     id: 13,
     name: "Tyler Coy",
     role: "AI/ML",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey, I'm Tyler!",
   },
   {
     id: 14,
     name: "Ruben Perez",
     role: "AI/ML",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey, I'm Ruben!",
   },
   {
     id: 15,
     name: "Jayden Krishna",
     role: "Frontend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey, I'm Jayden!",
   },
 ];
 
