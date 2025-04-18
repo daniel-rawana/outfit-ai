@@ -47,6 +47,6 @@ class Clothing:
         )
     
     def __str__(self):
-        return f"{self.main_category} {self.sub_category} {self.color} {self.season} {self.occasion}"
+        return f"{self.id} {self.main_category} {self.sub_category} {self.color} {self.season} {self.occasion}"
 
 

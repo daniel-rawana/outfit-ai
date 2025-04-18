@@ -5,15 +5,15 @@ import logo from './assets/runwai_logo.png';
 function Navbar() {
     return (
         <nav className="navbar">
-            <div className="logo">
-                <img src={logo} className="logo-icon"/> RunwAI
-            </div>
+            <Link to="/" className="logo">
+                <img src={logo} className="logo-icon" alt="Logo" /> RunwAI
+            </Link>
             <ul>
-                <li><Link to="/">Home</Link></li>
                 <li><Link to="/about">About</Link></li>
                 <li><Link to="/contact">Contact Us</Link></li>
+                <li><Link to="/saved-outfits">Saved Outfits</Link></li> 
                 <li>
-                    <button className="login-btn">Login</button>
+                    <button className="login-btn">Login</button> 
                 </li>
             </ul>
         </nav>

@@ -39,6 +39,13 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     best_bottoms = [item for item, _ in scored_bottoms[:bottom_limit]]
     best_shoes = [item for item, _ in scored_shoes[:shoe_limit]]
 
+    for top in best_tops:
+        print(top)
+    for bottom in best_bottoms:
+        print(bottom)
+    for shoe in best_shoes:
+        print(shoe)
+
     # Generate outfits using only these top items
     possible_outfits = []
 
@@ -66,31 +73,34 @@ def generate_ranked_outfits(wardrobe, user_preferences, limit=3):
     final_outfits = []
     used_items = set()
 
-    for outfit in ranked_outfits:
-        # Calculate penalty based on repetition
-        repetition_penalty = calculate_repetition_penalty(outfit, used_items)
+    remaining_outfits = ranked_outfits.copy()
 
-        # Apply penalty
-        outfit["score"] = max(0, outfit["score"] - repetition_penalty)
+    # Select outfits one by one, applying penalties dynamcially
+    while len(final_outfits) < limit and remaining_outfits:
+        # Apply repetition penalties to ALL remaining outfits
+        for outfit in remaining_outfits:
+            penalty = calculate_repetition_penalty(outfit, used_items)
+            outfit["score"] = max(0, outfit["score"] - penalty)
+    
+        # Re-sort based on adjusted scores
+        remaining_outfits.sort(key=lambda x: x["score"], reverse=True)
+    
+        # Take the best outfit after penalties
+        best_outfit = remaining_outfits[0]
+    
+        # Add to final outfits
+        final_outfits.append(best_outfit)
+    
+        # Add its items to used set
+        used_items.add(best_outfit["top"].id)
+        used_items.add(best_outfit["bottom"].id)
+        used_items.add(best_outfit["footwear"].id)
+    
+        # Remove this outfit from consideration
+        remaining_outfits.remove(best_outfit)
 
-        # Add to final outfits if we haven't rached the limti 
-        if len(final_outfits) < limit:
-            final_outfits.append(outfit)
-
-            # Add items to used set
-            used_items.add(outfit["top"].id)
-            used_items.add(outfit["bottom"].id)
-            used_items.add(outfit["footwear"].id)
-        
-        # Re-sort after each addition to account for penalties
-        final_outfits.sort(key=lambda x: x["score"], reverse=True)
-
-        # If we have enough outfits and the next one has a much lower score, we can stop
-        if len(final_outfits) >= limit and outfit["score"] < final_outfits[-1]["score"] * 0.7:
-            break
-
-    # Return top outfits
-    return final_outfits[:limit]
+    # Return final outfits
+    return final_outfits
 
 def score_individual_items(items, user_preferences):
     scored_items = []
@@ -99,13 +109,17 @@ def score_individual_items(items, user_preferences):
         # Start with base score
         score = 0
 
-        # Weather/season score (0-50 points)
+        # Weather/season score (0-40 points)
         weather_score = match_weather(item, user_preferences["weather"])
-        score += weather_score
+        score += (weather_score * 40)
 
-        # Occasion score (0-50 points)
+        # Occasion score (0-40 points)
         occasion_score = match_occasion(item, user_preferences["occasion"])
-        score += occasion_score
+        score += (occasion_score * 40)
+
+        # Color score (0-20 points)
+        color_score = color_pair_compatibility(item.color.lower(), user_preferences["color"].lower())
+        score += (color_score * 20)
 
         scored_items.append((item, score))
     
@@ -429,11 +443,11 @@ def calculate_repetition_penalty(outfit, used_items):
 
     # Check if top is repeated (Higher penalty)
     if outfit["top"].id in used_items:
-        penalty += 15
+        penalty += 30
     
     # Check if bottom is repeated (Moderate penalty)
     if outfit["bottom"].id in used_items:
-        penalty += 10
+        penalty += 15
 
     if outfit["footwear"].id in used_items:
         penalty += 5

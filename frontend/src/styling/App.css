@@ -77,7 +77,7 @@ body {
     color: white;
 }
 
-.upload-btn, .generate-btn, .save-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label, .continue-btn {
+.upload-btn, .generate-btn, .new-outfit-btn, .confirm-btn, .cancel-btn, .category-label, .continue-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,6 +93,24 @@ body {
     height: 50px;
     box-sizing: border-box;
     font-size: medium;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.save-btn, .view-saved-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 25px;
+    background: linear-gradient(to left, #212f57, #2d4883);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-size: larger;
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
     text-align: center;
@@ -132,8 +150,10 @@ body {
 .large-image-container img {
     width: 250px;
     height: 250px;
-    border-radius: 8px;
     object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    animation: outfitFadeIn 0.8s ease-in-out;
 }
 
 .image-placeholder, .category-box {
@@ -258,7 +278,7 @@ body {
     text-align: center;
 }
 
-.suggestion-container, .preferences-container {
+.preferences-container, .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -270,12 +290,30 @@ body {
     min-height: 75vh;
 }
 
+.suggestion-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    color: white;
+    padding: 50px;
+    gap: 30px;
+    min-height: 65vh;
+}
+
+.suggestion {
+    background: linear-gradient(to bottom, #80ceff, #8cb0e8);
+    padding: 50px;
+    border-radius: 15px;
+}
+
 .outfit-container, .buttons-container {
     display: flex;
     flex-direction: row;
     gap: 25px;
     align-items: center;
     justify-content: center;
+    margin-top: 50px;
 }
 
 .preference-container {
@@ -417,19 +455,37 @@ select {
 
 .outfit-item:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6);
-    z-index: 2;
-}
-
-.large-image-container {
-    animation: outfitFadeIn 0.8s ease-in-out;
 }
 
 .suggestion-container h1 {
-    background: linear-gradient(to left, #212f57, #2d4883);
-    color: white;
+    color: #2d4883;
     border-radius: 8px;
     padding: 10px;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.editable-name-input {
+    font-size: 2rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    outline: solid 2px white;
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #2d4883;
+    width: max-content;
+    display: block;
+    margin: 0 auto;
+}
+
+.edit, .cancel {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    fill: #2d4883;
 }
 
 @keyframes outfitFadeIn {
@@ -492,7 +548,7 @@ select {
     z-index: 999;
 }
 
-.popup-reveal-card {
+.popup-reveal-card, .popup-outfit-card {
     background: white;
     border-radius: 20px;
     padding: 40px;
@@ -513,12 +569,12 @@ select {
     background: linear-gradient(to right, #2d4883, #212f57);
 }
 
-.reveal-title {
+.reveal-title, .outfit-title {
     font-size: 30px;
     font-weight: bold;
 }
 
-.popup-outfits-grid {
+.popup-outfits-grid, .popup-clothes-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -594,4 +650,58 @@ select {
     height: 70px;
     object-fit: cover;
     border-radius: 8px;
+}
+
+.saved-outfit-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: linear-gradient(to top, #80ceff, #8cb0e8);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: fit-content;
+    max-width: 300px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.saved-outfit-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.saved-outfit-card .mini-outfit-img {
+    width: 90px;
+    height: 90px;
+}
+
+.outfit-title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast-notification {
+    text-align: center;
+    margin: 10px;
+}
+
+.logo {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo:visited {
+    color: inherit;
+}
+
+.logo:hover {
+    text-decoration: none;
+}
+
+.filter-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 20px;
+    gap: 10px;
 }

@@ -14,6 +14,7 @@ from outfit_generator import generate_ranked_outfits
 load_dotenv()
 
 url: str = os.environ.get("SUPABASE_URL")
+print(url)
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
@@ -89,12 +90,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print("FETCHED WARDROBE ITEMS:\n")
-        for index, item in enumerate(wardrobe):
-            item_copy = item.copy()
-            print(f"Item {index}:\n")
-            print(item_copy)
-            print("\n")
+        print(f"Fetched {len(wardrobe)} items from database. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
@@ -298,6 +294,120 @@ def get_outfits():
         return jsonify({"outfits": outfits}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/outfits/saved', methods=['GET'])
+def get_saved_outfits():
+    try:
+        user_id = 1  # FIXME: Replace with real user ID if login logic is added
+        print(f"[INFO] Fetching saved outfits for user_id: {user_id}")
+
+        # Fetch saved outfits for the user
+        outfits_response = (
+            supabase
+            .table("saved_outfits")
+            .select("*")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        saved_outfits = outfits_response.data
+        print(f"[DEBUG] Found {len(saved_outfits)} saved outfits.")
+
+        all_outfits = []
+
+        for outfit in saved_outfits:
+            outfit_id = outfit["id"]
+            print(f"[INFO] Processing outfit ID: {outfit_id} | Name: {outfit.get('outfit_name')}")
+
+            # Fetch clothing item IDs for this outfit
+            items_response = (
+                supabase
+                .table("outfit_items")
+                .select("clothing_item_id")
+                .eq("outfit_id", outfit_id)
+                .execute()
+            )
+
+            clothing_ids = [item["clothing_item_id"] for item in items_response.data]
+            print(f"[DEBUG] Outfit {outfit_id} has clothing item IDs: {clothing_ids}")
+
+            # Fetch full clothing item data including image and metadata
+            if clothing_ids:
+                clothing_response = (
+                    supabase
+                    .table("clothing_images")
+                    .select("clothing_id, image_url, clothing_items(*)")
+                    .in_("clothing_id", clothing_ids)
+                    .execute()
+                )
+
+                clothing_items = []
+                for row in clothing_response.data:
+                    metadata = row.get("clothing_items", {})
+                    clothing_items.append({
+                        "id": row["clothing_id"],
+                        "image": row["image_url"],
+                        "main_category": metadata.get("main_category", ""),
+                        "sub_category": metadata.get("sub_category", ""),
+                        "color": metadata.get("color", ""),
+                        "style": metadata.get("style", ""),
+                        "occasion": metadata.get("occasion", ""),
+                        "season": metadata.get("season", ""),
+                        "silhouette": metadata.get("silhouette", ""),
+                        "pattern": metadata.get("pattern", "")
+                    })
+
+                print(f"[DEBUG] Fetched {len(clothing_items)} clothing items for outfit ID {outfit_id}")
+
+                all_outfits.append({
+                    "id": outfit_id,
+                    "name": outfit.get("outfit_name", ""),
+                    "items": clothing_items
+                })
+
+        print("[SUCCESS] Returning all saved outfits.")
+        return jsonify({"outfits": all_outfits}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch saved outfits: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/outfits/save', methods=['POST'])
+def save_outfit():
+    try:
+        data = request.get_json()
+        outfit_items = data.get("outfit", [])
+        outfit_name = data.get("outfit_name", "Untitled Outfit")
+        user_id = 1  # TODO: Replace with real user ID when auth is added
+
+        print(f"[INFO] Saving outfit: {outfit_name} with {len(outfit_items)} items.")
+
+        # Insert into saved_outfits table
+        outfit_response = supabase.table("saved_outfits").insert({
+            "user_id": user_id,
+            "outfit_name": outfit_name
+        }).execute()
+
+        saved_outfit_id = outfit_response.data[0]["id"]
+        print(f"[DEBUG] New outfit ID: {saved_outfit_id}")
+
+        # Insert each clothing item into outfit_items table
+        for item in outfit_items:
+            clothing_id = item.get("id")
+            if clothing_id:
+                supabase.table("outfit_items").insert({
+                    "outfit_id": saved_outfit_id,
+                    "clothing_item_id": clothing_id
+                }).execute()
+                print(f"[DEBUG] Linked clothing ID {clothing_id} to outfit {saved_outfit_id}")
+
+        print("[SUCCESS] Outfit saved successfully.")
+        return jsonify({"message": "Outfit saved successfully"}), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to save outfit: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
