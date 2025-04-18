@@ -64,8 +64,8 @@ const teamMembers = [
     id: 9,
     name: "Alessandra Uribe",
     role: "Fashion SME, Backend, Database",
-    blurb: "Hi! I'm Alessandra",
     img: "alessandra.png",
+    blurb: "Hey! I’m Alessandra Uribe, a Computer Science student and the Fashion SME on this project. I worked on AI/ML, data testing, and helped align our tech with real-world trends. I love challenges, learning, and blending creativity with tech to make meaningful impact. Looking to continue working in future projects!",
   },
   {
     id: 10,

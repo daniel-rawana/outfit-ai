@@ -350,7 +350,11 @@ def get_saved_outfits():
                         "main_category": metadata.get("main_category", ""),
                         "sub_category": metadata.get("sub_category", ""),
                         "color": metadata.get("color", ""),
-                        "style": metadata.get("style", "")
+                        "style": metadata.get("style", ""),
+                        "occasion": metadata.get("occasion", ""),
+                        "season": metadata.get("season", ""),
+                        "silhouette": metadata.get("silhouette", ""),
+                        "pattern": metadata.get("pattern", "")
                     })
 
                 print(f"[DEBUG] Fetched {len(clothing_items)} clothing items for outfit ID {outfit_id}")
