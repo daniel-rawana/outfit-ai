@@ -14,7 +14,7 @@ const teamMembers = [
     id: 2,
     name: "Francesco Combatti",
     role: "Backend, Database",
-    blurb: "Hey! I'm Francesco, a Computer Science student passionate about Cybersecurity, AI, and solving real-world problems. On our team, I focused on data testing, backend logic, and secure code. I enjoy working out, learning new tools, watching shows, and reading.",
+    blurb: "Hey! I'm Francesco, a Computer Science student passionate about Cybersecurity, AI, and solving real-world problems through tech. As part of our team, I focused on data testing, backend logic, and security, ensuring clean, efficient code and safe data handling. I enjoy working out, learning new tools, watch series and movies, reading, and a lot more. I'm always driven to grow, create meaningful impact, and turn challenges into opportunities.",
     img: "francesco.jpeg",
     email: "francombatti@hotmail.com"
   },
@@ -45,7 +45,7 @@ const teamMembers = [
     id: 6,
     name: "Kevon Williams",
     role: "Backend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hey, I'm Kevon Williams! As a Computer Science major at FIU interested in data science, I focused on backend development and testing for this project. I gained valuable experience and look forward to tackling new challenges.",
   },
   {
     id: 7,
@@ -59,7 +59,9 @@ const teamMembers = [
     id: 8,
     name: "Alec Borque",
     role: "AI/ML, Backend",
-    blurb: "lorem ispum doloor sit amet.",
+    blurb: "Hello! My name is Alec Borque, a Computer Science major with a strong interest in data-driven problem solving and a long-term goal of becoming a quantitative analyst. In this project, I contributed through Project Support and AI Development, bringing a detail-oriented mindset and a passion for learning while working alongside a driven and collaborative team.",
+    email: "alecborque@gmail.com",
+    img: "alec.png",
   },
   {
     id: 9,
