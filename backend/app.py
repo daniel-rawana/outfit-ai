@@ -80,7 +80,11 @@ def get_user_id_from_token(auth_header):
 def get_wardrobe():
     try:
         
-        user_id = 1
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+
 
         # return list of clothing items + classifications pulled from database
         wardrobe = []
@@ -175,6 +179,11 @@ def update_classifications():
 def save_clothing_items():
     # Save new items and their classifications to database
     try:
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+        
         newItems = request.get_json()
 
         # save new clothing items and their classifications in database
@@ -199,7 +208,8 @@ def save_clothing_items():
 
             # create a unique filename
             file_name = f"clothing_{clothing_id}_{uuid.uuid4()}.jpg"
-            file_path = f"user_clothes/user_1/{file_name}" # FIXME: Using user_id 1 for now 
+            file_path = f"user_clothes/user_{user_id}/{file_name}"  # ✅ user-specific folder
+
 
             # upload to Supabase Storage
             storage_response = supabase.storage.from_("images").upload(
@@ -210,12 +220,12 @@ def save_clothing_items():
             # get the public url 
             image_url = supabase.storage.from_("images").get_public_url(file_path)
 
-            # Insert the image with reference to lothing_items
+            # Insert the image with reference to clothing_items
             image_record = {
                 "clothing_id": clothing_id,
                 "image_url": image_url,
                 "image_name": file_name,
-                "user_id": 1 #FIXME: Implement user_id features
+                "user_id": user_id
             }
             image_response = supabase.table("clothing_images").insert(image_record).execute()
             print(image_response.data[0]["id"])
@@ -235,7 +245,10 @@ def generate_outfit():
         print(request_data)
         print("\n")
 
-        user_id = 1
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
 
         response = (
             supabase
@@ -317,7 +330,11 @@ def get_outfits():
 @app.route('/outfits/saved', methods=['GET'])
 def get_saved_outfits():
     try:
-        user_id = 1  # FIXME: Replace with real user ID if login logic is added
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+        
         print(f"[INFO] Fetching saved outfits for user_id: {user_id}")
 
         # Fetch saved outfits for the user
@@ -397,7 +414,11 @@ def save_outfit():
         data = request.get_json()
         outfit_items = data.get("outfit", [])
         outfit_name = data.get("outfit_name", "Untitled Outfit")
-        user_id = 1  # TODO: Replace with real user ID when auth is added
+
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
 
         print(f"[INFO] Saving outfit: {outfit_name} with {len(outfit_items)} items.")
 
