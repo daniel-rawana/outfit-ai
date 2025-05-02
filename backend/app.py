@@ -29,32 +29,51 @@ CORS(app)
 @app.route('/users/register', methods=['POST'])
 def register_user():
     try:
-        # registration logic goes here (idk if we're gonna be allowing for user registration so this could be ignored entirely)
-        # 1. get email and password from request
-        # 2. validate email format and password strength
-        # 3. check if email already exists
-        # 4. hash the password
-        # 5. save user to database
-        # 6. generate auth token
-        # 7. return success with token
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+        
+        response = supabase.auth.sign_up({
+            "email": email,
+            "password": password
+        })
+        if response.user:
+            return jsonify({"message": "User registered successfully"}), 201
+        else:
+            return jsonify({"error": "User registration failed"}), 400
 
-        return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/users/login', methods=['POST'])
 def login_user():
     try:
-        # user login logic (again, this could be ignored entirely if we don't allow for user registration)
-        # 1. Get email and password from request
-        # 2. Find user by email in database
-        # 3. Verify password matches
-        # 4. Generate auth token
-        # 5. Return success with token
-
-        return jsonify({"message": "Login successful"}), 200
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+        session = auth_response.session
+        if session:
+            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth.response.user.id}), 200
+        else:
+            return jsonify({"error": "Login failed, invalid credentials."}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 401
+def get_user_id_from_token(auth_header):
+    try:
+        token = auth_header.split(" ")[1]  # Get just the token from "Bearer abc123"
+        user = supabase.auth.get_user(token)
+        return user.user.id
+    except Exception as e:
+        print("Auth error:", e)
+        return None
 
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
