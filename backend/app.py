@@ -61,7 +61,7 @@ def login_user():
         })
         session = auth_response.session
         if session:
-            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth.response.user.id}), 200
+            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
         else:
             return jsonify({"error": "Login failed, invalid credentials."}), 401
     except Exception as e:
