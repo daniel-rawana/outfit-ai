@@ -78,8 +78,9 @@ def get_user_id_from_token(auth_header):
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
+
     try:
-        
+        # check if user is logged in
         auth_header = request.headers.get("Authorization")
         user_id = get_user_id_from_token(auth_header)
         if not user_id:
@@ -95,7 +96,7 @@ def get_wardrobe():
             .select("user_id, clothing_id, image_url, clothing_items(*)")
             .eq("user_id", user_id)
             .execute()
-        )   
+        )
 
         # format items for response 
         for row in response.data: 
