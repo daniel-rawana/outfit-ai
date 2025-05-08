@@ -78,13 +78,15 @@ def get_user_id_from_token(auth_header):
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
-
+    
     try:
         # check if user is logged in
+        # get user id from auth token
         auth_header = request.headers.get("Authorization")
         user_id = get_user_id_from_token(auth_header)
         if not user_id:
             return jsonify({"error": "Unauthorized"}), 401
+        print("User ID:", user_id) # debugging purposes
 
 
         # return list of clothing items + classifications pulled from database
