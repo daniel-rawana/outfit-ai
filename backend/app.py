@@ -262,6 +262,10 @@ def generate_outfit():
         )
 
         clothing_list = []
+        
+        print(f"[DEBUG] Found {len(response.data)} clothing items for user ID: {user_id}") # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No clothing items found for the user."}), 404
 
         for row in response.data:
             metadata = row.get("clothing_items")
@@ -273,6 +277,7 @@ def generate_outfit():
                 ))
             else:
                 print("No metadata found for this image")
+
 
         generated_outfits = generate_ranked_outfits(clothing_list, request_data) 
 
