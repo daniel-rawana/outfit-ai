@@ -28,7 +28,12 @@ function HomePage() {
 
     const fetchWardrobe = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items");
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items", {
+                headers:{
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -61,7 +66,10 @@ function HomePage() {
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/classify-clothing", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 },
                 body: JSON.stringify({ images: base64Images }),
             });
             if (!response.ok) {
@@ -135,7 +143,10 @@ function HomePage() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                     },
                     body: JSON.stringify(modifiedExisting),
                 });
                 if (!response.ok) {
@@ -158,7 +169,10 @@ function HomePage() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/wardrobe/save-clothing-items", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                     },
                     body: JSON.stringify(newItems),
                 });
                 if (!response.ok) {
