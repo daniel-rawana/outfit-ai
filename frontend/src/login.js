@@ -19,10 +19,10 @@ function Login() {
             });
 
             // Store token or user info as needed
-            const token = localStorage.setItem("token", res.data.access_token);
-            const uid = localStorage.setItem("userId", res.data.user_id);
-            console.log("Token:", token);
-            console.log("User ID:", uid);
+            localStorage.setItem("token", res.data.access_token);
+            localStorage.setItem("userId", res.data.user_id);
+            console.log("Token:", localStorage.getItem("token"));
+            console.log("User ID:", localStorage.getItem("userId"));
             // Redirect to home page or another page after successful login
             console.log("Login success");
             navigate("/"); // or wherever you want to redirect

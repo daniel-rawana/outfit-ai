@@ -10,6 +10,7 @@ function HomePage() {
     const [uploadedImages, setUploadedImages] = useState([]);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId"); // USERID IS NOT USED IN THIS FILE, BUT IT IS IN THE BACKEND. IF WE DECIDE TO USE IT, WE CAN ADD IT TO THE FETCH REQUESTS.
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
