@@ -28,14 +28,26 @@ function HomePage() {
     }, [uploadedImages]);
 
     const fetchWardrobe = async () => {
+        if (!token) {
+            alert("Please log in to access your wardrobe.");
+            navigate("/login");
+            return;
+        }
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items", {
                 headers:{
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    alert("Session expired. Please log in again.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userId");
+                    navigate("/login");
+                }
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const wardrobeData = await response.json();
