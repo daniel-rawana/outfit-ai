@@ -78,13 +78,15 @@ def get_user_id_from_token(auth_header):
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
-
+    
     try:
         # check if user is logged in
+        # get user id from auth token
         auth_header = request.headers.get("Authorization")
         user_id = get_user_id_from_token(auth_header)
         if not user_id:
             return jsonify({"error": "Unauthorized"}), 401
+        print("User ID:", user_id) # debugging purposes
 
 
         # return list of clothing items + classifications pulled from database
@@ -97,10 +99,16 @@ def get_wardrobe():
             .eq("user_id", user_id)
             .execute()
         )
+        print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No items returned from supabase."}), 404
 
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
+            if not clothing_data:
+                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
+                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
@@ -114,7 +122,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print(f"Fetched {len(wardrobe)} items from database. \n" )
+        print(f"Fetched {len(wardrobe)} items from database, added to wardrobe. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
@@ -260,6 +268,10 @@ def generate_outfit():
         )
 
         clothing_list = []
+        
+        print(f"[DEBUG] Found {len(response.data)} clothing items for user ID: {user_id}") # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No clothing items found for the user."}), 404
 
         for row in response.data:
             metadata = row.get("clothing_items")
@@ -271,6 +283,7 @@ def generate_outfit():
                 ))
             else:
                 print("No metadata found for this image")
+
 
         generated_outfits = generate_ranked_outfits(clothing_list, request_data) 
 
