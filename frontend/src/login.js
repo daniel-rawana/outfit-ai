@@ -13,13 +13,13 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://127.0.0.1:5000/api/auth/login", {
+            const res = await axios.post("http://127.0.0.1:5000/users/login", {
                 email,
                 password,
             });
 
             // Store token or user info as needed
-            localStorage.setItem("token", res.data.token);
+            const token = localStorage.setItem("token", res.data.token);
             console.log("Login success");
             navigate("/"); // or wherever you want to redirect
         } catch (err) {
