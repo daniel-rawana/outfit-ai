@@ -20,6 +20,7 @@ function Login() {
 
             // Store token or user info as needed
             const token = localStorage.setItem("token", res.data.token);
+            console.log("Token:", token);
             console.log("Login success");
             navigate("/"); // or wherever you want to redirect
         } catch (err) {

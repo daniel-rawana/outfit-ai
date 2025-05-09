@@ -9,6 +9,7 @@ function HomePage() {
     const [wardrobeItems, setWardrobeItems] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -30,7 +31,7 @@ function HomePage() {
         try {
             const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items", {
                 headers:{
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -68,7 +69,7 @@ function HomePage() {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                  },
                 body: JSON.stringify({ images: base64Images }),
             });
@@ -145,7 +146,7 @@ function HomePage() {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                      },
                     body: JSON.stringify(modifiedExisting),
                 });
@@ -171,7 +172,7 @@ function HomePage() {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                      },
                     body: JSON.stringify(newItems),
                 });
