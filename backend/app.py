@@ -99,10 +99,16 @@ def get_wardrobe():
             .eq("user_id", user_id)
             .execute()
         )
+        print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No items returned from supabase."}), 404
 
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
+            if not clothing_data:
+                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
+                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
@@ -116,7 +122,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print(f"Fetched {len(wardrobe)} items from database. \n" )
+        print(f"Fetched {len(wardrobe)} items from database, added to wardrobe. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
