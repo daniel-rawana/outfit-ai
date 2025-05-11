@@ -101,7 +101,8 @@ def get_wardrobe():
         )
         print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
         if not response.data:
-            return jsonify({"error": "No items returned from supabase."}), 404
+            print(f"No clothing items found for user ID: {user_id}") # debugging purposes
+            return jsonify([]), 200
 
         # format items for response 
         for row in response.data: 
