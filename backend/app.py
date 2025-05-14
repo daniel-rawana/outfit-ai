@@ -207,8 +207,13 @@ def save_clothing_items():
             print(classification_copy)
             print("\n")
 
-            items_response = supabase.table("clothing_items").insert(classification_copy).execute()
-            clothing_id = items_response.data[0]["id"]
+            try:
+                items_response = supabase.table("clothing_items").insert(classification_copy).execute()
+                clothing_id = items_response.data[0]["id"]
+                print(f"Inserted clothing item with ID {clothing_id} for user {user_id}")
+            except Exception as e:
+                print(f"Error inserting clothing item: {e}")
+                continue
 
             # Convert base64 to binary for storage upload
             if "," in imgData:
@@ -222,25 +227,36 @@ def save_clothing_items():
 
 
             # upload to Supabase Storage
-            storage_response = supabase.storage.from_("images").upload(
-                file_path,
-                image_bytes
-            )
+            try:
+                storage_response = supabase.storage.from_("images").upload(
+                    file_path,
+                    image_bytes
+                )
+                print(f"Uploaded image to Supabase Storage: {storage_response}")
+            except Exception as e:  
+                print(f"Error uploading image to Supabase Storage: {e}")
+                continue
 
             # get the public url 
-            image_url = supabase.storage.from_("images").get_public_url(file_path)
+            try:
+                image_url = supabase.storage.from_("images").get_public_url(file_path)
+                print(f"Image URL: {image_url}")
+            
 
             # Insert the image with reference to clothing_items
-            image_record = {
-                "clothing_id": clothing_id,
-                "image_url": image_url,
-                "image_name": file_name,
-                "user_id": user_id
-            }
-            image_response = supabase.table("clothing_images").insert(image_record).execute()
-            print(image_response.data[0]["id"])
-            print("Success!")
-
+                image_record = {
+                    "clothing_id": clothing_id,
+                    "image_url": image_url,
+                    "image_name": file_name,
+                    "user_id": user_id
+                }
+            
+                image_response = supabase.table("clothing_images").insert(image_record).execute()
+                print(image_response.data[0]["id"])
+                print("Success!")
+            except Exception as e:
+                print(f"Error getting public URL: {e}")
+                continue
         return jsonify(newItems), 200
     except Exception as e:
         print(str(e))
