@@ -68,6 +68,9 @@ def login_user():
         return jsonify({"error": str(e)}), 401
 def get_user_id_from_token(auth_header):
     try:
+        if not auth_header or not auth_header.startswith("Bearer "):
+            print("Invalid auth header")
+            return None
         token = auth_header.split(" ")[1]  # Get just the token from "Bearer abc123"
         user = supabase.auth.get_user(token)
         return user.user.id
@@ -107,9 +110,6 @@ def get_wardrobe():
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
-            if not clothing_data:
-                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
-                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
