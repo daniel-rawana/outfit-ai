@@ -9,6 +9,8 @@ function HomePage() {
     const [wardrobeItems, setWardrobeItems] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId"); // USERID IS NOT USED IN THIS FILE, BUT IT IS IN THE BACKEND. IF WE DECIDE TO USE IT, WE CAN ADD IT TO THE FETCH REQUESTS.
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationData, setConfirmationData] = useState({ existingClassifications: [], newClassifications: [] });
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -27,9 +29,25 @@ function HomePage() {
     }, [uploadedImages]);
 
     const fetchWardrobe = async () => {
+        if (!token) {
+            alert("Please log in to access your wardrobe.");
+            navigate("/login");
+            return;
+        }
         try {
-            const response = await fetch("http://150.136.215.192:8000/wardrobe/fetch-user-items");
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items", {
+                headers:{
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) {
+                if (response.status === 401) {
+                    alert("Session expired. Please log in again.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userId");
+                    navigate("/login");
+                }
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const wardrobeData = await response.json();
@@ -61,7 +79,10 @@ function HomePage() {
         try {
             const response = await fetch("http://150.136.215.192:8000/wardrobe/classify-clothing", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`
+                 },
                 body: JSON.stringify({ images: base64Images }),
             });
             if (!response.ok) {
@@ -135,7 +156,10 @@ function HomePage() {
             try {
                 const response = await fetch("http://150.136.215.192:8000/wardrobe/update-classifications", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                     },
                     body: JSON.stringify(modifiedExisting),
                 });
                 if (!response.ok) {
@@ -158,7 +182,10 @@ function HomePage() {
             try {
                 const response = await fetch("http://150.136.215.192:8000/wardrobe/save-clothing-items", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                     },
                     body: JSON.stringify(newItems),
                 });
                 if (!response.ok) {

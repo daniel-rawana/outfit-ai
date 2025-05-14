@@ -17,4 +17,5 @@ python-dotenv
 pillow
 torch
 torchvision
+gunicorn
 git+https://github.com/openai/CLIP.git

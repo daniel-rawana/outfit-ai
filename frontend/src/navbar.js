@@ -1,8 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from './assets/runwai_logo.png';
 
 function Navbar() {
+    const navigate = useNavigate();
+
     return (
         <nav className="navbar">
             <Link to="/" className="logo">
@@ -13,7 +15,7 @@ function Navbar() {
                 <li><Link to="/contact">Contact Us</Link></li>
                 <li><Link to="/saved-outfits">Saved Outfits</Link></li> 
                 <li>
-                    <button className="login-btn">Login</button> 
+                    <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
                 </li>
             </ul>
         </nav>
