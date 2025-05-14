@@ -41,7 +41,6 @@ function HomePage() {
                     'Content-Type': 'application/json'
                 }
             });
-
             if (!response.ok) {
                 if (response.status === 401) {
                     alert("Session expired. Please log in again.");
@@ -78,7 +77,7 @@ function HomePage() {
             uploadedImages.map((image) => convertToBase64(image))
         );
         try {
-            const response = await fetch("http://127.0.0.1:5000/wardrobe/classify-clothing", {
+            const response = await fetch("http://150.136.215.192:8000/wardrobe/classify-clothing", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
@@ -155,7 +154,7 @@ function HomePage() {
         let saveSuccess = false;
         if (modifiedExisting.length > 0) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/wardrobe/update-classifications", {
+                const response = await fetch("http://150.136.215.192:8000/wardrobe/update-classifications", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
@@ -181,7 +180,7 @@ function HomePage() {
         }
         if (newItems.length > 0) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/wardrobe/save-clothing-items", {
+                const response = await fetch("http://150.136.215.192:8000/wardrobe/save-clothing-items", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",

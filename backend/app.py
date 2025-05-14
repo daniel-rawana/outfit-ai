@@ -64,6 +64,7 @@ def login_user():
             return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
         else:
             return jsonify({"error": "Login failed, invalid email or password."}), 401
+
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 def get_user_id_from_token(auth_header):
@@ -105,11 +106,15 @@ def get_wardrobe():
         print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
         if not response.data:
             print(f"No clothing items found for user ID: {user_id}") # debugging purposes
-            return jsonify([]), 200
+            return jsonify({"error": "No items returned from supabase."}), 404
+
 
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
+            if not clothing_data:
+                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
+                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
