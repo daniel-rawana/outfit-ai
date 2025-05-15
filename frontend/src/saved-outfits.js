@@ -30,7 +30,7 @@ function SavedOutfits() {
 
     const fetchOutfits = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/outfits/saved");
+            const response = await fetch("http://150.136.215.192:8000/outfits/saved");
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
