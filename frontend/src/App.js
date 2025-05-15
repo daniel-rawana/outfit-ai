@@ -9,6 +9,8 @@ import ContactUs from "./contact-us.js";
 import SavedOutfits from "./saved-outfits";
 import Login from "./login";
 import Register from "./register";
+import Signup from "./Signup";
+
 
 function App() {
     return (
@@ -23,6 +25,7 @@ function App() {
                 <Route path="/saved-outfits" element={<SavedOutfits />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/signup" element={<Signup />} />
             </Routes>
         </Router>
     );
