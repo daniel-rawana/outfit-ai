@@ -1,8 +1,8 @@
 import React, { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './styling/login.css';
-
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -24,6 +24,14 @@ function Login() {
             // Redirect to home page or another page after successful login
             console.log("Login success");
             navigate("/"); // or wherever you want to redirect
+            const res = await axios.post("http://127.0.0.1:5000/api/auth/login", {
+                email,
+                password,
+            });
+            
+            localStorage.setItem("token", res.data.token);
+            console.log("Login success");
+            navigate("/"); // Redirect after successful login
         } catch (err) {
             setError("Invalid email or password.");
             console.error("Login failed:", err);
@@ -51,6 +59,15 @@ function Login() {
                 <button type="submit">Login</button>
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}
+                <button className="login-button" type="submit">Login</button>
+            </form>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            <div className="login-footer">
+                <p>Don't have an account? <Link to="/register">Register Now </Link></p>
+            </div>
+            <p className="signup-text">
+              Don't have an account? <a href="/signup">Create one</a>
+            </p>
         </div>
     );
 }
