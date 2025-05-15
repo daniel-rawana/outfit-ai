@@ -7,6 +7,8 @@ import Preferences from "./preferences";
 import AboutUs from "./about-us.js";
 import ContactUs from "./contact-us.js";
 import SavedOutfits from "./saved-outfits";
+import Login from "./login";
+import Signup from "./Signup";
 
 function App() {
     return (
@@ -19,6 +21,8 @@ function App() {
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/saved-outfits" element={<SavedOutfits />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
             </Routes>
         </Router>
     );
