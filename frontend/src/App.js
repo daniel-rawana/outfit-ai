@@ -9,7 +9,7 @@ import ContactUs from "./contact-us.js";
 import SavedOutfits from "./saved-outfits";
 import Login from "./login";
 import Register from "./register";
-import Signup from "./Signup";
+import Signup from "./signup";
 
 
 function App() {

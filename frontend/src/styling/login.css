@@ -118,6 +118,7 @@ button {
 
 .register-button:hover {
     transform: scale(1.03);
+}
 button:hover {
     transform: scale(1.03);
 }
