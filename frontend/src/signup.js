@@ -1,37 +1,41 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './styling/login.css';
 
-function Login() {
+function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
+
         try {
-            const res = await axios.post("http://127.0.0.1:5000/users/login", {
+            const res = await axios.post("http://127.0.0.1:5000/api/auth/signup", {
                 email,
                 password,
             });
-            
-            localStorage.setItem("token", res.data.access_token);
-            console.log("Token:", localStorage.getItem("token"));
-            // Redirect to home page or another page after successful login
-            console.log("Login success");
-            navigate("/"); // Redirect after successful login
+
+            console.log("Signup success");
+            navigate("/login");
         } catch (err) {
-            setError("Invalid email or password.");
-            console.error("Login failed:", err);
+            setError("Signup failed. Please try again.");
+            console.error("Signup error:", err);
         }
     };
 
     return (
         <div className="login-container">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
+            <h2>Sign Up</h2>
+            <form onSubmit={handleSignup}>
                 <input
                     type="email"
                     placeholder="Email"
@@ -46,17 +50,22 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button className="login-button" type="submit">Login</button>
+                <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                />
+                <button className="login-button" type="submit">Create Account</button>
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}
-            <div className="login-footer">
-                <p>Don't have an account? <Link to="/register">Register Now </Link></p>
-            </div>
+
             <p className="signup-text">
-              Don't have an account? <a href="/signup">Create one</a>
+                Already have an account? <a href="/login">Log in</a>
             </p>
         </div>
     );
 }
 
-export default Login;
+export default Signup;
