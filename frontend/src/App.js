@@ -11,7 +11,6 @@ import Login from "./login";
 import Register from "./register";
 import Signup from "./signup";
 
-
 function App() {
     return (
         <Router>

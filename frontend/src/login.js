@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import './styling/login.css';
 
@@ -16,12 +17,12 @@ function Login() {
                 email,
                 password,
             });
-            
+
+            // Store token or user info as needed
             localStorage.setItem("token", res.data.access_token);
             console.log("Token:", localStorage.getItem("token"));
             // Redirect to home page or another page after successful login
-            console.log("Login success");
-            navigate("/"); // Redirect after successful login
+            navigate("/"); // or wherever you want to redirect
         } catch (err) {
             setError("Invalid email or password.");
             console.error("Login failed:", err);
@@ -46,8 +47,10 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button className="login-button" type="submit">Login</button>
+                <button type="submit">Login</button>
             </form>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+                <button className="login-button" type="submit">Login</button>
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div className="login-footer">
                 <p>Don't have an account? <Link to="/register">Register Now </Link></p>
