@@ -1,19 +1,60 @@
 .login-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 2rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to right, #dbeafe, #60a5fa); /* soft blue gradient */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.login-container input {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0;
-    padding: 0.5rem;
+
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #1e3a8a;
+    font-size: 28px;
 }
-.login-container button {
-    padding: 0.5rem 1rem;
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: #ffffffcc;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+input {
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: #3b82f6;
+}
+
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(to right, #3b82f6, #60a5fa); /* blue gradient */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+p {
+    margin-top: 10px;
+    text-align: center;
 }
