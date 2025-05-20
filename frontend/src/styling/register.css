@@ -1,64 +1,60 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import './styling/register.css';
-
-function Register() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post("http://127.0.0.1:5000/api/auth/register", {
-                name,
-                email,
-                password,
-            });
-
-            console.log("Registration successful:", res.data);
-            navigate("/login");
-        } catch (err) {
-            console.error("Registration failed:", err);
-            setError("Registration failed. Please check your info.");
-        }
-    };
-
-    return (
-        <div className="register-container">
-            <h2>Register</h2>
-            <form onSubmit={handleRegister}>
-                <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                {/* Mensaje debajo del campo de contraseña */}
-                <p style={{ fontSize: "12px", color: "#888" }}>Password must be at least 8 characters</p>
-                <button type="submit">Register Now</button> {/* Cambié el texto aquí */}
-            </form>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
-    );
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to right, #dbeafe, #60a5fa); /* soft blue gradient */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-export default Register;
+.register-container h2 {
+    margin-bottom: 20px;
+    color: #1e3a8a;
+    font-size: 28px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: #ffffffcc;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+input {
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: #3b82f6;
+}
+
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(to right, #3b82f6, #60a5fa); /* blue gradient */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+p {
+    margin-top: 10px;
+    text-align: center;
+}
