@@ -47,7 +47,8 @@ const Preferences = () => {
             const generateResponse = await fetch("http://150.136.215.192:8000/outfits/generate", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify(preferences)
             });

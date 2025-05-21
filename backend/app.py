@@ -63,11 +63,15 @@ def login_user():
         if session:
             return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
         else:
-            return jsonify({"error": "Login failed, invalid credentials."}), 401
+            return jsonify({"error": "Login failed, invalid email or password."}), 401
+
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 def get_user_id_from_token(auth_header):
     try:
+        if not auth_header or not auth_header.startswith("Bearer "):
+            print("Invalid auth header")
+            return None
         token = auth_header.split(" ")[1]  # Get just the token from "Bearer abc123"
         user = supabase.auth.get_user(token)
         return user.user.id
@@ -78,13 +82,15 @@ def get_user_id_from_token(auth_header):
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
-
+    
     try:
         # check if user is logged in
+        # get user id from auth token
         auth_header = request.headers.get("Authorization")
         user_id = get_user_id_from_token(auth_header)
         if not user_id:
             return jsonify({"error": "Unauthorized"}), 401
+        print("User ID:", user_id) # debugging purposes
 
 
         # return list of clothing items + classifications pulled from database
@@ -97,10 +103,18 @@ def get_wardrobe():
             .eq("user_id", user_id)
             .execute()
         )
+        print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
+        if not response.data:
+            print(f"No clothing items found for user ID: {user_id}") # debugging purposes
+            return jsonify({"error": "No items returned from supabase."}), 404
+
 
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
+            if not clothing_data:
+                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
+                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
@@ -114,7 +128,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print(f"Fetched {len(wardrobe)} items from database. \n" )
+        print(f"Fetched {len(wardrobe)} items from database, added to wardrobe. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
@@ -198,8 +212,13 @@ def save_clothing_items():
             print(classification_copy)
             print("\n")
 
-            items_response = supabase.table("clothing_items").insert(classification_copy).execute()
-            clothing_id = items_response.data[0]["id"]
+            try:
+                items_response = supabase.table("clothing_items").insert(classification_copy).execute()
+                clothing_id = items_response.data[0]["id"]
+                print(f"Inserted clothing item with ID {clothing_id} for user {user_id}")
+            except Exception as e:
+                print(f"Error inserting clothing item: {e}")
+                continue
 
             # Convert base64 to binary for storage upload
             if "," in imgData:
@@ -213,25 +232,36 @@ def save_clothing_items():
 
 
             # upload to Supabase Storage
-            storage_response = supabase.storage.from_("images").upload(
-                file_path,
-                image_bytes
-            )
+            try:
+                storage_response = supabase.storage.from_("images").upload(
+                    file_path,
+                    image_bytes
+                )
+                print(f"Uploaded image to Supabase Storage: {storage_response}")
+            except Exception as e:  
+                print(f"Error uploading image to Supabase Storage: {e}")
+                continue
 
             # get the public url 
-            image_url = supabase.storage.from_("images").get_public_url(file_path)
+            try:
+                image_url = supabase.storage.from_("images").get_public_url(file_path)
+                print(f"Image URL: {image_url}")
+            
 
             # Insert the image with reference to clothing_items
-            image_record = {
-                "clothing_id": clothing_id,
-                "image_url": image_url,
-                "image_name": file_name,
-                "user_id": user_id
-            }
-            image_response = supabase.table("clothing_images").insert(image_record).execute()
-            print(image_response.data[0]["id"])
-            print("Success!")
-
+                image_record = {
+                    "clothing_id": clothing_id,
+                    "image_url": image_url,
+                    "image_name": file_name,
+                    "user_id": user_id
+                }
+            
+                image_response = supabase.table("clothing_images").insert(image_record).execute()
+                print(image_response.data[0]["id"])
+                print("Success!")
+            except Exception as e:
+                print(f"Error getting public URL: {e}")
+                continue
         return jsonify(newItems), 200
     except Exception as e:
         print(str(e))
@@ -260,6 +290,10 @@ def generate_outfit():
         )
 
         clothing_list = []
+        
+        print(f"[DEBUG] Found {len(response.data)} clothing items for user ID: {user_id}") # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No clothing items found for the user."}), 404
 
         for row in response.data:
             metadata = row.get("clothing_items")
@@ -271,6 +305,7 @@ def generate_outfit():
                 ))
             else:
                 print("No metadata found for this image")
+
 
         generated_outfits = generate_ranked_outfits(clothing_list, request_data) 
 
