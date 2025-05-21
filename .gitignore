@@ -174,3 +174,5 @@ cython_debug/
 backend/.DS_Store
 backend/images/.DS_Store
 .DS_Store
+node_modules/
+
