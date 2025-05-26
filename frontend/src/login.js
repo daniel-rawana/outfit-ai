@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import './styling/login.css';
 
@@ -19,6 +18,9 @@ function Login() {
             });
 
             // Store token or user info as needed
+            localStorage.setItem("token", res.data.token);
+            console.log("Login success");
+            navigate("/"); // Redirect after successful login
             localStorage.setItem("token", res.data.access_token);
             console.log("Token:", localStorage.getItem("token"));
             // Redirect to home page or another page after successful login
@@ -63,3 +65,4 @@ function Login() {
 }
 
 export default Login;
+
