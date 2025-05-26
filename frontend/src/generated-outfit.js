@@ -96,9 +96,12 @@ const GeneratedOutfit = () => {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/outfits/save", {
+            const response = await fetch("http://150.136.215.192:8000/outfits/save", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 },
                 body: JSON.stringify(outfitPayload),
             });
 

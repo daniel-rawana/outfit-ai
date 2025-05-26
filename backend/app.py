@@ -29,39 +29,69 @@ CORS(app)
 @app.route('/users/register', methods=['POST'])
 def register_user():
     try:
-        # registration logic goes here (idk if we're gonna be allowing for user registration so this could be ignored entirely)
-        # 1. get email and password from request
-        # 2. validate email format and password strength
-        # 3. check if email already exists
-        # 4. hash the password
-        # 5. save user to database
-        # 6. generate auth token
-        # 7. return success with token
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+        
+        response = supabase.auth.sign_up({
+            "email": email,
+            "password": password
+        })
+        if response.user:
+            return jsonify({"message": "User registered successfully"}), 201
+        else:
+            return jsonify({"error": "User registration failed"}), 400
 
-        return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/users/login', methods=['POST'])
 def login_user():
     try:
-        # user login logic (again, this could be ignored entirely if we don't allow for user registration)
-        # 1. Get email and password from request
-        # 2. Find user by email in database
-        # 3. Verify password matches
-        # 4. Generate auth token
-        # 5. Return success with token
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+        session = auth_response.session
+        if session:
+            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
+        else:
+            return jsonify({"error": "Login failed, invalid email or password."}), 401
 
-        return jsonify({"message": "Login successful"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 401
+def get_user_id_from_token(auth_header):
+    try:
+        if not auth_header or not auth_header.startswith("Bearer "):
+            print("Invalid auth header")
+            return None
+        token = auth_header.split(" ")[1]  # Get just the token from "Bearer abc123"
+        user = supabase.auth.get_user(token)
+        return user.user.id
+    except Exception as e:
+        print("Auth error:", e)
+        return None
 
 # Wardrobe routes
 @app.route('/wardrobe/fetch-user-items', methods=['GET'])
 def get_wardrobe():
+    
     try:
-        
-        user_id = 1
+        # check if user is logged in
+        # get user id from auth token
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+        print("User ID:", user_id) # debugging purposes
+
 
         # return list of clothing items + classifications pulled from database
         wardrobe = []
@@ -72,11 +102,19 @@ def get_wardrobe():
             .select("user_id, clothing_id, image_url, clothing_items(*)")
             .eq("user_id", user_id)
             .execute()
-        )   
+        )
+        print(f"Supabase fetched {len(response.data)} items from database. [FROM respone.data] \n" ) # debugging purposes
+        if not response.data:
+            print(f"No clothing items found for user ID: {user_id}") # debugging purposes
+            return jsonify({"error": "No items returned from supabase."}), 404
+
 
         # format items for response 
         for row in response.data: 
             clothing_data = row["clothing_items"]
+            if not clothing_data:
+                print(f"No metadata found for this image. Row: {row.get('clothing_id')}") # debugging purposes
+                continue
             wardrobe.append({
                 "image": row["image_url"],
                 "main_category": clothing_data.get("main_category", ""),
@@ -90,7 +128,7 @@ def get_wardrobe():
             })
 
         # printing purposes only
-        print(f"Fetched {len(wardrobe)} items from database. \n" )
+        print(f"Fetched {len(wardrobe)} items from database, added to wardrobe. \n" )
 
         return jsonify(wardrobe), 200
     except Exception as e:
@@ -156,6 +194,11 @@ def update_classifications():
 def save_clothing_items():
     # Save new items and their classifications to database
     try:
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+        
         newItems = request.get_json()
 
         # save new clothing items and their classifications in database
@@ -169,8 +212,13 @@ def save_clothing_items():
             print(classification_copy)
             print("\n")
 
-            items_response = supabase.table("clothing_items").insert(classification_copy).execute()
-            clothing_id = items_response.data[0]["id"]
+            try:
+                items_response = supabase.table("clothing_items").insert(classification_copy).execute()
+                clothing_id = items_response.data[0]["id"]
+                print(f"Inserted clothing item with ID {clothing_id} for user {user_id}")
+            except Exception as e:
+                print(f"Error inserting clothing item: {e}")
+                continue
 
             # Convert base64 to binary for storage upload
             if "," in imgData:
@@ -180,28 +228,40 @@ def save_clothing_items():
 
             # create a unique filename
             file_name = f"clothing_{clothing_id}_{uuid.uuid4()}.jpg"
-            file_path = f"user_clothes/user_1/{file_name}" # FIXME: Using user_id 1 for now 
+            file_path = f"user_clothes/user_{user_id}/{file_name}"  # ✅ user-specific folder
+
 
             # upload to Supabase Storage
-            storage_response = supabase.storage.from_("images").upload(
-                file_path,
-                image_bytes
-            )
+            try:
+                storage_response = supabase.storage.from_("images").upload(
+                    file_path,
+                    image_bytes
+                )
+                print(f"Uploaded image to Supabase Storage: {storage_response}")
+            except Exception as e:  
+                print(f"Error uploading image to Supabase Storage: {e}")
+                continue
 
             # get the public url 
-            image_url = supabase.storage.from_("images").get_public_url(file_path)
+            try:
+                image_url = supabase.storage.from_("images").get_public_url(file_path)
+                print(f"Image URL: {image_url}")
+            
 
-            # Insert the image with reference to lothing_items
-            image_record = {
-                "clothing_id": clothing_id,
-                "image_url": image_url,
-                "image_name": file_name,
-                "user_id": 1 #FIXME: Implement user_id features
-            }
-            image_response = supabase.table("clothing_images").insert(image_record).execute()
-            print(image_response.data[0]["id"])
-            print("Success!")
-
+            # Insert the image with reference to clothing_items
+                image_record = {
+                    "clothing_id": clothing_id,
+                    "image_url": image_url,
+                    "image_name": file_name,
+                    "user_id": user_id
+                }
+            
+                image_response = supabase.table("clothing_images").insert(image_record).execute()
+                print(image_response.data[0]["id"])
+                print("Success!")
+            except Exception as e:
+                print(f"Error getting public URL: {e}")
+                continue
         return jsonify(newItems), 200
     except Exception as e:
         print(str(e))
@@ -216,7 +276,10 @@ def generate_outfit():
         print(request_data)
         print("\n")
 
-        user_id = 1
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
 
         response = (
             supabase
@@ -227,6 +290,10 @@ def generate_outfit():
         )
 
         clothing_list = []
+        
+        print(f"[DEBUG] Found {len(response.data)} clothing items for user ID: {user_id}") # debugging purposes
+        if not response.data:
+            return jsonify({"error": "No clothing items found for the user."}), 404
 
         for row in response.data:
             metadata = row.get("clothing_items")
@@ -238,6 +305,7 @@ def generate_outfit():
                 ))
             else:
                 print("No metadata found for this image")
+
 
         generated_outfits = generate_ranked_outfits(clothing_list, request_data) 
 
@@ -298,7 +366,11 @@ def get_outfits():
 @app.route('/outfits/saved', methods=['GET'])
 def get_saved_outfits():
     try:
-        user_id = 1  # FIXME: Replace with real user ID if login logic is added
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+        
         print(f"[INFO] Fetching saved outfits for user_id: {user_id}")
 
         # Fetch saved outfits for the user
@@ -378,7 +450,11 @@ def save_outfit():
         data = request.get_json()
         outfit_items = data.get("outfit", [])
         outfit_name = data.get("outfit_name", "Untitled Outfit")
-        user_id = 1  # TODO: Replace with real user ID when auth is added
+
+        auth_header = request.headers.get("Authorization")
+        user_id = get_user_id_from_token(auth_header)
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
 
         print(f"[INFO] Saving outfit: {outfit_name} with {len(outfit_items)} items.")
 

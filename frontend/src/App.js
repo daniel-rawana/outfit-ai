@@ -10,6 +10,7 @@ import SavedOutfits from "./saved-outfits";
 import Login from "./login";
 import Register from "./register";
 
+import Signup from "./signup";
 function App() {
     return (
         <Router>
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/saved-outfits" element={<SavedOutfits />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/signup" element={<Signup />} />
             </Routes>
         </Router>
     );
