@@ -1,48 +1,56 @@
+/* 🌄 Container */
 .register-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(to right, #dbeafe, #60a5fa); /* soft blue gradient */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
 }
 
+/* 🧑‍🎓 Title */
 .register-container h2 {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     color: #1e3a8a;
     font-size: 28px;
+    text-align: center;
 }
 
-form {
+/* 🧾 Form */
+.register-container form {
     display: flex;
     flex-direction: column;
-    width: 300px;
-    background-color: #ffffffcc;
-    padding: 30px;
-    border-radius: 20px;
+    width: 100%;
+    max-width: 350px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 30px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-input {
-    margin-bottom: 15px;
-    padding: 12px;
+/* 🧩 Inputs */
+.register-container input {
+    margin-bottom: 18px;
+    padding: 10px;
     border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 50px;
+    font-size: 18px;
     outline: none;
     transition: border-color 0.2s;
 }
 
-input:focus {
+.register-container input:focus {
     border-color: #3b82f6;
 }
 
-button {
+/* 🔘 Button */
+.register-container button {
     padding: 12px;
     border: none;
     border-radius: 20px;
-    background: linear-gradient(to right, #3b82f6, #60a5fa); /* blue gradient */
+    background: linear-gradient(to right, #3b82f6, #60a5fa);
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -50,11 +58,14 @@ button {
     transition: transform 0.2s ease;
 }
 
-button:hover {
+.register-container button:hover {
     transform: scale(1.03);
 }
 
-p {
+/* ℹ️ Extra Text (error, password msg, etc.) */
+.register-container p {
+    font-size: 14px;
     margin-top: 10px;
     text-align: center;
+    color: #444;
 }

@@ -52,14 +52,9 @@ function Login() {
                 <button type="submit">Login</button>
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}
-                <button className="login-button" type="submit">Login</button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
             <div className="login-footer">
                 <p>Don't have an account? <Link to="/register">Register Now </Link></p>
             </div>
-            <p className="signup-text">
-              Don't have an account? <a href="/signup">Create one</a>
-            </p>
         </div>
     );
 }
