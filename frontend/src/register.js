@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import './styling/register.css';
 
 function Register() {
-    const [name, setName] = useState("");
+    const [username, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -13,13 +13,14 @@ function Register() {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://127.0.0.1:5000/api/auth/register", {
-                name,
+            const res = await axios.post("http://150.136.215.192:8000/api/auth/register", {
+                username,
                 email,
                 password,
             });
 
             console.log("Registration successful:", res.data);
+            alert("Registration successful! Check your email to activate your account.");
             navigate("/login");
         } catch (err) {
             console.error("Registration failed:", err);
@@ -33,8 +34,8 @@ function Register() {
             <form onSubmit={handleRegister}>
                 <input
                     type="text"
-                    placeholder="Full Name"
-                    value={name}
+                    placeholder="Username"
+                    value={username}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
