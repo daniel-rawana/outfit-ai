@@ -12,7 +12,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://150.136.215.192:8000/users/login", {
+            const res = await axios.post("http://127.0.0.1:5000/users/login", {
                 email,
                 password,
             });
