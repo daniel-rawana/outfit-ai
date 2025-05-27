@@ -85,7 +85,6 @@ button:hover,
     margin-top: 10px;
 }
 
-/* ℹ️ Helper & Error Text */
 p {
     font-size: 14px;
     margin-top: 10px;
@@ -110,7 +109,5 @@ p {
 .signup-text a:hover {
     text-decoration: underline;
 }
-
-
 
 

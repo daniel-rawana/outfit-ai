@@ -1,4 +1,4 @@
-/* 🌄 Container */
+/* Container */
 .register-container {
     display: flex;
     flex-direction: column;
@@ -10,7 +10,7 @@
     padding: 20px;
 }
 
-/* 🧑‍🎓 Title */
+/*  Title */
 .register-container h2 {
     margin-bottom: 24px;
     color: #1e3a8a;
@@ -18,7 +18,7 @@
     text-align: center;
 }
 
-/* 🧾 Form */
+/* Form */
 .register-container form {
     display: flex;
     flex-direction: column;
@@ -29,7 +29,7 @@
     border-radius: 30px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
-/* 🧩 Inputs */
+/* Inputs */
 .register-container input {
     margin-bottom: 18px;
     padding: 10px;
@@ -59,7 +59,6 @@
     transform: scale(1.03);
 }
 
-/* ℹ️ Extra Text (error, password msg, etc.) */
 .register-container p {
     font-size: 14px;
     margin-top: 10px;

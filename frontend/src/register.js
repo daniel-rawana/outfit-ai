@@ -52,9 +52,9 @@ function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                {/* Mensaje debajo del campo de contraseña */}
+                {/* Message under password */}
                 <p style={{ fontSize: "12px", color: "#888" }}>Password must be at least 8 characters</p>
-                <button type="submit">Register Now</button> {/* Cambié el texto aquí */}
+                <button type="submit">Register Now</button> {/* Register */}
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
