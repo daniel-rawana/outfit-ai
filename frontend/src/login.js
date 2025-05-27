@@ -17,17 +17,23 @@ function Login() {
                 password,
             });
 
-            // Store token or user info as needed
-            localStorage.setItem("token", res.data.token);
+            console.log("Login response:", res.data); // Log the entire response
+            
+            // Store token and user ID correctly
+            localStorage.setItem("token", res.data.access_token);
+            localStorage.setItem("userId", res.data.user_id);
+            
+            console.log("Token stored:", localStorage.getItem("token"));
+            console.log("User ID stored:", localStorage.getItem("userId"));
+            
+            // Dispatch event to notify navbar
+            window.dispatchEvent(new Event('storage'));
+            
             console.log("Login success");
             navigate("/"); // Redirect after successful login
-            localStorage.setItem("token", res.data.access_token);
-            console.log("Token:", localStorage.getItem("token"));
-            // Redirect to home page or another page after successful login
-            navigate("/"); // or wherever you want to redirect
         } catch (err) {
+            console.error("Login error details:", err.response ? err.response.data : err.message);
             setError("Invalid email or password.");
-            console.error("Login failed:", err);
         }
     };
 
@@ -60,4 +66,3 @@ function Login() {
 }
 
 export default Login;
-

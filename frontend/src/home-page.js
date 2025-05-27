@@ -35,7 +35,7 @@ function HomePage() {
             return;
         }
         try {
-            const response = await fetch("http://150.136.215.192:8000/wardrobe/fetch-user-items", {
+            const response = await fetch("http://127.0.0.1:5000/wardrobe/fetch-user-items", {
                 headers:{
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

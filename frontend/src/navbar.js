@@ -10,8 +10,20 @@ function Navbar() {
     
     // Check if user is logged in
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        setIsLoggedIn(!!token);
+        const checkLoginStatus = () => {
+            const token = localStorage.getItem("token");
+            setIsLoggedIn(!!token);
+        };
+        
+        // Call the function immediately
+        checkLoginStatus();
+        
+        // Listen for storage events
+        window.addEventListener('storage', checkLoginStatus);
+        
+        return () => {
+            window.removeEventListener('storage', checkLoginStatus);
+        };
     }, []);
     
     // Close dropdown when clicking outside
@@ -59,7 +71,7 @@ function Navbar() {
                                 className="user-menu-btn" 
                                 onClick={() => setShowDropdown(!showDropdown)}
                             >
-                                [Username]
+                                My Account
                             </button>
                             
                             {showDropdown && (
