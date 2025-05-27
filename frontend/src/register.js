@@ -9,8 +9,8 @@ function Register() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-
     const handleRegister = async (e) => {
+    
         e.preventDefault();
         try {
             const res = await axios.post("http://127.0.0.1:5000/api/auth/register", {
@@ -60,6 +60,5 @@ function Register() {
         </div>
     );
 }
-
 
 export default Register;

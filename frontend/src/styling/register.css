@@ -43,7 +43,6 @@
 .register-container input:focus {
     border-color: #3b82f6;
 }
-
 .register-container button {
     padding: 12px;
     border: none;
@@ -67,3 +66,5 @@
     text-align: center;
     color: #444;
 }
+
+

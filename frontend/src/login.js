@@ -4,7 +4,6 @@ import axios from "axios";
 import './styling/login.css';
 
 function Login() {
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -31,7 +30,6 @@ function Login() {
             console.error("Login failed:", err);
         }
     };
-
     return (
         <div className="login-container">
             <h2>Login</h2>
@@ -59,6 +57,7 @@ function Login() {
         </div>
     );
 }
+
 
 export default Login;
 
