@@ -19,7 +19,7 @@ function Signup() {
         }
 
         try {
-            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/api/auth/signup", {
+            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/users/signup", {
                 email,
                 password,
             });

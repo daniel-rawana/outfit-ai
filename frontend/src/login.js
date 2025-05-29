@@ -12,7 +12,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/api/auth/login", {
+            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/users/login", {
                 email,
                 password,
             });

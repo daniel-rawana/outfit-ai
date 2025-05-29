@@ -13,7 +13,7 @@ function Register() {
 
         e.preventDefault();
         try {
-            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/api/auth/register", {
+            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/users/register", {
                 name,
                 email,
                 password,
