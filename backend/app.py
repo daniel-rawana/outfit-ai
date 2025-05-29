@@ -41,10 +41,11 @@ def server_test():
 def register_user():
     try:
         data = request.get_json()
+        username = data.get("username")
         email = data.get("email")
         password = data.get("password")
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
+        if not email or not password or not username:
+            return jsonify({"error": "Email, password, or username not provided."}), 400
         
         response = supabase.auth.sign_up({
             "email": email,

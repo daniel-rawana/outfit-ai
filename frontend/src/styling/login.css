@@ -4,110 +4,85 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    background: linear-gradient(to right, #dbeafe, #60a5fa); /* soft blue gradient */
+    min-height: 100vh; 
+    background: linear-gradient(to right, #dbeafe, #60a5fa);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 2.5rem 1.5rem; 
+    box-sizing: border-box; 
 }
 
-/* 🧑‍🎓 Title */
-.login-title,
+/* Title: Styles the main heading */
 .login-container h2 {
-    font-size: 28px;
+    font-size: 1.75rem; /* 28px */
     font-weight: bold;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem; /* 24px */
     color: #1e3a8a;
     text-align: center;
 }
 
-/* 🧾 Form Styling */
-form {
+/* Form: Styles the login form itself */
+.login-container form {
     display: flex;
     flex-direction: column;
-    width: 320px;
-    background-color: rgba(255, 255, 255, 0.85);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 20rem; /* 320px */
+    background-color: rgba(255, 255, 255, 0.9); 
+    padding: 2rem; 
+    border-radius: 1.25rem; /* 20px */
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; 
 }
 
-/* 🧩 Inputs */
-input,
-input[type="email"],
-input[type="password"],
+/* Inputs: Styles for all input fields */
 .login-container input {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 12px;
+    width: 100%; 
+    margin-bottom: 1rem; 
+    padding: 0.75rem; /* 12px */
     border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 0.75rem; /* 12px */
+    font-size: 1rem; /* 16px */
     outline: none;
     transition: border-color 0.2s ease;
+    box-sizing: border-box; 
 }
 
-input:focus {
+/* Input Focus: Highlight on focus */
+.login-container input:focus {
     border-color: #3b82f6;
 }
-
-/* 🎯 Buttons (General) */
-button,
-.login-container button,
-form button {
-    padding: 12px;
+/* Button: Styles for the submit button */
+.login-container button {
+    width: 100%; 
+    padding: 0.875rem 1.5rem;
     border: none;
-    border-radius: 12px;
+    border-radius: 0.75rem; /* 12px */
     background: linear-gradient(to right, #3b82f6, #60a5fa);
     color: white;
-    font-size: 16px;
+    font-size: 1.125rem; 
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s ease, background 0.3s ease;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+    margin-top: 0.5rem; 
+    box-sizing: border-box; 
 }
 
-button:hover,
-.login-button:hover,
-.register-button:hover {
-    transform: scale(1.03);
+.login-container button:hover {
+    transform: scale(1.02);
     opacity: 0.95;
 }
 
-/* 🔐 Login-specific Button */
-.login-button {
-    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-    padding: 12px 24px;
-    font-size: 14px;
-    border-radius: 8px;
-}
-
-/* 📝 Register-specific Button */
-.register-button {
-    background: linear-gradient(to right, #60a5fa, #3b82f6);
-    margin-top: 10px;
-}
-
-p {
-    font-size: 14px;
-    margin-top: 10px;
+.login-footer p {
+    font-size: 0.875rem; /* 14px */
+    margin-top: 1rem; /* 16px */
     text-align: center;
     color: #444;
 }
-
-/* ✍️ Signup redirect text */
-.signup-text {
-    margin-top: 16px;
-    font-size: 14px;
-    color: #444;
-}
-
-.signup-text a {
+.login-footer p a {
     color: #2575fc;
-
     text-decoration: none;
     font-weight: bold;
 }
 
-.signup-text a:hover {
+.login-footer p a:hover {
     text-decoration: underline;
 }
-
-
