@@ -47,6 +47,58 @@ body {
     font-size: medium;
     color: white;
 }
+/* User Menu Styles */
+.user-menu {
+    position: relative;
+}
+
+.user-menu-btn {
+    background-color: #4a90e2;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    min-width: 160px;
+    z-index: 1000;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    text-align: left;
+    border: none;
+    background: none;
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-menu button {
+    color: #e74c3c;
+    border-top: 1px solid #eee;
+}
 
 .main-content {
     display: flex;

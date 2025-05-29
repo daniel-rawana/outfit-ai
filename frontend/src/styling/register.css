@@ -1,69 +1,77 @@
-/* Container */
+/* Register Container: Centers content, adds background, and sets basic typography */
 .register-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(to right, #dbeafe, #60a5fa); /* soft blue gradient */
+    min-height: 100vh; /* Ensures it takes full viewport height */
+    background: linear-gradient(to right, #dbeafe, #60a5fa);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
+    padding: 2.5rem 1.5rem; /* Responsive padding (40px top/bottom, 24px left/right) */
+    box-sizing: border-box; /* Includes padding in element's total width and height */
 }
 
-/*  Title */
+/* Title: Styles the main heading */
 .register-container h2 {
-    margin-bottom: 24px;
+    margin-bottom: 2rem; /* Spacing below title */
     color: #1e3a8a;
-    font-size: 28px;
+    font-size: 1.75rem; /* 28px */
     text-align: center;
 }
 
-/* Form */
+/* Form: Styles the registration form itself */
 .register-container form {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 350px;
+    max-width: 20rem; /* Max width for the form (320px) */
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 40px;
-    border-radius: 30px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem 2.5rem 2rem 2rem; /* top, right, bottom, left */
+    border-radius: 1.875rem; /* 30px */
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.1); /* Softer shadow */
+    box-sizing: border-box;
 }
-/* Inputs */
+/* Inputs: Styles for all input fields */
 .register-container input {
-    margin-bottom: 18px;
-    padding: 10px;
+    margin-bottom: 1.375rem; /* 22px */
+    padding: 0.75rem; /* 12px for better touch area */
     border: 1px solid #cbd5e1;
-    border-radius: 50px;
-    font-size: 18px;
+    border-radius: 3.125rem; /* 50px - very rounded */
+    font-size: 1.125rem; /* 18px */
     outline: none;
     transition: border-color 0.2s;
 }
 
+/* Input Focus: Highlight on focus */
 .register-container input:focus {
     border-color: #3b82f6;
 }
+
+/* Button: Styles for the submit button */
 .register-container button {
-    padding: 12px;
+    padding: 1rem 1.75rem; /* 16px top/bottom, 28px left/right */
+    margin-top: 1.25rem; /* 20px */
     border: none;
-    border-radius: 20px;
+    border-radius: 1.25rem; /* 20px */
     background: linear-gradient(to right, #3b82f6, #60a5fa);
     color: white;
-    font-size: 16px;
+    font-size: 1.25rem; /* 20px */
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s ease;
+    align-self: center; /* Centers the button horizontally */
+    width: fit-content; /* Prevents button from stretching */
 }
 
+/* Button Hover: Adds a slight scale effect on hover */
 .register-container button:hover {
     transform: scale(1.03);
 }
 
+/* Paragraph: Styles for any text paragraphs */
 .register-container p {
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 0.875rem; /* 14px */
+    margin-top: 1rem; /* 16px */
     text-align: center;
     color: #444;
 }
-
-

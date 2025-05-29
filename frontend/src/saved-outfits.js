@@ -30,7 +30,7 @@ function SavedOutfits() {
 
     const fetchOutfits = async () => {
         try {
-            const response = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/outfits/saved", 
+            const response = await fetch("http://150.136.215.192:8000/outfits/saved", 
                 {
                     method: "GET",
                     headers: {
