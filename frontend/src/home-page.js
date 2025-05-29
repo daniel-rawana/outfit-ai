@@ -35,7 +35,7 @@ function HomePage() {
             return;
         }
         try {
-            const response = await fetch("http://150.136.215.192:8000/wardrobe/fetch-user-items", {
+            const response = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/wardrobe/fetch-user-items", {
                 headers:{
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -77,7 +77,7 @@ function HomePage() {
             uploadedImages.map((image) => convertToBase64(image))
         );
         try {
-            const response = await fetch("http://150.136.215.192:8000/wardrobe/classify-clothing", {
+            const response = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/wardrobe/classify-clothing", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
@@ -154,7 +154,7 @@ function HomePage() {
         let saveSuccess = false;
         if (modifiedExisting.length > 0) {
             try {
-                const response = await fetch("http://150.136.215.192:8000/wardrobe/update-classifications", {
+                const response = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/wardrobe/update-classifications", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
@@ -180,7 +180,7 @@ function HomePage() {
         }
         if (newItems.length > 0) {
             try {
-                const response = await fetch("http://150.136.215.192:8000/wardrobe/save-clothing-items", {
+                const response = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/wardrobe/save-clothing-items", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",

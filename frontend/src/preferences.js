@@ -44,7 +44,7 @@ const Preferences = () => {
             };
 
 
-            const generateResponse = await fetch("http://150.136.215.192:8000/outfits/generate", {
+            const generateResponse = await fetch("https://outfit-api.ddns.net.jumpingcrab.com/outfits/generate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

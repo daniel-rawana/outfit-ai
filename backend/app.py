@@ -22,8 +22,19 @@ if (Client):
     print("Connected")
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app, 
+     origins=["http://localhost:3000", "https://outfit-ai-three.vercel.app"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"]) 
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        return "", 200
+
+@app.route('/server_test', methods=['GET'])
+def server_test():
+    return jsonify({"message": "Success!"}), 200
 
 # User routes
 @app.route('/users/register', methods=['POST'])
