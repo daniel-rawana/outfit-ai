@@ -9,8 +9,8 @@ function Register() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-
     const handleRegister = async (e) => {
+
         e.preventDefault();
         try {
             const res = await axios.post("http://127.0.0.1:5000/api/auth/register", {
@@ -33,7 +33,7 @@ function Register() {
             <form onSubmit={handleRegister}>
                 <input
                     type="text"
-                    placeholder="Full Name"
+                    placeholder="Username"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -52,9 +52,9 @@ function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                {/* Mensaje debajo del campo de contraseña */}
+                {/* Message under password */}
                 <p style={{ fontSize: "12px", color: "#888" }}>Password must be at least 8 characters</p>
-                <button type="submit">Register Now</button> {/* Cambié el texto aquí */}
+                <button type="submit">Register Now</button> {/* Register */}
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
