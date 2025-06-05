@@ -80,12 +80,22 @@ def login_user():
         })
         session = auth_response.session
         if session:
-            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
+            # Extract display_name from user metadata
+            user_metadata = auth_response.user.user_metadata
+            display_name = user_metadata.get("display_name", email.split('@')[0])  # Fallback to email username
+            
+            return jsonify({
+                "message": "Login successful", 
+                "access_token": session.access_token, 
+                "user_id": auth_response.user.id,
+                "display_name": display_name  # Include display_name in response
+            }), 200
         else:
             return jsonify({"error": "Login failed, invalid email or password."}), 401
 
     except Exception as e:
         return jsonify({"error": str(e)}), 401
+    
 def get_user_id_from_token(auth_header):
     try:
         if not auth_header or not auth_header.startswith("Bearer "):
