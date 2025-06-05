@@ -6,13 +6,19 @@ function Navbar() {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [displayName, setDisplayName] = useState("My Account");
     const dropdownRef = useRef(null);
     
     // Check if user is logged in
     useEffect(() => {
         const checkLoginStatus = () => {
             const token = localStorage.getItem("token");
+            const username = localStorage.getItem("displayName");
             setIsLoggedIn(!!token);
+
+            if (username) {
+                setDisplayName(username);
+            }
         };
         
         // Call the function immediately
@@ -44,12 +50,14 @@ function Navbar() {
         // Clear localStorage
         localStorage.removeItem("token");
         localStorage.removeItem("userId");
+        localStorage.removeItem("displayName");
         
         // Update state
         setIsLoggedIn(false);
         setShowDropdown(false);
         
         // Redirect to login page
+        setDisplayName("My Account");
         alert("You have been logged out successfully.");
         console.log("User logged out"); 
         navigate("/login");
@@ -71,7 +79,7 @@ function Navbar() {
                                 className="user-menu-btn" 
                                 onClick={() => setShowDropdown(!showDropdown)}
                             >
-                                My Account
+                                {displayName}
                             </button>
                             
                             {showDropdown && (

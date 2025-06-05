@@ -13,7 +13,7 @@ function Register() {
 
         e.preventDefault();
         try {
-            const res = await axios.post("http://150.136.215.192:8000/users/register", {
+            const res = await axios.post("https://outfit-api.ddns.net.jumpingcrab.com/users/register", {
                 username,
                 email,
                 password,
@@ -24,7 +24,10 @@ function Register() {
             navigate("/login");
         } catch (err) {
             console.error("Registration failed:", err);
-            setError("Registration failed. Please check your info.");
+            if (err.response && err.response.status === 409) {
+                setError("This email is already registered. Please use a different email. Or login if you already have an account.");
+            }
+            setError("Registration failed. Please check your information.");
         }
     };
 
