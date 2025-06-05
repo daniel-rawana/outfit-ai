@@ -47,6 +47,22 @@ def register_user():
         if not email or not password or not username:
             return jsonify({"error": "Email, password, or username not provided."}), 400
         
+        # Check if email already exists
+        try:
+            # Try to get user by email
+            user_response = supabase.auth.admin.list_users()
+            existing_users = user_response.users
+            
+            # Check if any user has the same email
+            for user in existing_users:
+                if user.email == email:
+                    return jsonify({"error": "Email already exists. Please use a different email or login."}), 409
+            print(f"No existing user found with email: {email}")  # debugging purposes
+        except Exception as e:
+            print(f"Error checking for existing email: {e}")
+            # Continue with registration if we can't check for existing email
+            # This is a fallback in case we can't access the admin API
+
         # Create user with display_name in user metadata
         response = supabase.auth.sign_up({
             "email": email,
