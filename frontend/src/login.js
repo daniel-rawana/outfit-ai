@@ -22,9 +22,11 @@ function Login() {
             // Store token and user ID correctly
             localStorage.setItem("token", res.data.access_token);
             localStorage.setItem("userId", res.data.user_id);
+            localStorage.setItem("displayName", res.data.display_name);
             
             console.log("Token stored:", localStorage.getItem("token"));
             console.log("User ID stored:", localStorage.getItem("userId"));
+            console.log("Display Name stored:", localStorage.getItem("displayName"));
             
             // Dispatch event to notify navbar
             window.dispatchEvent(new Event('storage'));
