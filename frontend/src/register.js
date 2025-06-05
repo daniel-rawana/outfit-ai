@@ -24,7 +24,10 @@ function Register() {
             navigate("/login");
         } catch (err) {
             console.error("Registration failed:", err);
-            setError("Registration failed. Please check your info.");
+            if (err.response && err.response.status === 409) {
+                setError("This email is already registered. Please use a different email. Or login if you already have an account.");
+            }
+            setError("Registration failed. Please check your information.");
         }
     };
 
