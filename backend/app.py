@@ -47,10 +47,17 @@ def register_user():
         if not email or not password or not username:
             return jsonify({"error": "Email, password, or username not provided."}), 400
         
+        # Create user with display_name in user metadata
         response = supabase.auth.sign_up({
             "email": email,
-            "password": password
+            "password": password,
+            "options": {
+                "data": {
+                    "display_name": username  # Store username in user metadata
+                }
+            }
         })
+        
         if response.user:
             return jsonify({"message": "User registered successfully"}), 201
         else:
