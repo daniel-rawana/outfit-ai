@@ -47,10 +47,33 @@ def register_user():
         if not email or not password or not username:
             return jsonify({"error": "Email, password, or username not provided."}), 400
         
+        # Check if email already exists
+        try:
+            # Try to get user by email
+            user_response = supabase.auth.admin.list_users()
+            existing_users = user_response.users
+            
+            # Check if any user has the same email
+            for user in existing_users:
+                if user.email == email:
+                    return jsonify({"error": "Email already exists. Please use a different email or login."}), 409
+            print(f"No existing user found with email: {email}")  # debugging purposes
+        except Exception as e:
+            print(f"Error checking for existing email: {e}")
+            # Continue with registration if we can't check for existing email
+            # This is a fallback in case we can't access the admin API
+
+        # Create user with display_name in user metadata
         response = supabase.auth.sign_up({
             "email": email,
-            "password": password
+            "password": password,
+            "options": {
+                "data": {
+                    "display_name": username  # Store username in user metadata
+                }
+            }
         })
+        
         if response.user:
             return jsonify({"message": "User registered successfully"}), 201
         else:
@@ -73,12 +96,22 @@ def login_user():
         })
         session = auth_response.session
         if session:
-            return jsonify({"message": "Login successful", "access_token": session.access_token, "user_id": auth_response.user.id}), 200
+            # Extract display_name from user metadata
+            user_metadata = auth_response.user.user_metadata
+            display_name = user_metadata.get("display_name", email.split('@')[0])  # Fallback to email username
+            
+            return jsonify({
+                "message": "Login successful", 
+                "access_token": session.access_token, 
+                "user_id": auth_response.user.id,
+                "display_name": display_name  # Include display_name in response
+            }), 200
         else:
             return jsonify({"error": "Login failed, invalid email or password."}), 401
 
     except Exception as e:
         return jsonify({"error": str(e)}), 401
+    
 def get_user_id_from_token(auth_header):
     try:
         if not auth_header or not auth_header.startswith("Bearer "):
